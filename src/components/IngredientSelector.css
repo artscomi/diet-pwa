@@ -9,7 +9,7 @@
   font-size: clamp(0.6875rem, 2vw, 0.8125rem);
   font-weight: 600;
   margin-bottom: 0.625rem;
-  color: #6b7280;
+  color: #92400e;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   line-height: 1.4;
@@ -67,13 +67,13 @@
 
 .ingredient-selector-text:empty::before {
   content: attr(placeholder);
-  color: #6b7280;
+  color: #92400e;
   font-weight: 400;
 }
 
 .ingredient-selector-arrow {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: #92400e;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -153,7 +153,7 @@
 }
 
 .ingredient-option.empty {
-  color: #6b7280;
+  color: #92400e;
   cursor: default;
   justify-content: center;
 }
@@ -172,7 +172,7 @@
 
 .option-quantity {
   font-size: clamp(0.8125rem, 2vw, 0.9375rem);
-  color: #6b7280;
+  color: #92400e;
   font-weight: 400;
   white-space: nowrap;
   flex-shrink: 0;

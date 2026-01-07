@@ -14,7 +14,7 @@ export default defineConfig({
         short_name: 'Menu Dieta',
         description: 'Menu giornalieri che rispettano la tua dieta personalizzata',
         theme_color: '#10b981',
-        background_color: '#fafafa',
+        background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',

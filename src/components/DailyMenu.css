@@ -95,7 +95,7 @@
 
 .menu-action-btn.cancel {
   background: rgba(0, 0, 0, 0.03);
-  color: #92400e;
+  color: #64748b;
 }
 
 .menu-action-btn.cancel:hover {
@@ -128,7 +128,7 @@
 }
 
 .menu-section {
-  background: #fef3e7;
+  background: #f8fafc;
   border-radius: 12px;
   padding: 1rem;
   border: none;
@@ -136,7 +136,7 @@
 }
 
 .menu-section:hover {
-  background: #fed7aa;
+  background: #e2e8f0;
 }
 
 .menu-section h4 {
@@ -162,7 +162,7 @@
   margin: 0.5rem 0;
   font-size: clamp(0.875rem, 2.5vw, 1rem);
   line-height: 1.5;
-  color: #78350f;
+  color: #334155;
   letter-spacing: -0.01em;
 }
 
@@ -224,7 +224,7 @@
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
   .menu-section:hover {
-    background: #fef3e7;
+    background: #f8fafc;
   }
 
   .menu-action-btn:hover {

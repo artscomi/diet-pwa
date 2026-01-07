@@ -9,7 +9,7 @@
   font-size: clamp(0.6875rem, 2vw, 0.8125rem);
   font-weight: 600;
   margin-bottom: 0.625rem;
-  color: #92400e;
+  color: #64748b;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   line-height: 1.4;
@@ -39,7 +39,7 @@
 
 .ingredient-selector-button:active {
   transform: scale(0.98);
-  background: #fef3e7;
+  background: #f8fafc;
 }
 
 .ingredient-selector-button:hover {
@@ -49,7 +49,7 @@
 }
 
 .ingredient-selector-button.open {
-  background: #fef3e7;
+  background: #f8fafc;
   border-color: #10b981;
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
@@ -67,13 +67,13 @@
 
 .ingredient-selector-text:empty::before {
   content: attr(placeholder);
-  color: #92400e;
+  color: #64748b;
   font-weight: 400;
 }
 
 .ingredient-selector-arrow {
   font-size: 0.75rem;
-  color: #92400e;
+  color: #64748b;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -137,7 +137,7 @@
 }
 
 .ingredient-option:active {
-  background: #fef3e7;
+  background: #f8fafc;
   transform: scale(0.98);
 }
 
@@ -153,7 +153,7 @@
 }
 
 .ingredient-option.empty {
-  color: #92400e;
+  color: #64748b;
   cursor: default;
   justify-content: center;
 }
@@ -172,7 +172,7 @@
 
 .option-quantity {
   font-size: clamp(0.8125rem, 2vw, 0.9375rem);
-  color: #92400e;
+  color: #64748b;
   font-weight: 400;
   white-space: nowrap;
   flex-shrink: 0;
@@ -237,6 +237,6 @@
   }
 
   .ingredient-option:active {
-    background: #fef3e7;
+    background: #f8fafc;
   }
 }

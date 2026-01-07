@@ -1,44 +1,56 @@
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
+  font-size: 16px;
 
   color-scheme: light;
   color: #1a1a1a;
-  background-color: #f8f9fa;
+  background-color: #fff7ed;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  font-variant-ligatures: common-ligatures;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  min-height: -webkit-fill-available;
+  background-color: #fff7ed;
+  overscroll-behavior: none;
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Selection styling */
 ::selection {
-  background-color: #667eea;
+  background-color: #10b981;
   color: #ffffff;
 }
 
 ::-moz-selection {
-  background-color: #667eea;
+  background-color: #10b981;
   color: #ffffff;
+}
+
+/* Prevent text selection on buttons */
+button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }

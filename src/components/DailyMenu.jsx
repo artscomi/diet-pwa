@@ -35,7 +35,6 @@ function DailyMenu({ menu, onSave, onCancel }) {
     return (
       <div className="daily-menu-card editing">
         <div className="menu-header">
-          <h3>{editedMenu.name}</h3>
           <div className="menu-actions">
             <button className="menu-action-btn save" onClick={handleSave}>
               <SaveIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
@@ -197,7 +196,6 @@ function DailyMenu({ menu, onSave, onCancel }) {
   return (
     <div className="daily-menu-card">
       <div className="menu-header">
-        <h3>{menu.name}</h3>
         <button 
           className="menu-action-btn edit"
           onClick={() => setIsEditing(true)}

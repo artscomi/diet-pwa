@@ -1,151 +1,160 @@
 import { useState, useEffect } from 'react'
-import { dailyMenus as initialMenus } from './data/dailyMenus'
+import { dailyMenus } from './data/dailyMenus'
 import DailyMenu from './components/DailyMenu'
-import { DownloadIcon, ArrowLeftIcon, ArrowRightIcon, ListIcon, SunIcon, UtensilsIcon, MoonIcon, SaladBowlIcon, HeartIcon } from './components/Icons'
+import { SaladBowlIcon, HeartIcon } from './components/Icons'
 import './App.css'
 
 function App() {
-  const [menus, setMenus] = useState([])
-  const [selectedMenu, setSelectedMenu] = useState(null)
-  const [installPrompt, setInstallPrompt] = useState(null)
-  const [isInstalled, setIsInstalled] = useState(false)
+  const [currentMenu, setCurrentMenu] = useState(null)
+  const [todayDate, setTodayDate] = useState(new Date().toDateString())
+
+  // Funzione per ottenere il menu del giorno corrente
+  const getTodayMenu = () => {
+    // Calcola il numero del giorno dall'inizio dell'anno (0-365)
+    const today = new Date()
+    const startOfYear = new Date(today.getFullYear(), 0, 0)
+    const dayOfYear = Math.floor((today - startOfYear) / (1000 * 60 * 60 * 24))
+    
+    // Usa il giorno dell'anno modulo il numero di menu per ciclare tra i menu
+    const menuIndex = dayOfYear % dailyMenus.length
+    
+    // Crea una copia del menu con la data di oggi
+    const menu = { ...dailyMenus[menuIndex] }
+    menu.date = today.toDateString()
+    
+    return menu
+  }
+
+  // Funzione per formattare la data
+  const formatDate = (date) => {
+    return date.toLocaleDateString('it-IT', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })
+  }
 
   useEffect(() => {
-    // Load menus from localStorage or use initial menus
-    const savedMenus = localStorage.getItem('dietMenus')
-    if (savedMenus) {
+    // Carica il menu del giorno corrente
+    const today = new Date()
+    const todayKey = today.toDateString()
+    
+    // Controlla se è cambiato il giorno
+    if (todayKey !== todayDate) {
+      setTodayDate(todayKey)
+    }
+    
+    // Carica il menu predefinito di oggi
+    const todayMenu = getTodayMenu()
+    
+    // Controlla se c'è una versione modificata salvata per oggi
+    const savedMenu = localStorage.getItem(`dietMenu_${todayKey}`)
+    if (savedMenu) {
       try {
-        const parsed = JSON.parse(savedMenus)
-        setMenus(parsed)
+        const parsed = JSON.parse(savedMenu)
+        // Verifica che il menu salvato sia per oggi
+        if (parsed.date === todayKey) {
+          setCurrentMenu(parsed)
+        } else {
+          setCurrentMenu(todayMenu)
+        }
       } catch (e) {
-        setMenus(initialMenus)
+        setCurrentMenu(todayMenu)
       }
     } else {
-      setMenus(initialMenus)
+      setCurrentMenu(todayMenu)
     }
 
-    // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true)
+    // Controlla ogni minuto se è cambiato il giorno
+    const checkDayChange = setInterval(() => {
+      const now = new Date()
+      const currentDate = now.toDateString()
+      
+      if (currentDate !== todayDate) {
+        // Il giorno è cambiato, ricarica il menu
+        const newTodayMenu = getTodayMenu()
+        const savedMenu = localStorage.getItem(`dietMenu_${currentDate}`)
+        if (savedMenu) {
+          try {
+            const parsed = JSON.parse(savedMenu)
+            if (parsed.date === currentDate) {
+              setCurrentMenu(parsed)
+            } else {
+              setCurrentMenu(newTodayMenu)
+            }
+          } catch (e) {
+            setCurrentMenu(newTodayMenu)
+          }
+        } else {
+          setCurrentMenu(newTodayMenu)
+        }
+        setTodayDate(currentDate)
+      }
+    }, 60000) // Controlla ogni minuto
+
+    // Controlla anche quando la pagina diventa visibile (utente torna all'app)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const now = new Date()
+        const currentDate = now.toDateString()
+        if (currentDate !== todayDate) {
+          const newTodayMenu = getTodayMenu()
+          const savedMenu = localStorage.getItem(`dietMenu_${currentDate}`)
+          if (savedMenu) {
+            try {
+              const parsed = JSON.parse(savedMenu)
+              if (parsed.date === currentDate) {
+                setCurrentMenu(parsed)
+              } else {
+                setCurrentMenu(newTodayMenu)
+              }
+            } catch (e) {
+              setCurrentMenu(newTodayMenu)
+            }
+          } else {
+            setCurrentMenu(newTodayMenu)
+          }
+          setTodayDate(currentDate)
+        }
+      }
     }
 
-    // Listen for beforeinstallprompt event
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault()
-      setInstallPrompt(e)
-    }
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      clearInterval(checkDayChange)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [])
-
-  const handleInstallClick = async () => {
-    if (!installPrompt) return
-    installPrompt.prompt()
-    const { outcome } = await installPrompt.userChoice
-    if (outcome === 'accepted') {
-      setIsInstalled(true)
-    }
-    setInstallPrompt(null)
-  }
+  }, [todayDate])
 
   const handleSaveMenu = (updatedMenu) => {
-    const updatedMenus = menus.map(menu => 
-      menu.id === updatedMenu.id ? updatedMenu : menu
-    )
-    setMenus(updatedMenus)
-    localStorage.setItem('dietMenus', JSON.stringify(updatedMenus))
-    
-    // Update selected menu if it's the one being edited
-    if (selectedMenu && selectedMenu.id === updatedMenu.id) {
-      setSelectedMenu(updatedMenu)
-    }
+    // Salva il menu modificato per oggi con la data
+    const today = new Date()
+    const todayKey = today.toDateString()
+    const menuToSave = { ...updatedMenu, date: todayKey }
+    localStorage.setItem(`dietMenu_${todayKey}`, JSON.stringify(menuToSave))
+    setCurrentMenu(menuToSave)
   }
 
-  const handleMenuClick = (menu) => {
-    setSelectedMenu(menu)
-  }
+  const today = new Date()
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>
           <SaladBowlIcon size={24} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
-          Menu Dietetici
+          Menu di Oggi
         </h1>
-        <p className="subtitle">Menu giornalieri predefiniti che rispettano la dieta</p>
+        <p className="subtitle">{formatDate(today)}</p>
       </header>
 
       <main className="app-main">
-        {installPrompt && !isInstalled && (
-          <button className="install-button" onClick={handleInstallClick}>
-            <DownloadIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
-            Installa App
-          </button>
-        )}
-
-        {selectedMenu ? (
-          <div className="menu-detail-view">
-            <button 
-              className="back-button"
-              onClick={() => setSelectedMenu(null)}
-            >
-              <ArrowLeftIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
-              Torna all'elenco
-            </button>
-            <DailyMenu 
-              menu={selectedMenu} 
-              onSave={handleSaveMenu}
-            />
-          </div>
-        ) : (
-          <div className="menus-list">
-            <div className="info-banner">
-              <p>
-                <ListIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
-                Seleziona un menu per visualizzare i dettagli completi
-              </p>
-            </div>
-            
-            <div className="menus-grid">
-              {menus.map((menu, index) => (
-                <button
-                  key={menu.id}
-                  className="menu-card"
-                  onClick={() => handleMenuClick(menu)}
-                >
-                  <div className="menu-card-number">{index + 1}</div>
-                  <div className="menu-card-content">
-                    <h3>{menu.name}</h3>
-                    <div className="menu-card-preview">
-                      <div className="preview-item">
-                        <span className="preview-icon"><SunIcon size={16} /></span>
-                        <span className="preview-text">
-                          {menu.colazione.carboidrati?.name || 'N/A'}
-                        </span>
-                      </div>
-                      <div className="preview-item">
-                        <span className="preview-icon"><UtensilsIcon size={16} /></span>
-                        <span className="preview-text">
-                          {menu.pranzo.proteine?.name || 'N/A'}
-                        </span>
-                      </div>
-                      <div className="preview-item">
-                        <span className="preview-icon"><MoonIcon size={16} /></span>
-                        <span className="preview-text">
-                          {menu.cena.proteine?.name || 'N/A'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="menu-card-arrow"><ArrowRightIcon size={18} /></div>
-                </button>
-              ))}
-            </div>
-          </div>
+        {currentMenu && (
+          <DailyMenu 
+            menu={currentMenu} 
+            onSave={handleSaveMenu}
+          />
         )}
       </main>
 

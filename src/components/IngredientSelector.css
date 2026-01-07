@@ -1,0 +1,236 @@
+.ingredient-selector {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.ingredient-label {
+  display: block;
+  font-size: clamp(0.8125rem, 3vw, 0.875rem);
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+  color: #495057;
+  letter-spacing: 0.01em;
+}
+
+.ingredient-selector-button {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.875rem 1.25rem;
+  background: #ffffff;
+  border: 1.5px solid #e9ecef;
+  border-radius: 12px;
+  color: #1a1a1a;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: clamp(0.875rem, 3vw, 0.9375rem);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ingredient-selector-button:active {
+  transform: scale(0.98);
+}
+
+.ingredient-selector-button:hover {
+  background: #f8f9fa;
+  border-color: #dee2e6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ingredient-selector-button.open {
+  background: #f8f9fa;
+  border-color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+.ingredient-selector-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 0.75rem;
+  color: #1a1a1a;
+}
+
+.ingredient-selector-text:empty::before {
+  content: attr(placeholder);
+  color: #adb5bd;
+}
+
+.ingredient-selector-arrow {
+  font-size: 0.75rem;
+  color: #adb5bd;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ingredient-selector-button.open .ingredient-selector-arrow {
+  transform: rotate(180deg);
+  color: #667eea;
+}
+
+.ingredient-dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1.5px solid #e9ecef;
+  border-radius: 14px;
+  max-height: min(280px, 60vh);
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ingredient-option {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.875rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #f1f3f5;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+  color: #1a1a1a;
+  font-size: clamp(0.875rem, 3vw, 0.9375rem);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ingredient-option:last-child {
+  border-bottom: none;
+}
+
+.ingredient-option:active {
+  background: #f1f3f5;
+  transform: scale(0.98);
+}
+
+.ingredient-option:hover {
+  background: #f8f9fa;
+  padding-left: 1.5rem;
+}
+
+.ingredient-option.selected {
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+  font-weight: 500;
+  border-left: 4px solid #667eea;
+  padding-left: 1.5rem;
+}
+
+.ingredient-option.empty {
+  color: #adb5bd;
+  cursor: default;
+  justify-content: center;
+}
+
+.ingredient-option.empty:hover,
+.ingredient-option.empty:active {
+  background: transparent;
+  padding-left: 1.25rem;
+  transform: none;
+}
+
+.option-name {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+}
+
+.option-quantity {
+  font-size: clamp(0.8125rem, 3vw, 0.875rem);
+  color: #6c757d;
+  font-weight: 400;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.check-mark {
+  color: #667eea;
+  font-size: 1.125rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Scrollbar styling */
+.ingredient-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ingredient-dropdown::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.ingredient-dropdown::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.ingredient-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .ingredient-selector-button {
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+  }
+
+  .ingredient-dropdown {
+    border-radius: 16px;
+    max-height: min(300px, 50vh);
+  }
+
+  .ingredient-option {
+    padding: 1rem 1.25rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .ingredient-selector-button:hover {
+    background: #ffffff;
+  }
+
+  .ingredient-selector-button:active {
+    transform: scale(0.98);
+  }
+
+  .ingredient-option:hover {
+    background: transparent;
+    padding-left: 1.25rem;
+  }
+
+  .ingredient-option:active {
+    background: #f1f3f5;
+    padding-left: 1.5rem;
+  }
+}

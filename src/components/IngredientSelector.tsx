@@ -1,13 +1,30 @@
+'use client'
+
 import { useState, useRef, useEffect } from 'react'
+import type { FoodItem } from '@/types/diet'
 import './IngredientSelector.css'
 
-function IngredientSelector({ label, options, selected, onSelect, placeholder = 'Seleziona...' }) {
+interface IngredientSelectorProps {
+  label: string
+  options: FoodItem[]
+  selected: FoodItem | null | undefined
+  onSelect: (option: FoodItem) => void
+  placeholder?: string
+}
+
+export default function IngredientSelector({
+  label,
+  options,
+  selected,
+  onSelect,
+  placeholder = 'Seleziona...',
+}: IngredientSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
@@ -18,7 +35,7 @@ function IngredientSelector({ label, options, selected, onSelect, placeholder = 
     }
   }, [])
 
-  const handleSelect = (option) => {
+  const handleSelect = (option: FoodItem) => {
     onSelect(option)
     setIsOpen(false)
   }
@@ -31,7 +48,7 @@ function IngredientSelector({ label, options, selected, onSelect, placeholder = 
   return (
     <div className="ingredient-selector" ref={dropdownRef}>
       <label className="ingredient-label">{label}</label>
-      <button 
+      <button
         className={`ingredient-selector-button ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         type="button"
@@ -39,7 +56,7 @@ function IngredientSelector({ label, options, selected, onSelect, placeholder = 
         <span className="ingredient-selector-text">{getDisplayText()}</span>
         <span className="ingredient-selector-arrow">{isOpen ? '▲' : '▼'}</span>
       </button>
-      
+
       {isOpen && (
         <div className="ingredient-dropdown">
           {options.length === 0 ? (
@@ -47,7 +64,7 @@ function IngredientSelector({ label, options, selected, onSelect, placeholder = 
           ) : (
             options.map((option, index) => {
               const isSelected = selected?.name === option.name
-              
+
               return (
                 <button
                   key={index}
@@ -69,6 +86,3 @@ function IngredientSelector({ label, options, selected, onSelect, placeholder = 
     </div>
   )
 }
-
-export default IngredientSelector
-

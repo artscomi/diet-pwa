@@ -1,96 +1,104 @@
 # Menu Dietetici PWA
 
-Una Progressive Web App (PWA) per consultare menu giornalieri predefiniti che rispettano la dieta personalizzata.
+App Next.js per gestire menu dietetici: usa i 14 menu predefiniti oppure carica un file (PDF, immagine o testo) e ottieni la dieta in formato strutturato grazie a OpenAI.
 
-## Caratteristiche
+## Funzionalità
 
-- ✅ **Menu Predefiniti**: 14 menu giornalieri variati che rispettano la dieta
-- ✅ **Consultazione Semplice**: Visualizza i dettagli completi di ogni menu
-- ✅ **Offline Support**: Funziona anche senza connessione internet grazie al Service Worker
-- ✅ **Installabile**: Può essere installata sul dispositivo come un'app nativa
-- ✅ **Responsive**: Design ottimizzato per mobile e desktop
-- ✅ **Modern UI**: Interfaccia utente moderna e accattivante
+- **Pagina iniziale**: scegli “Usa dieta predefinita” o “Carica un file” con la tua dieta
+- **Caricamento file**: PDF, immagini (JPG, PNG, WebP) o testo analizzati da OpenAI per generare i menu
+- **Menu del giorno**: visualizzazione e modifica del menu del giorno, con salvataggio in localStorage
+- **Cambia dieta**: pulsante per tornare alla schermata iniziale e scegliere un’altra dieta
+- **Responsive**: layout adatto a mobile e desktop
+- **Installabile**: configurabile come PWA (manifest e icone in `public/`)
 
-## Funzionalità App
+## Stack
 
-### Consultazione Menu
-- Visualizza l'elenco di tutti i menu disponibili
-- Clicca su un menu per vedere i dettagli completi
-- Ogni menu include:
-  - Colazione (carboidrati, frutta, proteine)
-  - Spuntino mattutino
-  - Pranzo (carboidrati, proteine, verdure)
-  - Merenda
-  - Cena (pane, verdure, proteine)
-  - Olio d'oliva durante la giornata
+- **Next.js 14** (App Router) – frontend e API in un’unica app
+- **TypeScript** – tipizzazione per dati dieta, menu e componenti
+- **React 18**
+- **OpenAI API** – estrazione dieta da file (testo, PDF, immagini)
+- **LocalStorage** – persistenza dieta attiva e modifiche ai menu
 
-## Tecnologie Utilizzate
+## Requisiti
 
-- **React 18**: Libreria UI moderna
-- **Vite**: Build tool veloce e moderno
-- **Vite PWA Plugin**: Plugin per configurare PWA automaticamente
-- **Workbox**: Libreria per gestire Service Workers e caching
-- **LocalStorage**: Salvataggio dati localmente nel browser
+- Node.js 18+
+- (Opzionale) Chiave API OpenAI per il caricamento file
 
 ## Installazione
 
 ```bash
-# Installa le dipendenze
+git clone <repo>
+cd react-pwa-app
 npm install
+```
 
-# Avvia il server di sviluppo
+## Configurazione
+
+L’app funziona subito con la **dieta predefinita**. Per abilitare il **caricamento file** con OpenAI:
+
+1. Copia il file di esempio e aggiungi la tua chiave API:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+2. Apri `.env.local` e imposta:
+   ```env
+   OPENAI_API_KEY=sk-proj-...
+   ```
+   La chiave si ottiene da [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+
+Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla.
+
+## Avvio
+
+```bash
+# Sviluppo (frontend + API sulla stessa origine)
 npm run dev
+```
 
+Apri [http://localhost:3000](http://localhost:3000).
+
+```bash
 # Build per produzione
 npm run build
 
-# Preview della build di produzione
-npm run preview
+# Avvio in produzione
+npm start
 ```
 
-## Configurazione PWA
+## Script disponibili
 
-L'app è già configurata come PWA con:
+| Comando       | Descrizione                    |
+|---------------|--------------------------------|
+| `npm run dev` | Server di sviluppo (porta 3000) |
+| `npm run build` | Build ottimizzata per produzione |
+| `npm start`   | Avvia l’app in produzione      |
+| `npm run lint` | Esegue ESLint                  |
 
-- **Service Worker**: Gestisce la cache e il funzionamento offline
-- **Web App Manifest**: Configurazione per l'installazione
-- **Cache Strategy**: Cache intelligente per risorse statiche e API
-- **Icons**: Supporto per icone PWA (da aggiungere nella cartella `public`)
+## Struttura del progetto
 
-## Icone PWA
-
-Per completare la configurazione, aggiungi le seguenti icone nella cartella `public`:
-
-- `pwa-192x192.png` (192x192px)
-- `pwa-512x512.png` (512x512px)
-- `apple-touch-icon.png` (180x180px)
-- `favicon.ico` (32x32px)
-
-Puoi generare queste icone usando strumenti online come:
-- [PWA Asset Generator](https://github.com/elegantapp/pwa-asset-generator)
-- [RealFaviconGenerator](https://realfavicongenerator.net/)
-
-## Utilizzo
-
-1. **Visualizza i menu**: Vedi l'elenco di tutti i menu disponibili nella schermata principale
-2. **Consulta un menu**: Clicca su un menu per vedere tutti i dettagli del pasto
-3. **Torna all'elenco**: Usa il pulsante "Torna all'elenco" per tornare alla vista principale
-
-## Sviluppo
-
-Il progetto usa Vite per lo sviluppo. Il server di sviluppo si avvia su `http://localhost:5173` di default.
-
-## Build
-
-Per creare una build di produzione ottimizzata:
-
-```bash
-npm run build
+```
+src/
+├── app/
+│   ├── api/parse-diet/   # API route POST per upload e parsing con OpenAI
+│   ├── globals.css       # Stili globali
+│   ├── layout.tsx        # Layout root e metadata
+│   └── page.tsx          # Pagina principale (client)
+├── components/           # Landing, DailyMenu, IngredientSelector, Icons (.tsx)
+├── data/                 # dietData.ts, dailyMenus.ts (dieta predefinita)
+├── types/                # diet.ts (tipi condivisi), pdf-parse.d.ts
+├── utils/                # validateDietJson.ts
+└── App.tsx               # Logica app (dieta, menu del giorno, Cambia dieta)
 ```
 
-I file compilati saranno nella cartella `dist`.
+## Formato dieta (API)
+
+L’endpoint `POST /api/parse-diet` accetta un form con campo `file`. Risponde con un JSON:
+
+- **Successo**: `{ "success": true, "data": { "dailyMenus": [ ... ], "dietData"?: { ... } } }`
+- **Errore**: `{ "success": false, "error": "messaggio" }`
+
+Ogni menu in `dailyMenus` segue la struttura usata dall’app (colazione, spuntino, pranzo, merenda, cena, olio con `name`, `quantity`, `unit`).
 
 ## Licenza
 
 MIT
-

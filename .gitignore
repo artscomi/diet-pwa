@@ -10,7 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.next
 *.local
+
+# Env (OpenAI key)
+.env
+.env.local
+.env*.local
 
 # Editor directories and files
 .vscode/*

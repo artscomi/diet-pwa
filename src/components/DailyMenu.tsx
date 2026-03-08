@@ -1,20 +1,31 @@
+'use client'
+
 import { useState } from 'react'
-import { dietData } from '../data/dietData'
+import { dietData as defaultDietData } from '@/data/dietData'
 import IngredientSelector from './IngredientSelector'
 import { SunIcon, UtensilsIcon, MoonIcon, PeanutIcon, DropletIcon, SaveIcon, TimesIcon, EditIcon } from './Icons'
+import type { DailyMenu, DietData, FoodItem } from '@/types/diet'
 import './DailyMenu.css'
 
-function DailyMenu({ menu, onSave, onCancel }) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedMenu, setEditedMenu] = useState(menu)
+interface DailyMenuProps {
+  menu: DailyMenu
+  onSave?: (menu: DailyMenu) => void
+  onCancel?: () => void
+  dietData?: DietData
+}
 
-  const formatFood = (food) => {
-    if (!food) return null
-    if (Array.isArray(food)) {
-      return food.map(f => `${f.name} (${f.quantity} ${f.unit})`).join(', ')
-    }
-    return `${food.name} (${food.quantity} ${food.unit})`
+function formatFood(food: FoodItem | FoodItem[] | null | undefined): string | null {
+  if (!food) return null
+  if (Array.isArray(food)) {
+    return food.map((f) => `${f.name} (${f.quantity} ${f.unit})`).join(', ')
   }
+  return `${food.name} (${food.quantity} ${food.unit})`
+}
+
+export default function DailyMenuComponent({ menu, onSave, onCancel, dietData: dietDataProp }: DailyMenuProps) {
+  const dietData = dietDataProp ?? defaultDietData
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu)
 
   const handleSave = () => {
     if (onSave) {
@@ -57,28 +68,34 @@ function DailyMenu({ menu, onSave, onCancel }) {
               label="Carboidrati"
               options={dietData.colazione.carboidrati}
               selected={editedMenu.colazione?.carboidrati}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                colazione: { ...editedMenu.colazione, carboidrati: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  colazione: { ...editedMenu.colazione, carboidrati: selected },
+                })
+              }
             />
             <IngredientSelector
               label="Frutta"
               options={dietData.colazione.frutta}
               selected={editedMenu.colazione?.frutta}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                colazione: { ...editedMenu.colazione, frutta: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  colazione: { ...editedMenu.colazione, frutta: selected },
+                })
+              }
             />
             <IngredientSelector
               label="Proteine"
               options={dietData.colazione.proteine}
               selected={editedMenu.colazione?.proteine}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                colazione: { ...editedMenu.colazione, proteine: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  colazione: { ...editedMenu.colazione, proteine: selected },
+                })
+              }
             />
           </div>
 
@@ -104,28 +121,34 @@ function DailyMenu({ menu, onSave, onCancel }) {
               label="Carboidrati"
               options={dietData.pranzo.carboidrati}
               selected={editedMenu.pranzo?.carboidrati}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                pranzo: { ...editedMenu.pranzo, carboidrati: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  pranzo: { ...editedMenu.pranzo, carboidrati: selected },
+                })
+              }
             />
             <IngredientSelector
               label="Proteine"
               options={dietData.pranzo.proteine}
               selected={editedMenu.pranzo?.proteine}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                pranzo: { ...editedMenu.pranzo, proteine: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  pranzo: { ...editedMenu.pranzo, proteine: selected },
+                })
+              }
             />
             <IngredientSelector
               label="Verdure"
               options={dietData.pranzo.verdure}
               selected={editedMenu.pranzo?.verdure}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                pranzo: { ...editedMenu.pranzo, verdure: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  pranzo: { ...editedMenu.pranzo, verdure: selected },
+                })
+              }
             />
           </div>
 
@@ -151,28 +174,34 @@ function DailyMenu({ menu, onSave, onCancel }) {
               label="Pane"
               options={dietData.cena.pane}
               selected={editedMenu.cena?.pane}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                cena: { ...editedMenu.cena, pane: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  cena: { ...editedMenu.cena, pane: selected },
+                })
+              }
             />
             <IngredientSelector
               label="Verdure"
               options={dietData.cena.verdure}
               selected={editedMenu.cena?.verdure}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                cena: { ...editedMenu.cena, verdure: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  cena: { ...editedMenu.cena, verdure: selected },
+                })
+              }
             />
             <IngredientSelector
               label="Proteine"
               options={dietData.cena.proteine}
               selected={editedMenu.cena?.proteine}
-              onSelect={(selected) => setEditedMenu({
-                ...editedMenu,
-                cena: { ...editedMenu.cena, proteine: selected }
-              })}
+              onSelect={(selected) =>
+                setEditedMenu({
+                  ...editedMenu,
+                  cena: { ...editedMenu.cena, proteine: selected },
+                })
+              }
             />
           </div>
 
@@ -196,10 +225,7 @@ function DailyMenu({ menu, onSave, onCancel }) {
   return (
     <div className="daily-menu-card">
       <div className="menu-header">
-        <button 
-          className="menu-action-btn edit"
-          onClick={() => setIsEditing(true)}
-        >
+        <button className="menu-action-btn edit" onClick={() => setIsEditing(true)}>
           <EditIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
           Modifica
         </button>
@@ -212,13 +238,19 @@ function DailyMenu({ menu, onSave, onCancel }) {
             Colazione
           </h4>
           {menu.colazione?.carboidrati && (
-            <p><strong>Carboidrati:</strong> {formatFood(menu.colazione.carboidrati)}</p>
+            <p>
+              <strong>Carboidrati:</strong> {formatFood(menu.colazione.carboidrati)}
+            </p>
           )}
           {menu.colazione?.frutta && (
-            <p><strong>Frutta:</strong> {formatFood(menu.colazione.frutta)}</p>
+            <p>
+              <strong>Frutta:</strong> {formatFood(menu.colazione.frutta)}
+            </p>
           )}
           {menu.colazione?.proteine && (
-            <p><strong>Proteine:</strong> {formatFood(menu.colazione.proteine)}</p>
+            <p>
+              <strong>Proteine:</strong> {formatFood(menu.colazione.proteine)}
+            </p>
           )}
         </div>
 
@@ -238,13 +270,19 @@ function DailyMenu({ menu, onSave, onCancel }) {
             Pranzo
           </h4>
           {menu.pranzo?.carboidrati && (
-            <p><strong>Carboidrati:</strong> {formatFood(menu.pranzo.carboidrati)}</p>
+            <p>
+              <strong>Carboidrati:</strong> {formatFood(menu.pranzo.carboidrati)}
+            </p>
           )}
           {menu.pranzo?.proteine && (
-            <p><strong>Proteine:</strong> {formatFood(menu.pranzo.proteine)}</p>
+            <p>
+              <strong>Proteine:</strong> {formatFood(menu.pranzo.proteine)}
+            </p>
           )}
           {menu.pranzo?.verdure && (
-            <p><strong>Verdure:</strong> {formatFood(menu.pranzo.verdure)}</p>
+            <p>
+              <strong>Verdure:</strong> {formatFood(menu.pranzo.verdure)}
+            </p>
           )}
         </div>
 
@@ -264,13 +302,19 @@ function DailyMenu({ menu, onSave, onCancel }) {
             Cena
           </h4>
           {menu.cena?.pane && (
-            <p><strong>Pane:</strong> {formatFood(menu.cena.pane)}</p>
+            <p>
+              <strong>Pane:</strong> {formatFood(menu.cena.pane)}
+            </p>
           )}
           {menu.cena?.verdure && (
-            <p><strong>Verdure:</strong> {formatFood(menu.cena.verdure)}</p>
+            <p>
+              <strong>Verdure:</strong> {formatFood(menu.cena.verdure)}
+            </p>
           )}
           {menu.cena?.proteine && (
-            <p><strong>Proteine:</strong> {formatFood(menu.cena.proteine)}</p>
+            <p>
+              <strong>Proteine:</strong> {formatFood(menu.cena.proteine)}
+            </p>
           )}
         </div>
 
@@ -287,5 +331,3 @@ function DailyMenu({ menu, onSave, onCancel }) {
     </div>
   )
 }
-
-export default DailyMenu

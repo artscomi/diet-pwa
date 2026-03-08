@@ -1,7 +1,8 @@
 import { dietData } from './dietData'
+import type { DailyMenu } from '@/types/diet'
 
 // Menu giornalieri predefiniti che rispettano la dieta
-export const dailyMenus = [
+export const dailyMenus: DailyMenu[] = [
   {
     id: 'menu-1',
     name: 'Menu Giorno 1',

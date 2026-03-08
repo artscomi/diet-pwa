@@ -1,0 +1,124 @@
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.landing-header {
+  text-align: center;
+  padding: 2rem 1.25rem 1.5rem;
+  padding-top: max(2rem, calc(env(safe-area-inset-top) + 1.5rem));
+}
+
+.landing-header h1 {
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+}
+
+.landing-subtitle {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.landing-main {
+  flex: 1;
+  padding: 1rem 1.25rem 2rem;
+  padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1.5rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.landing-btn {
+  width: 100%;
+  max-width: 320px;
+  min-height: 50px;
+  padding: 0.875rem 1.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.0625rem);
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+}
+
+.landing-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.landing-btn-primary {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.landing-btn-primary:hover:not(:disabled) {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.landing-btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.landing-btn-secondary {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1a1a1a;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.landing-btn-secondary:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.landing-btn-secondary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.landing-file-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.landing-upload {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  justify-content: center;
+}
+
+.landing-error {
+  color: #dc2626;
+  font-size: 0.9375rem;
+  text-align: center;
+  max-width: 320px;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .landing-main {
+    padding: 2rem 1.5rem;
+  }
+}

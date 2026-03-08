@@ -1,4 +1,6 @@
-export const dietData = {
+import type { DietData } from '@/types/diet'
+
+export const dietData: DietData = {
   colazione: {
     carboidrati: [
       { name: 'Fette biscottate integrali', quantity: 30, unit: 'g' },

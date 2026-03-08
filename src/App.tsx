@@ -5,7 +5,7 @@ import { dailyMenus } from "@/data/dailyMenus";
 import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
 import DailyMenu from "@/components/DailyMenu";
-import Landing, { loadUserDiet, clearUserDiet } from "@/components/Landing";
+import Landing, { loadUserDiet, clearUserDiet, clearSavedDailyMenus } from "@/components/Landing";
 import { SaladBowlIcon, HeartIcon } from "@/components/Icons";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 
@@ -161,6 +161,7 @@ export default function App() {
           type="button"
           className="change-diet-btn"
           onClick={() => {
+            clearSavedDailyMenus();
             clearUserDiet();
             setUserDiet(null);
           }}
@@ -184,6 +185,17 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
+        <button
+          type="button"
+          className="change-diet-link"
+          onClick={() => {
+            clearSavedDailyMenus();
+            clearUserDiet();
+            setUserDiet(null);
+          }}
+        >
+          Cambia dieta
+        </button>
         <p>
           Made with{" "}
           <HeartIcon

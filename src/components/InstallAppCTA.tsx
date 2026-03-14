@@ -57,11 +57,17 @@ function getUninstallPlatform(): UninstallPlatform {
   return 'other'
 }
 
-export default function InstallAppCTA() {
+interface InstallAppCTAProps {
+  /** "banner" = box con testo (footer/landing), "button" = solo pulsante per header */
+  variant?: 'banner' | 'button'
+}
+
+export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps) {
   const [showInstall, setShowInstall] = useState(false)
   const [showUninstallModal, setShowUninstallModal] = useState(false)
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
   const installPromptRef = useRef<InstallPromptEvent | null>(null)
+  const isButton = variant === 'button'
 
   useEffect(() => {
     if (isStandalone()) return
@@ -113,6 +119,7 @@ export default function InstallAppCTA() {
 
   // Se l’app è già installata (standalone): CTA «Vuoi disinstallare?» sotto il footer con spacing
   if (isStandalone()) {
+    if (isButton) return null
     return (
       <>
         <div className="install-cta-uninstall-wrap">
@@ -137,6 +144,13 @@ export default function InstallAppCTA() {
 
   // Chrome/Edge: un click avvia il prompt di installazione del browser
   if (showInstall) {
+    if (isButton) {
+      return (
+        <button type="button" className="install-cta-btn install-cta-btn--header" onClick={handleInstallClick}>
+          Installa app
+        </button>
+      )
+    }
     return (
       <div className="install-cta install-cta-native">
         <p className="install-cta-text">
@@ -160,6 +174,37 @@ export default function InstallAppCTA() {
 
   // iOS/Safari: bottone che apre istruzioni
   if (isIOS()) {
+    if (isButton) {
+      return (
+        <>
+          <button type="button" className="install-cta-btn install-cta-btn--header" onClick={handleIOSClick}>
+            Aggiungi alla Home
+          </button>
+          {showIOSInstructions && (
+            <div className="install-cta-overlay" role="dialog" aria-label="Istruzioni per aggiungere alla Home">
+              <div className="install-cta-overlay-content">
+                <h3 className="install-cta-overlay-title">Aggiungi alla Home</h3>
+                <p className="install-cta-overlay-note">Su iPhone e iPad i passaggi sono gli stessi in Safari e in Chrome.</p>
+                <ol className="install-cta-overlay-steps">
+                  <li>Tap sull'icona <strong>Condivisi</strong> (in basso oppure in alto nella barra).</li>
+                  <li>Scorri e scegli <strong>«Aggiungi a Home»</strong>.</li>
+                  <li>Conferma con «Aggiungi».</li>
+                </ol>
+                <button type="button" className="install-cta-btn" onClick={handleCloseIOSInstructions}>
+                  Ho capito
+                </button>
+              </div>
+              <button
+                type="button"
+                className="install-cta-overlay-backdrop"
+                onClick={handleCloseIOSInstructions}
+                aria-label="Chiudi"
+              />
+            </div>
+          )}
+        </>
+      )
+    }
     return (
       <>
         <div className="install-cta install-cta-ios">

@@ -12,6 +12,7 @@ import Landing, {
   clearSavedDailyMenus,
 } from "@/components/Landing";
 import Footer from "@/components/Footer";
+import InstallAppCTA from "@/components/InstallAppCTA";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 
 export default function App() {
@@ -142,37 +143,37 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>
-          <span className="site-logo-wrap">
-            <Image
-              src="/menoo-logo.svg"
-              alt="Menoo"
-              width={150}
-              height={150}
-              className="site-logo"
-              priority
-            />
-          </span>
-        </h1>
-        <p className="subtitle">{formatDate(today)}</p>
-        <p className="diet-source">
-          {userDiet.dietData
-            ? "Dieta personalizzata"
-            : userDiet.dailyMenus.length !== dailyMenus.length
-              ? "Dieta personalizzata"
-              : "Dieta predefinita"}
-        </p>
-        <button
-          type="button"
-          className="change-diet-btn"
-          onClick={() => {
-            clearSavedDailyMenus();
-            clearUserDiet();
-            setUserDiet(null);
-          }}
-        >
-          Cambia dieta
-        </button>
+        <div className="app-header__inner">
+          <h1 className="app-header__logo">
+            <span className="site-logo-wrap">
+              <Image
+                src="/menoo-logo.svg"
+                alt="Menoo"
+                width={140}
+                height={52}
+                className="site-logo site-logo--header"
+                priority
+              />
+            </span>
+          </h1>
+          <div className="app-header__center">
+            <p className="subtitle">{formatDate(today)}</p>
+          </div>
+          <div className="app-header__meta">
+            <InstallAppCTA variant="button" />
+            <button
+              type="button"
+              className="change-diet-btn"
+              onClick={() => {
+                clearSavedDailyMenus();
+                clearUserDiet();
+                setUserDiet(null);
+              }}
+            >
+              Cambia dieta
+            </button>
+          </div>
+        </div>
       </header>
 
       <main className="app-main">
@@ -189,7 +190,7 @@ export default function App() {
         )}
       </main>
 
-      <Footer />
+      <Footer showInstallCTA={false} />
     </div>
   );
 }

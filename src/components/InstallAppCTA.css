@@ -77,6 +77,28 @@
   transform: scale(0.98);
 }
 
+/* Variante compatta per header (pagine interne) */
+.install-cta-btn--header {
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #059669;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.install-cta-btn--header:hover {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: none;
+}
+
+.install-cta-btn--header:active {
+  transform: scale(0.98);
+}
+
 /* Overlay istruzioni iOS */
 .install-cta-overlay {
   position: fixed;

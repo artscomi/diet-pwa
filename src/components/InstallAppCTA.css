@@ -108,6 +108,14 @@
   margin: 0;
 }
 
+.install-cta-overlay-note {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+}
+
 .install-cta-overlay-steps {
   text-align: left;
   font-size: 0.9375rem;

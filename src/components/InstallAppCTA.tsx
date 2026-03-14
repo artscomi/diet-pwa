@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Modal from './Modal'
-import InstallAppModal from './InstallAppModal'
 import UninstallInstructionsModal, { type UninstallPlatform } from './UninstallInstructionsModal'
 import './InstallAppCTA.css'
 
@@ -56,7 +54,6 @@ function getUninstallPlatform(): UninstallPlatform {
 
 export default function InstallAppCTA() {
   const [showInstall, setShowInstall] = useState(false)
-  const [showInstallModal, setShowInstallModal] = useState(false)
   const [showUninstallModal, setShowUninstallModal] = useState(false)
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
   const installPromptRef = useRef<InstallPromptEvent | null>(null)
@@ -89,16 +86,15 @@ export default function InstallAppCTA() {
     if (isStandalone()) setShowInstall(false)
   }, [])
 
-  const handleInstallConfirm = async () => {
+  const handleInstallClick = async () => {
     const e = installPromptRef.current
-    setShowInstallModal(false)
     if (!e) return
     try {
       await e.prompt()
       installPromptRef.current = null
       setShowInstall(false)
     } catch {
-      // Ignora errori (es. utente chiude il dialog)
+      // Ignora errori (es. utente chiude il dialog del browser)
     }
   }
 
@@ -132,23 +128,15 @@ export default function InstallAppCTA() {
     )
   }
 
-  // Chrome/Edge: bottone Installa → apre modale, da lì si chiama e.prompt()
+  // Chrome/Edge: un click su «Installa l’app» avvia subito il prompt di installazione del browser
   if (showInstall) {
     return (
-      <>
-        <div className="install-cta install-cta-native">
-          <p className="install-cta-text">Aggiungi l’app al telefono o al desktop per averla sempre a portata di mano.</p>
-          <button type="button" className="install-cta-btn" onClick={() => setShowInstallModal(true)}>
-            Installa l’app
-          </button>
-        </div>
-        {showInstallModal && (
-          <InstallAppModal
-            onClose={() => setShowInstallModal(false)}
-            onInstall={handleInstallConfirm}
-          />
-        )}
-      </>
+      <div className="install-cta install-cta-native">
+        <p className="install-cta-text">Aggiungi l’app al telefono o al desktop per averla sempre a portata di mano.</p>
+        <button type="button" className="install-cta-btn" onClick={handleInstallClick}>
+          Installa l’app
+        </button>
+      </div>
     )
   }
 
@@ -171,8 +159,9 @@ export default function InstallAppCTA() {
           <div className="install-cta-overlay" role="dialog" aria-label="Istruzioni per aggiungere alla Home">
             <div className="install-cta-overlay-content">
               <h3 className="install-cta-overlay-title">Aggiungi alla Home</h3>
+              <p className="install-cta-overlay-note">Su iPhone e iPad i passaggi sono gli stessi in Safari e in Chrome.</p>
               <ol className="install-cta-overlay-steps">
-                <li>Tap sull’icona <strong>Condivisi</strong> (in basso in Safari, oppure in alto).</li>
+                <li>Tap sull’icona <strong>Condivisi</strong> (in basso oppure in alto nella barra).</li>
                 <li>Scorri e scegli <strong>«Aggiungi a Home»</strong>.</li>
                 <li>Conferma con «Aggiungi».</li>
               </ol>

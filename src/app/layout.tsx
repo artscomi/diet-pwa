@@ -23,7 +23,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="it">
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
-        <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/pwa-192x192.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/pwa-192x192.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/pwa-512x512.png" />
       </head>
       <body>{children}</body>
     </html>

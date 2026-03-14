@@ -15,7 +15,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 0.625rem;
+  padding: 1rem 0.75rem;
   background: rgba(0, 0, 0, 0.04);
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -24,8 +24,8 @@
 }
 
 .uninstall-modal-step-text {
-  font-size: 0.8125rem;
-  line-height: 1.35;
+  font-size: 0.875rem;
+  line-height: 1.4;
   color: #374151;
   text-align: center;
 }
@@ -87,6 +87,11 @@
     flex: 1;
     padding: 0.75rem 0.875rem;
     min-width: 0;
+  }
+
+  .uninstall-modal-step-text {
+    font-size: 0.8125rem;
+    line-height: 1.35;
   }
 
   .uninstall-modal-arrow {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import './Modal.css'
 
 interface ModalProps {
@@ -49,7 +50,7 @@ export default function Modal({
     }
   }, [onClose])
 
-  return (
+  const modalContent = (
     <div className="modal-overlay" role="presentation">
       <div
         className="modal-backdrop"
@@ -91,4 +92,7 @@ export default function Modal({
       </div>
     </div>
   )
+
+  if (typeof document === 'undefined') return modalContent
+  return createPortal(modalContent, document.body)
 }

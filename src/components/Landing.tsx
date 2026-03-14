@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { dailyMenus } from '@/data/dailyMenus'
-import { SaladBowlIcon } from './Icons'
+import { SaladBowlIcon, HeartIcon } from './Icons'
 import InstallAppCTA from './InstallAppCTA'
 import { validateDietJson } from '@/utils/validateDietJson'
 import type { UserDiet } from '@/types/diet'
@@ -164,9 +164,32 @@ export default function Landing({ onDietLoaded }: LandingProps) {
             {error}
           </p>
         )}
-
-        <InstallAppCTA />
       </main>
+
+      <footer className="landing-footer">
+        <p>
+          Made with{' '}
+          <HeartIcon
+            size={14}
+            style={{
+              margin: '0 0.25rem',
+              color: '#e74c3c',
+              verticalAlign: 'middle',
+              display: 'inline-block',
+            }}
+          />{' '}
+          by{' '}
+          <a
+            href="https://instagram.com/artscomi"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Artscomi
+          </a>{' '}
+          - Menu Dietetici PWA
+        </p>
+        <InstallAppCTA />
+      </footer>
     </div>
   )
 }

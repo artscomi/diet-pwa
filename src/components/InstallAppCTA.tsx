@@ -37,6 +37,11 @@ function isAndroid(): boolean {
   return /Android/.test(navigator.userAgent)
 }
 
+/** Telefono (iOS o Android). */
+function isMobile(): boolean {
+  return isIOS() || isAndroid()
+}
+
 function isEdge(): boolean {
   if (typeof navigator === 'undefined') return false
   return /Edg/.test(navigator.userAgent)
@@ -106,17 +111,19 @@ export default function InstallAppCTA() {
     setShowIOSInstructions(false)
   }
 
-  // Se l’app è già installata (standalone): solo CTA nel footer che apre modale con istruzioni illustrate
+  // Se l’app è già installata (standalone): CTA «Vuoi disinstallare?» sotto il footer con spacing
   if (isStandalone()) {
     return (
       <>
-        <button
-          type="button"
-          className="install-cta-uninstall-btn"
-          onClick={() => setShowUninstallModal(true)}
-        >
-          Vuoi disinstallare l’app?
-        </button>
+        <div className="install-cta-uninstall-wrap">
+          <button
+            type="button"
+            className="install-cta-uninstall-btn"
+            onClick={() => setShowUninstallModal(true)}
+          >
+            Vuoi disinstallare l’app?
+          </button>
+        </div>
         {showUninstallModal && (
           <UninstallInstructionsModal
             platform={getUninstallPlatform()}
@@ -128,11 +135,17 @@ export default function InstallAppCTA() {
     )
   }
 
-  // Chrome/Edge: un click su «Installa l’app» avvia subito il prompt di installazione del browser
+  // Chrome/Edge: un click avvia il prompt di installazione del browser
   if (showInstall) {
     return (
       <div className="install-cta install-cta-native">
-        <p className="install-cta-text">Aggiungi l’app al telefono o al desktop per averla sempre a portata di mano.</p>
+        <p className="install-cta-text">
+          {isMobile() ? (
+            <>Aggiungi l’app allo smartphone per averla sempre.<br />A portata di mano.</>
+          ) : (
+            <>Installa l’app per averla sempre.<br />A portata di mano.</>
+          )}
+        </p>
         <button type="button" className="install-cta-btn" onClick={handleInstallClick}>
           Installa l’app
         </button>

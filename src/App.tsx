@@ -155,8 +155,7 @@ export default function App() {
             ? "Dieta personalizzata"
             : userDiet.dailyMenus.length !== dailyMenus.length
               ? "Dieta personalizzata"
-              : "Dieta predefinita"}{" "}
-          ({userDiet.dailyMenus.length} menu)
+              : "Dieta predefinita"}
         </p>
         <button
           type="button"
@@ -186,18 +185,6 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <InstallAppCTA />
-        <button
-          type="button"
-          className="change-diet-link"
-          onClick={() => {
-            clearSavedDailyMenus();
-            clearUserDiet();
-            setUserDiet(null);
-          }}
-        >
-          Cambia dieta
-        </button>
         <p>
           Made with{" "}
           <HeartIcon
@@ -219,6 +206,7 @@ export default function App() {
           </a>{" "}
           - Menu Dietetici PWA
         </p>
+        <InstallAppCTA />
       </footer>
     </div>
   );

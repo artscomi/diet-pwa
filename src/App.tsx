@@ -147,7 +147,7 @@ export default function App() {
               display: "inline-block",
             }}
           />
-          Menu di Oggi
+          Menoo
         </h1>
         <p className="subtitle">{formatDate(today)}</p>
         <p className="diet-source">
@@ -204,7 +204,7 @@ export default function App() {
           >
             Artscomi
           </a>{" "}
-          - Menu Dietetici PWA
+          - Menoo
         </p>
         <InstallAppCTA />
       </footer>

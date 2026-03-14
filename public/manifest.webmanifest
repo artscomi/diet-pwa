@@ -1,7 +1,7 @@
 {
-  "name": "Menu Dieta - PWA",
-  "short_name": "Menu Dieta",
-  "description": "Menu giornalieri che rispettano la tua dieta personalizzata",
+  "name": "Menoo",
+  "short_name": "Menoo",
+  "description": "Your daily menu that follows your diet. Upload your file, customize ingredients.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -1,6 +1,6 @@
-# Menu Dietetici PWA
+# Menoo
 
-App Next.js per gestire menu dietetici: usa i 14 menu predefiniti oppure carica un file (PDF, immagine o testo) e ottieni la dieta in formato strutturato grazie a OpenAI.
+App Next.js per il menu del giorno che rispetta la tua dieta: usa i 14 menu predefiniti oppure carica un file (PDF, immagine o testo) e ottieni la dieta in formato strutturato grazie a OpenAI.
 
 ## Funzionalità
 

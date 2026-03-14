@@ -1,13 +1,13 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Menu Dieta - Carica la tua dieta e consulta il menu del giorno",
+  title: "Menoo - Il tuo menu del giorno",
   description:
-    "Carica la tua dieta (file o predefinita) e consulta il menu del giorno. Nessuna registrazione. Installa l’app sul telefono per averla sempre a portata di mano.",
+    "Un menu che rispetta la tua dieta, ogni giorno. Carica il file, personalizza gli ingredienti. Installa l’app per averla sempre a portata di mano.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Menu Dieta",
+    title: "Menoo",
   },
 };
 

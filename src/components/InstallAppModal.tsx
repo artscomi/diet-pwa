@@ -88,6 +88,22 @@ function getNativeSteps(variant: NativeVariant): Step[] {
   }
 }
 
+/** Sottotitolo modale install: copy adattato a dispositivo e browser. */
+function getNativeSubtitle(variant: NativeVariant): string {
+  switch (variant) {
+    case 'chrome-desktop':
+      return 'Un click sul pulsante «Installa» aprirà il dialogo di Chrome. Troverai l’app nel menu Applicazioni o nel Dock.'
+    case 'chrome-android':
+      return 'Un tap sul pulsante «Installa» aprirà il dialogo di Chrome. Troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.'
+    case 'edge-desktop':
+      return 'Un click sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nel menu App di Edge o nel Dock.'
+    case 'edge-android':
+      return 'Un tap sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.'
+    default:
+      return 'Un click sul pulsante «Installa» aprirà il dialogo del browser. Troverai l’app nel menu del browser o nel Dock.'
+  }
+}
+
 /** Passi per iOS: su iPhone/iPad (Safari e Chrome) non c’è installazione automatica, solo “Aggiungi alla Home”. */
 function getIOSSteps(): Step[] {
   return [
@@ -117,7 +133,8 @@ interface InstallAppModalProps {
 
 export default function InstallAppModal({ variant, onClose, onInstall }: InstallAppModalProps) {
   const isIOSVariant = variant === 'ios'
-  const steps = isIOSVariant ? getIOSSteps() : getNativeSteps(getNativeVariant())
+  const nativeVariant = getNativeVariant()
+  const steps = isIOSVariant ? getIOSSteps() : getNativeSteps(nativeVariant)
 
   const subtitle = isIOSVariant ? (
     <p className="uninstall-modal-subtitle">
@@ -125,10 +142,7 @@ export default function InstallAppModal({ variant, onClose, onInstall }: Install
       per aggiungere l’app alla Home e aprirla come un’app.
     </p>
   ) : (
-    <p className="uninstall-modal-subtitle">
-      Un click sul pulsante «Installa» aprirà il dialogo del browser. Su desktop troverai l’app nel menu del browser o
-      nel Dock; su smartphone nella Home o nel drawer delle app.
-    </p>
+    <p className="uninstall-modal-subtitle">{getNativeSubtitle(nativeVariant)}</p>
   )
 
   return (

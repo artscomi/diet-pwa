@@ -23,11 +23,12 @@
 }
 
 .landing-subtitle {
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  color: #64748b;
-  line-height: 1.5;
-  max-width: 480px;
+  font-size: clamp(0.9375rem, 2.2vw, 1.0625rem);
+  color: #475569;
+  line-height: 1.6;
+  max-width: 420px;
   margin: 0 auto;
+  letter-spacing: 0.01em;
 }
 
 .landing-main {
@@ -135,13 +136,77 @@
   opacity: 0;
   overflow: hidden;
   z-index: -1;
+  pointer-events: none;
 }
 
-.landing-upload {
+.landing-dropzone {
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
+  min-height: 168px;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  padding: 1.75rem 1.5rem;
+  margin: 0 auto;
+  background: rgba(16, 185, 129, 0.06);
+  border: 2px dashed rgba(16, 185, 129, 0.4);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landing-dropzone:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.55);
+}
+
+.landing-dropzone:active {
+  transform: scale(0.99);
+}
+
+.landing-dropzone--active {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: #10b981;
+  border-style: solid;
+}
+
+.landing-dropzone--loading {
+  cursor: wait;
+  border-style: solid;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.landing-dropzone-icon {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.landing-dropzone-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: center;
+}
+
+.landing-dropzone-hint {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.landing-dropzone-text {
+  font-size: 0.9375rem;
+  color: #10b981;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
 }
 
 .landing-error {

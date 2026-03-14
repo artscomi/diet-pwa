@@ -169,8 +169,7 @@
   align-items: center;
   justify-content: center;
   touch-action: manipulation;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
   outline: none;
   margin: 0 auto;
 }

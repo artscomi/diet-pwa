@@ -73,11 +73,16 @@ button {
   line-height: 1;
 }
 
+.site-logo-wrap {
+  display: inline-block;
+  line-height: 0;
+}
+
 .site-logo {
   display: block;
-  height: 56px;
+  height: 150px;
   width: auto;
-  max-width: 220px;
+  max-width: 520px;
   margin: 0 auto;
   object-fit: contain;
 }

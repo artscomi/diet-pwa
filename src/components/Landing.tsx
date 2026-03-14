@@ -1,13 +1,25 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { IconFileUpload } from "@tabler/icons-react";
 import { dailyMenus } from "@/data/dailyMenus";
+import InstallAppCTA from "./InstallAppCTA";
 import Footer from "./Footer";
 import { validateDietJson } from "@/utils/validateDietJson";
 import type { UserDiet } from "@/types/diet";
 import "./Landing.css";
+
+const LANDING_BG_IMAGES = [
+  "/landing-bg.png",
+  "https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&w=1920",
+  "https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&w=1920",
+  "https://images.pexels.com/photos/1656666/pexels-photo-1656666.jpeg?auto=compress&w=1920",
+  "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&w=1920",
+  "https://images.pexels.com/photos/14774699/pexels-photo-14774699.jpeg?auto=compress&w=1920",
+];
+const LANDING_BG_INTERVAL_MS = 12000;
+const LANDING_BG_FADE_MS = 450;
 
 const USER_DIET_KEY = "userDiet";
 const DIET_MENU_PREFIX = "dietMenu_";
@@ -56,7 +68,35 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [bgIndex, setBgIndex] = useState(0);
+  const [bgVisible, setBgVisible] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bgTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const runFade = () => {
+      setBgVisible(false);
+      bgTimeoutRef.current = setTimeout(() => {
+        setBgIndex((i) => (i + 1) % LANDING_BG_IMAGES.length);
+        setBgVisible(true);
+        bgTimeoutRef.current = null;
+      }, LANDING_BG_FADE_MS);
+    };
+    const t = setInterval(runFade, LANDING_BG_INTERVAL_MS);
+    return () => {
+      clearInterval(t);
+      if (bgTimeoutRef.current) clearTimeout(bgTimeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const nextIndex = (bgIndex + 1) % LANDING_BG_IMAGES.length;
+    const url = LANDING_BG_IMAGES[nextIndex];
+    if (url.startsWith("http")) {
+      const img = document.createElement("img");
+      img.src = url;
+    }
+  }, [bgIndex]);
 
   const handleUseDefault = () => {
     clearSavedDailyMenus();
@@ -165,95 +205,113 @@ export default function Landing({ onDietLoaded }: LandingProps) {
 
   return (
     <div className="landing">
-      <header className="landing-header">
-        <h1>
-          <Image
-            src="/menoo-logo.png"
-            alt="Menoo"
-            width={200}
-            height={56}
-            className="site-logo"
-            priority
-          />
-        </h1>
-        <p className="landing-subtitle">
-          Un menu che rispetta la tua dieta, ogni giorno. Carica il file,
-          personalizza gli ingredienti e hai tutto a portata di mano.
-        </p>
-      </header>
-
-      <main className="landing-main">
-        {process.env.NODE_ENV === "development" && (
-          <button
-            type="button"
-            className="landing-btn landing-btn-primary"
-            onClick={handleUseDefault}
-            disabled={uploadStatus === "loading"}
-          >
-            Usa dieta predefinita
-          </button>
-        )}
-
+      <div className="landing-hero">
         <div
-          className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() =>
-            uploadStatus !== "loading" && fileInputRef.current?.click()
-          }
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (
-              (e.key === "Enter" || e.key === " ") &&
-              uploadStatus !== "loading"
-            ) {
-              e.preventDefault();
-              fileInputRef.current?.click();
-            }
+          className="landing-bg"
+          aria-hidden
+          style={{
+            backgroundImage: `url(${LANDING_BG_IMAGES[bgIndex]})`,
+            opacity: bgVisible ? 1 : 0,
           }}
-          aria-label="Carica un file con la tua dieta"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="*/*"
-            onChange={handleFileChange}
-            disabled={uploadStatus === "loading"}
-            className="landing-file-input"
-            id="diet-file"
-            aria-hidden
-          />
-          {uploadStatus === "loading" ? (
-            <p className="landing-dropzone-text">
-              Stiamo generando il tuo menu del giorno...
+        />
+        <div className="landing-panel">
+          <header className="landing-header">
+            <h1>
+              <span className="site-logo-wrap">
+                <Image
+                  src="/menoo-logo.svg"
+                  alt="Menoo"
+                  width={150}
+                  height={150}
+                  className="site-logo"
+                  priority
+                />
+              </span>
+            </h1>
+            <p className="landing-subtitle">
+              Un menu che rispetta la tua dieta, ogni giorno. Carica il file,
+              personalizza gli ingredienti e hai tutto a portata di mano.
             </p>
-          ) : (
-            <>
-              <IconFileUpload
-                size={40}
-                className="landing-dropzone-icon"
-                stroke={1.5}
+          </header>
+
+          <main className="landing-main">
+            {process.env.NODE_ENV === "development" && (
+              <button
+                type="button"
+                className="landing-btn landing-btn-primary"
+                onClick={handleUseDefault}
+                disabled={uploadStatus === "loading"}
+              >
+                Usa dieta predefinita
+              </button>
+            )}
+
+            <div
+              className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() =>
+                uploadStatus !== "loading" && fileInputRef.current?.click()
+              }
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (
+                  (e.key === "Enter" || e.key === " ") &&
+                  uploadStatus !== "loading"
+                ) {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              aria-label="Carica un file con la tua dieta"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="*/*"
+                onChange={handleFileChange}
+                disabled={uploadStatus === "loading"}
+                className="landing-file-input"
+                id="diet-file"
+                aria-hidden
               />
-              <p className="landing-dropzone-title">
-                Trascina qui il file della tua dieta
+              {uploadStatus === "loading" ? (
+                <p className="landing-dropzone-text">
+                  Stiamo generando il tuo menu del giorno...
+                </p>
+              ) : (
+                <>
+                  <IconFileUpload
+                    size={40}
+                    className="landing-dropzone-icon"
+                    stroke={1.5}
+                  />
+                  <p className="landing-dropzone-title">
+                    Carica il file della tua dieta
+                  </p>
+                  <p className="landing-dropzone-hint">
+                    Trascinalo qui oppure seleziona un file dal tuo dispositivo
+                  </p>
+                </>
+              )}
+            </div>
+
+            {error && (
+              <p className="landing-error" role="alert">
+                {error}
               </p>
-              <p className="landing-dropzone-hint">
-                oppure tocca per scegliere dal telefono o dal computer
-              </p>
-            </>
-          )}
+            )}
+
+            <div className="landing-install-wrap">
+              <InstallAppCTA />
+            </div>
+          </main>
+
+          <Footer showInstallCTA={false} />
         </div>
-
-        {error && (
-          <p className="landing-error" role="alert">
-            {error}
-          </p>
-        )}
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

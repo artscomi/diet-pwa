@@ -143,14 +143,16 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1>
-          <Image
-            src="/menoo-logo.png"
-            alt="Menoo"
-            width={200}
-            height={56}
-            className="site-logo"
-            priority
-          />
+          <span className="site-logo-wrap">
+            <Image
+              src="/menoo-logo.svg"
+              alt="Menoo"
+              width={150}
+              height={150}
+              className="site-logo"
+              priority
+            />
+          </span>
         </h1>
         <p className="subtitle">{formatDate(today)}</p>
         <p className="diet-source">

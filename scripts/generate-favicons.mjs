@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Genera favicon e icone PWA da public/favicon-icon.svg (solo logo, senza scritta).
+ * Genera favicon e icone PWA da public/menoo-logo.svg (stesso logo+testo mostrato in homepage).
  * Richiede: npm install (sharp)
  * Uso: node scripts/generate-favicons.mjs
  */
@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(__dirname, "..", "public");
-const svgPath = join(publicDir, "favicon-icon.svg");
+const svgPath = join(publicDir, "menoo-logo.svg");
 
 const SIZES = [
   { name: "favicon-16x16.png", size: 16 },

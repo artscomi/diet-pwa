@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import UninstallInstructionsModal, { type UninstallPlatform } from './UninstallInstructionsModal'
+import InstallAppModal, { type InstallModalVariant } from './InstallAppModal'
 import './InstallAppCTA.css'
 
 /** Evento beforeinstallprompt (Chrome/Edge). Non disponibile su Safari/iOS. */
@@ -65,7 +66,7 @@ interface InstallAppCTAProps {
 export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps) {
   const [showInstall, setShowInstall] = useState(false)
   const [showUninstallModal, setShowUninstallModal] = useState(false)
-  const [showIOSInstructions, setShowIOSInstructions] = useState(false)
+  const [installModalVariant, setInstallModalVariant] = useState<InstallModalVariant | null>(null)
   const installPromptRef = useRef<InstallPromptEvent | null>(null)
   const isButton = variant === 'button'
 
@@ -109,12 +110,17 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     }
   }
 
-  const handleIOSClick = () => {
-    setShowIOSInstructions(true)
+  const handleOpenInstallModal = (v: InstallModalVariant) => {
+    setInstallModalVariant(v)
   }
 
-  const handleCloseIOSInstructions = () => {
-    setShowIOSInstructions(false)
+  const handleCloseInstallModal = () => {
+    setInstallModalVariant(null)
+  }
+
+  const handleInstallFromModal = async () => {
+    await handleInstallClick()
+    handleCloseInstallModal()
   }
 
   // Se l’app è già installata (standalone): CTA «Vuoi disinstallare?» sotto il footer con spacing
@@ -146,13 +152,27 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
   if (showInstall) {
     if (isButton) {
       return (
-        <button type="button" className="install-cta-btn install-cta-btn--header" onClick={handleInstallClick}>
-          Installa app
-        </button>
+        <>
+          <button
+            type="button"
+            className="install-cta-btn install-cta-btn--header"
+            onClick={() => handleOpenInstallModal('native')}
+          >
+            Installa app
+          </button>
+          {installModalVariant === 'native' && (
+            <InstallAppModal
+              variant="native"
+              onClose={handleCloseInstallModal}
+              onInstall={handleInstallFromModal}
+            />
+          )}
+        </>
       )
     }
     return (
-      <div className="install-cta install-cta-native">
+      <>
+        <div className="install-cta install-cta-native">
         <p className="install-cta-text">
           {isMobile() ? (
             <>Aggiungi l’app allo smartphone per averla sempre.<br />A portata di mano.</>
@@ -160,10 +180,18 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
             <>Installa l’app per averla sempre.<br />A portata di mano.</>
           )}
         </p>
-        <button type="button" className="install-cta-btn" onClick={handleInstallClick}>
+        <button type="button" className="install-cta-btn" onClick={() => handleOpenInstallModal('native')}>
           Installa l’app
         </button>
-      </div>
+        </div>
+        {installModalVariant === 'native' && (
+          <InstallAppModal
+            variant="native"
+            onClose={handleCloseInstallModal}
+            onInstall={handleInstallFromModal}
+          />
+        )}
+      </>
     )
   }
 
@@ -177,30 +205,11 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     if (isButton) {
       return (
         <>
-          <button type="button" className="install-cta-btn install-cta-btn--header" onClick={handleIOSClick}>
+          <button type="button" className="install-cta-btn install-cta-btn--header" onClick={() => handleOpenInstallModal('ios')}>
             Aggiungi alla Home
           </button>
-          {showIOSInstructions && (
-            <div className="install-cta-overlay" role="dialog" aria-label="Istruzioni per aggiungere alla Home">
-              <div className="install-cta-overlay-content">
-                <h3 className="install-cta-overlay-title">Aggiungi alla Home</h3>
-                <p className="install-cta-overlay-note">Su iPhone e iPad i passaggi sono gli stessi in Safari e in Chrome.</p>
-                <ol className="install-cta-overlay-steps">
-                  <li>Tap sull'icona <strong>Condivisi</strong> (in basso oppure in alto nella barra).</li>
-                  <li>Scorri e scegli <strong>«Aggiungi a Home»</strong>.</li>
-                  <li>Conferma con «Aggiungi».</li>
-                </ol>
-                <button type="button" className="install-cta-btn" onClick={handleCloseIOSInstructions}>
-                  Ho capito
-                </button>
-              </div>
-              <button
-                type="button"
-                className="install-cta-overlay-backdrop"
-                onClick={handleCloseIOSInstructions}
-                aria-label="Chiudi"
-              />
-            </div>
+          {installModalVariant === 'ios' && (
+            <InstallAppModal variant="ios" onClose={handleCloseInstallModal} />
           )}
         </>
       )
@@ -209,31 +218,12 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
       <>
         <div className="install-cta install-cta-ios">
           <p className="install-cta-text">Aggiungi l’app alla Home per aprirla come un’app.</p>
-          <button type="button" className="install-cta-btn" onClick={handleIOSClick}>
+          <button type="button" className="install-cta-btn" onClick={() => handleOpenInstallModal('ios')}>
             Aggiungi alla Home
           </button>
         </div>
-        {showIOSInstructions && (
-          <div className="install-cta-overlay" role="dialog" aria-label="Istruzioni per aggiungere alla Home">
-            <div className="install-cta-overlay-content">
-              <h3 className="install-cta-overlay-title">Aggiungi alla Home</h3>
-              <p className="install-cta-overlay-note">Su iPhone e iPad i passaggi sono gli stessi in Safari e in Chrome.</p>
-              <ol className="install-cta-overlay-steps">
-                <li>Tap sull’icona <strong>Condivisi</strong> (in basso oppure in alto nella barra).</li>
-                <li>Scorri e scegli <strong>«Aggiungi a Home»</strong>.</li>
-                <li>Conferma con «Aggiungi».</li>
-              </ol>
-              <button type="button" className="install-cta-btn" onClick={handleCloseIOSInstructions}>
-                Ho capito
-              </button>
-            </div>
-            <button
-              type="button"
-              className="install-cta-overlay-backdrop"
-              onClick={handleCloseIOSInstructions}
-              aria-label="Chiudi"
-            />
-          </div>
+        {installModalVariant === 'ios' && (
+          <InstallAppModal variant="ios" onClose={handleCloseInstallModal} />
         )}
       </>
     )

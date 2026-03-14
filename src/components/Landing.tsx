@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { dailyMenus } from '@/data/dailyMenus'
 import { SaladBowlIcon } from './Icons'
+import InstallAppCTA from './InstallAppCTA'
 import { validateDietJson } from '@/utils/validateDietJson'
 import type { UserDiet } from '@/types/diet'
 import './Landing.css'
@@ -129,8 +130,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           Menu Dietetici PWA
         </h1>
         <p className="landing-subtitle">
-          Scegli la dieta predefinita o carica un file (PDF, immagine o testo) con la tua dieta: verrà analizzato con
-          l’intelligenza artificiale.
+          Carica la tua dieta o usa quella predefinita. Consulta il menu del giorno e personalizza gli ingredienti. Puoi anche installare l’app sul telefono.
         </p>
       </header>
 
@@ -164,6 +164,8 @@ export default function Landing({ onDietLoaded }: LandingProps) {
             {error}
           </p>
         )}
+
+        <InstallAppCTA />
       </main>
     </div>
   )

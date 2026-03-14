@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Menu Dieta - PWA',
-  description: 'Menu giornalieri che rispettano la tua dieta personalizzata',
+  title: 'Menu Dieta - Carica la tua dieta e consulta il menu del giorno',
+  description: 'Carica la tua dieta (file o predefinita) e consulta il menu del giorno. Nessuna registrazione. Installa l’app sul telefono per averla sempre a portata di mano.',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

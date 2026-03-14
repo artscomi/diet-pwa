@@ -6,6 +6,7 @@ import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
 import DailyMenu from "@/components/DailyMenu";
 import Landing, { loadUserDiet, clearUserDiet, clearSavedDailyMenus } from "@/components/Landing";
+import InstallAppCTA from "@/components/InstallAppCTA";
 import { SaladBowlIcon, HeartIcon } from "@/components/Icons";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 
@@ -185,6 +186,7 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
+        <InstallAppCTA />
         <button
           type="button"
           className="change-diet-link"

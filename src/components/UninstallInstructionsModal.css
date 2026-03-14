@@ -1,0 +1,105 @@
+/* Mobile: step impilati, frecce in mezzo (ruotate verso il basso) */
+.uninstall-modal-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.uninstall-modal-step {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.625rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  min-width: 0;
+  max-width: none;
+}
+
+.uninstall-modal-step-text {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: #374151;
+  text-align: center;
+}
+
+.uninstall-modal-step-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 8px;
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.uninstall-modal-arrow {
+  flex-shrink: 0;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.35rem 0;
+  transform: rotate(90deg);
+}
+
+.uninstall-modal-fallback {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #374151;
+  margin: 0;
+}
+
+.uninstall-modal-fallback-note {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #64748b;
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Desktop: step affiancati, frecce a destra */
+@media (min-width: 768px) {
+  .uninstall-modal-steps {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .uninstall-modal-step {
+    flex: 1;
+    padding: 0.75rem 0.875rem;
+    min-width: 0;
+  }
+
+  .uninstall-modal-arrow {
+    margin: 0 0.35rem;
+    transform: none;
+  }
+
+  .uninstall-modal-step-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .uninstall-modal-step-text {
+    font-size: 0.8125rem;
+  }
+}

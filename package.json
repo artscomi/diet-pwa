@@ -9,6 +9,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.40.0",
     "next": "^14.2.0",
     "openai": "^4.52.0",
     "pdf-parse": "^1.1.1",

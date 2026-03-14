@@ -14,6 +14,10 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .landing-bg {
@@ -29,11 +33,17 @@
 .landing-panel {
   position: relative;
   z-index: 2;
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
   background: #ffffff;
+  box-sizing: border-box;
+  border-radius: 16px;
+  overflow-y: auto;
+  max-height: calc(100vh - 2rem);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .landing-header,
@@ -84,7 +94,6 @@
 }
 
 .landing-main {
-  flex: 1;
   padding: 1.5rem 1.25rem 2rem;
   display: flex;
   flex-direction: column;
@@ -92,58 +101,29 @@
   gap: 1.25rem;
 }
 
-/* Desktop: panel a sx 50%, immagini a dx a tutto sfondo */
+/* Desktop: box centrato sulla pagina, sfondo a tutto schermo */
 @media (min-width: 768px) {
   .landing-hero {
-    flex-direction: row;
-    flex: 1 1 100%;
-    height: 100vh;
-  }
-
-  .landing-bg {
-    inset: unset;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    min-height: 100vh;
+    padding: 2rem;
   }
 
   .landing-panel {
-    width: 42%;
-    max-width: 420px;
-    flex: 0 0 42%;
-    min-height: 100vh;
+    max-width: 440px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
-    padding: 0 2rem;
-    box-sizing: border-box;
+    max-height: calc(100vh - 4rem);
   }
 
   .landing-header {
-    text-align: left;
-    padding: 2.5rem 0 5rem 0;
-    padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 2rem));
-  }
-
-  .landing-header h1 {
-    margin-bottom: 0.75rem;
-  }
-
-  .landing-subtitle {
-    margin: 0;
-    max-width: none;
-    font-size: 0.9375rem;
-    line-height: 1.6;
+    padding: 2.5rem 2rem 2rem;
   }
 
   .landing-main {
+    padding: 1.5rem 2rem 2rem;
     align-items: stretch;
-    padding: 0 0 2.5rem;
     gap: 1rem;
-  }
-
-  .landing-panel .site-logo-wrap {
-    margin: 0;
   }
 
   .landing-dropzone {
@@ -171,12 +151,6 @@
 
   .landing-install-wrap {
     width: 100%;
-  }
-
-  .landing-credits {
-    text-align: left;
-    padding: 1rem 0 1.5rem;
-    padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
   }
 }
 

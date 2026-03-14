@@ -43,10 +43,12 @@ L’app funziona subito con la **dieta predefinita**. Per abilitare il **caricam
 2. Apri `.env.local` e imposta:
    ```env
    OPENAI_API_KEY=sk-proj-...
+   PEXELS_API_KEY=...   # opzionale: slider sfondo a tema food sulla landing
    ```
-   La chiave si ottiene da [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+   - OpenAI: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+   - Pexels: [pexels.com/api](https://www.pexels.com/api/) (gratuito, per le immagini di sfondo casuali).
 
-Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla.
+Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` la landing userà immagini di fallback per lo sfondo.
 
 ## Avvio
 

@@ -172,6 +172,7 @@
   font-family:
     -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
   outline: none;
+  margin: 0 auto;
 }
 
 .landing-btn:disabled {

@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { dailyMenus } from "@/data/dailyMenus";
 import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
 import DailyMenu from "@/components/DailyMenu";
-import Landing, { loadUserDiet, clearUserDiet, clearSavedDailyMenus } from "@/components/Landing";
-import InstallAppCTA from "@/components/InstallAppCTA";
-import { SaladBowlIcon, HeartIcon } from "@/components/Icons";
+import Landing, {
+  loadUserDiet,
+  clearUserDiet,
+  clearSavedDailyMenus,
+} from "@/components/Landing";
+import Footer from "@/components/Footer";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 
 export default function App() {
@@ -139,15 +143,14 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1>
-          <SaladBowlIcon
-            size={24}
-            style={{
-              marginRight: "0.5rem",
-              verticalAlign: "middle",
-              display: "inline-block",
-            }}
+          <Image
+            src="/menoo-logo.png"
+            alt="Menoo"
+            width={200}
+            height={56}
+            className="site-logo"
+            priority
           />
-          Menoo
         </h1>
         <p className="subtitle">{formatDate(today)}</p>
         <p className="diet-source">
@@ -184,30 +187,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="app-footer">
-        <p>
-          Made with{" "}
-          <HeartIcon
-            size={14}
-            style={{
-              margin: "0 0.25rem",
-              color: "#e74c3c",
-              verticalAlign: "middle",
-              display: "inline-block",
-            }}
-          />{" "}
-          by
-          <a
-            href="https://instagram.com/artscomi"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Artscomi
-          </a>{" "}
-          - Menoo
-        </p>
-        <InstallAppCTA />
-      </footer>
+      <Footer />
     </div>
   );
 }

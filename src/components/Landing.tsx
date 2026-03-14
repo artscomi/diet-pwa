@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import { IconFileUpload } from "@tabler/icons-react";
 import { dailyMenus } from "@/data/dailyMenus";
-import { SaladBowlIcon, HeartIcon } from "./Icons";
-import InstallAppCTA from "./InstallAppCTA";
+import Footer from "./Footer";
 import { validateDietJson } from "@/utils/validateDietJson";
 import type { UserDiet } from "@/types/diet";
 import "./Landing.css";
@@ -167,15 +167,14 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     <div className="landing">
       <header className="landing-header">
         <h1>
-          <SaladBowlIcon
-            size={28}
-            style={{
-              marginRight: "0.5rem",
-              verticalAlign: "middle",
-              display: "inline-block",
-            }}
+          <Image
+            src="/menoo-logo.png"
+            alt="Menoo"
+            width={200}
+            height={56}
+            className="site-logo"
+            priority
           />
-          Menoo
         </h1>
         <p className="landing-subtitle">
           Un menu che rispetta la tua dieta, ogni giorno. Carica il file,
@@ -254,30 +253,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         )}
       </main>
 
-      <footer className="landing-footer">
-        <p>
-          Made with{" "}
-          <HeartIcon
-            size={14}
-            style={{
-              margin: "0 0.25rem",
-              color: "#e74c3c",
-              verticalAlign: "middle",
-              display: "inline-block",
-            }}
-          />{" "}
-          by{" "}
-          <a
-            href="https://instagram.com/artscomi"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Artscomi
-          </a>{" "}
-          - Menoo
-        </p>
-        <InstallAppCTA />
-      </footer>
+      <Footer />
     </div>
   );
 }

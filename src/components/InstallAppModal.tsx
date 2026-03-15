@@ -43,7 +43,7 @@ function getNativeVariant(): NativeVariant {
 
 interface Step {
   icon: ReactNode;
-  text: string;
+  text: ReactNode;
 }
 
 function getNativeSteps(variant: NativeVariant): Step[] {
@@ -116,7 +116,11 @@ function getIOSSteps(): Step[] {
   return [
     {
       icon: <IconUpload size={STEP_SIZE} />,
-      text: "Tap sull’icona Condividi in alto nella barra degli indirizzi",
+      text: (
+        <>
+          Tap sull&apos;icona <IconUpload size={18} style={{ verticalAlign: "middle", marginRight: 2 }} /> Condividi in alto nella barra degli indirizzi
+        </>
+      ),
     },
     {
       icon: <IconSquarePlus size={STEP_SIZE} />,

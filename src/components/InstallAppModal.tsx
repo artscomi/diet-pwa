@@ -7,7 +7,7 @@ import {
   IconDeviceDesktop,
   IconDeviceMobile,
   IconShare,
-  IconHomePlus,
+  IconSquarePlus,
   IconCircleCheck,
 } from '@tabler/icons-react'
 import Modal from './Modal'
@@ -92,9 +92,9 @@ function getNativeSteps(variant: NativeVariant): Step[] {
 function getNativeSubtitle(variant: NativeVariant): string {
   switch (variant) {
     case 'chrome-desktop':
-      return 'Un click sul pulsante «Installa» aprirà il dialogo di Chrome. Troverai l’app nel menu Applicazioni o nel Dock.'
+      return "Un click sul pulsante «Installa» aprirà una finestra di dialogo di Chrome. Conferma l'installazione, troverai l'app nel menu Applicazioni o nel Dock."
     case 'chrome-android':
-      return 'Un tap sul pulsante «Installa» aprirà il dialogo di Chrome. Troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.'
+      return 'Un tap sul pulsante «Installa» aprirà una finestra di dialogo di Chrome. Conferma l\'installazione, troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.'
     case 'edge-desktop':
       return 'Un click sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nel menu App di Edge o nel Dock.'
     case 'edge-android':
@@ -109,11 +109,11 @@ function getIOSSteps(): Step[] {
   return [
     {
       icon: <IconShare size={STEP_SIZE} />,
-      text: 'Tap sull’icona Condivisi (in basso oppure in alto nella barra di Safari o Chrome)',
+      text: 'Tap sull’icona Condividi (in basso oppure in alto nella barra di Safari o Chrome)',
     },
     {
-      icon: <IconHomePlus size={STEP_SIZE} />,
-      text: 'Scorri e scegli «Aggiungi a Home»',
+      icon: <IconSquarePlus size={STEP_SIZE} />,
+      text: 'Scorri e scegli «Aggiungi alla schermata Home»',
     },
     {
       icon: <IconCircleCheck size={STEP_SIZE} />,
@@ -138,7 +138,7 @@ export default function InstallAppModal({ variant, onClose, onInstall }: Install
 
   const subtitle = isIOSVariant ? (
     <p className="uninstall-modal-subtitle">
-      Su iPhone e iPad l’installazione non è automatica: Safari e Chrome usano gli stessi passaggi. Usa il menu Condivisi
+      Su iPhone e iPad l’installazione non è automatica: Safari e Chrome usano gli stessi passaggi. Usa il menu Condividi
       per aggiungere l’app alla Home e aprirla come un’app.
     </p>
   ) : (

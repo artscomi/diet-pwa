@@ -1,13 +1,13 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Menoo - Il tuo menu del giorno",
+  title: "My menoo - Il tuo menu del giorno",
   description:
     "Un menu che rispetta la tua dieta, ogni giorno. Carica il file, personalizza gli ingredienti. Installa l’app per averla sempre a portata di mano.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Menoo",
+    title: "My menoo",
   },
 };
 

@@ -148,7 +148,7 @@ export default function App() {
             <span className="site-logo-wrap">
               <Image
                 src="/menoo-logo.svg"
-                alt="Menoo"
+                alt="My menoo"
                 width={140}
                 height={52}
                 className="site-logo site-logo--header"

@@ -1,3 +1,4 @@
+/* Mobile: modale full page (card che riempie lo schermo) */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -7,6 +8,15 @@
   justify-content: stretch;
   box-sizing: border-box;
   animation: modal-overlay-in 0.2s ease-out;
+}
+
+/* Desktop: modale centrata a box, non full page */
+@media (min-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
 }
 
 @keyframes modal-overlay-in {
@@ -32,7 +42,9 @@
   flex: 1;
   width: 100%;
   min-height: 0;
+  max-height: 100%;
   background: #ffffff;
+  border-radius: 16px;
   padding: max(1.25rem, env(safe-area-inset-top))
     max(1.25rem, env(safe-area-inset-right))
     max(1.25rem, env(safe-area-inset-bottom))
@@ -45,15 +57,21 @@
 
 @media (min-width: 768px) {
   .modal-card {
+    flex: none;
+    width: auto;
+    max-width: 420px;
+    max-height: min(90vh, 640px);
+    min-height: 0;
     padding: max(1.75rem, env(safe-area-inset-top))
       max(2rem, env(safe-area-inset-right))
       max(1.75rem, env(safe-area-inset-bottom))
       max(2rem, env(safe-area-inset-left));
   }
-}
 
-.modal-card--wide {
-  /* Stesso layout full screen della modale standard */
+  .modal-card--wide {
+    max-width: min(560px, 92vw);
+    max-height: min(90vh, 520px);
+  }
 }
 
 @keyframes modal-card-in {
@@ -70,11 +88,12 @@
   font-weight: 700;
   color: #1a1a1a;
   flex-shrink: 0;
+  margin-bottom: 0.25rem;
 }
 
 @media (min-width: 768px) {
   .modal-title {
-    margin-bottom: 2rem;
+    margin-bottom: 0.375rem;
   }
 }
 

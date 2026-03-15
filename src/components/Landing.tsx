@@ -260,7 +260,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               <span className="site-logo-wrap">
                 <Image
                   src="/menoo-logo.svg"
-                  alt="Menoo"
+                  alt="My menoo"
                   width={150}
                   height={150}
                   className="site-logo"

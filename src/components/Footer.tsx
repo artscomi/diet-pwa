@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { HeartIcon } from "./Icons";
 import InstallAppCTA from "./InstallAppCTA";
+import UninstallFooterLink from "./UninstallFooterLink";
 import "./Footer.css";
 
 interface FooterProps {
@@ -36,6 +36,7 @@ export default function Footer({ showInstallCTA = true }: FooterProps) {
         <span>© {currentYear}</span>
       </p>
       {showInstallCTA && <InstallAppCTA />}
+      {showInstallCTA && <UninstallFooterLink />}
     </footer>
   );
 }

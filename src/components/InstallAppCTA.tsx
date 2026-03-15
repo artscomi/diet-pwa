@@ -13,7 +13,7 @@ type InstallPromptEvent = Event & { prompt: () => Promise<{ outcome: string }> }
  * Non indica "l'app è installata" ma "questa finestra è in modalità app (standalone) o browser (tab)".
  * Stessa URL: da icona → standalone; da barra indirizzi/tab → non standalone.
  */
-function isStandalone(): boolean {
+export function isStandalone(): boolean {
   if (typeof window === 'undefined') return false
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
@@ -49,7 +49,7 @@ function isEdge(): boolean {
 }
 
 /** Piattaforma per istruzioni di disinstallazione (solo in standalone). */
-function getUninstallPlatform(): UninstallPlatform {
+export function getUninstallPlatform(): UninstallPlatform {
   if (typeof navigator === 'undefined') return 'other'
   if (isIOS()) return 'ios'
   if (isAndroid()) return 'android'
@@ -123,29 +123,9 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     handleCloseInstallModal()
   }
 
-  // Se l’app è già installata (standalone): CTA «Vuoi disinstallare?» sotto il footer con spacing
+  // In standalone il CTA «Vuoi disinstallare?» è mostrato in fondo al footer (UninstallFooterLink)
   if (isStandalone()) {
-    if (isButton) return null
-    return (
-      <>
-        <div className="install-cta-uninstall-wrap">
-          <button
-            type="button"
-            className="install-cta-uninstall-btn"
-            onClick={() => setShowUninstallModal(true)}
-          >
-            Vuoi disinstallare l’app?
-          </button>
-        </div>
-        {showUninstallModal && (
-          <UninstallInstructionsModal
-            platform={getUninstallPlatform()}
-            onClose={() => setShowUninstallModal(false)}
-            isStandalone={true}
-          />
-        )}
-      </>
-    )
+    return null
   }
 
   // Chrome/Edge: un click avvia il prompt di installazione del browser

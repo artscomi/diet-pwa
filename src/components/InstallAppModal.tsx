@@ -116,7 +116,7 @@ function getIOSSteps(): Step[] {
   return [
     {
       icon: <IconUpload size={STEP_SIZE} />,
-      text: "Tap sull’icona Condividi (in basso oppure in alto nella barra di Safari o Chrome)",
+      text: "Tap sull’icona Condividi in alto nella barra degli indirizzi",
     },
     {
       icon: <IconSquarePlus size={STEP_SIZE} />,

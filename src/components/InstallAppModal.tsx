@@ -7,8 +7,8 @@ import {
   IconDeviceDesktop,
   IconDeviceMobile,
   IconUpload,
+  IconDots,
   IconSquarePlus,
-  IconCircleCheck,
 } from "@tabler/icons-react";
 import Modal from "./Modal";
 import "./UninstallInstructionsModal.css";
@@ -23,6 +23,18 @@ function isAndroid(): boolean {
 function isEdge(): boolean {
   if (typeof navigator === "undefined") return false;
   return /Edg/.test(navigator.userAgent);
+}
+
+/** Su iOS: rileva se il browser è Chrome (CriOS) o Safari. */
+function getIOSBrowser(): "safari" | "chrome" | "other" {
+  if (typeof navigator === "undefined") return "other";
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) {
+    if (/CriOS/.test(ua)) return "chrome";
+    if (/Safari/.test(ua) && !/Chrome/.test(ua)) return "safari";
+    return "safari"; // default su iOS
+  }
+  return "other";
 }
 
 type NativeVariant =
@@ -113,22 +125,33 @@ function getNativeSubtitle(variant: NativeVariant): string {
 
 /** Passi per iOS: su iPhone/iPad (Safari e Chrome) non c’è installazione automatica, solo “Aggiungi alla Home”. */
 function getIOSSteps(): Step[] {
+  const browser = getIOSBrowser();
+  const barraLabel =
+    browser === "chrome"
+      ? "nella barra degli indirizzi di Chrome"
+      : browser === "safari"
+        ? "in basso nella barra degli strumenti"
+        : "in alto nella barra degli indirizzi";
   return [
     {
       icon: <IconUpload size={STEP_SIZE} />,
       text: (
         <>
-          Tap sull&apos;icona <IconUpload size={18} style={{ verticalAlign: "middle", marginRight: 2 }} /> Condividi in alto nella barra degli indirizzi
+          Tap sull&apos;icona <IconUpload size={18} style={{ verticalAlign: "middle", marginRight: 2 }} /> Condividi {barraLabel}
+        </>
+      ),
+    },
+    {
+      icon: <IconDots size={STEP_SIZE} />,
+      text: (
+        <>
+          Clicca sull&apos;icona Altro con i tre puntini <IconDots size={18} style={{ verticalAlign: "middle", marginRight: 2 }} />
         </>
       ),
     },
     {
       icon: <IconSquarePlus size={STEP_SIZE} />,
-      text: "Scorri e scegli «Aggiungi alla schermata Home»",
-    },
-    {
-      icon: <IconCircleCheck size={STEP_SIZE} />,
-      text: "Conferma con «Aggiungi»",
+      text: "Scegli «Aggiungi alla schermata Home»",
     },
   ];
 }
@@ -151,11 +174,15 @@ export default function InstallAppModal({
   const nativeVariant = getNativeVariant();
   const steps = isIOSVariant ? getIOSSteps() : getNativeSteps(nativeVariant);
 
+  const iosBrowser = getIOSBrowser();
+  const iosSubtitle =
+    iosBrowser === "chrome"
+      ? "Usa il menu Condividi di Chrome per aggiungere l'app alla Home e aprirla come un'app."
+      : iosBrowser === "safari"
+        ? "Usa il menu Condividi di Safari per aggiungere l'app alla Home e aprirla come un'app."
+        : "Usa il menu Condividi per aggiungere l'app alla Home e aprirla come un'app.";
   const subtitle = isIOSVariant ? (
-    <p className="uninstall-modal-subtitle">
-      Usa il menu Condividi per aggiungere l’app alla Home e aprirla come
-      un’app.
-    </p>
+    <p className="uninstall-modal-subtitle">{iosSubtitle}</p>
   ) : (
     <p className="uninstall-modal-subtitle">
       {getNativeSubtitle(nativeVariant)}

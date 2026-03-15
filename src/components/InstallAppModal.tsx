@@ -1,106 +1,113 @@
-'use client'
+"use client";
 
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, type ReactNode } from "react";
 import {
   IconChevronRight,
   IconPointer,
   IconDeviceDesktop,
   IconDeviceMobile,
-  IconShare,
+  IconUpload,
   IconSquarePlus,
   IconCircleCheck,
-} from '@tabler/icons-react'
-import Modal from './Modal'
-import './UninstallInstructionsModal.css'
+} from "@tabler/icons-react";
+import Modal from "./Modal";
+import "./UninstallInstructionsModal.css";
 
-const STEP_SIZE = 22
+const STEP_SIZE = 22;
 
 function isAndroid(): boolean {
-  if (typeof navigator === 'undefined') return false
-  return /Android/.test(navigator.userAgent)
+  if (typeof navigator === "undefined") return false;
+  return /Android/.test(navigator.userAgent);
 }
 
 function isEdge(): boolean {
-  if (typeof navigator === 'undefined') return false
-  return /Edg/.test(navigator.userAgent)
+  if (typeof navigator === "undefined") return false;
+  return /Edg/.test(navigator.userAgent);
 }
 
-type NativeVariant = 'chrome-desktop' | 'chrome-android' | 'edge-desktop' | 'edge-android'
+type NativeVariant =
+  | "chrome-desktop"
+  | "chrome-android"
+  | "edge-desktop"
+  | "edge-android";
 
 function getNativeVariant(): NativeVariant {
-  if (typeof navigator === 'undefined') return 'chrome-desktop'
-  const android = isAndroid()
-  const edge = isEdge()
-  if (edge && android) return 'edge-android'
-  if (edge) return 'edge-desktop'
-  if (android) return 'chrome-android'
-  return 'chrome-desktop'
+  if (typeof navigator === "undefined") return "chrome-desktop";
+  const android = isAndroid();
+  const edge = isEdge();
+  if (edge && android) return "edge-android";
+  if (edge) return "edge-desktop";
+  if (android) return "chrome-android";
+  return "chrome-desktop";
 }
 
 interface Step {
-  icon: ReactNode
-  text: string
+  icon: ReactNode;
+  text: string;
 }
 
 function getNativeSteps(variant: NativeVariant): Step[] {
   const step1 = {
     icon: <IconPointer size={STEP_SIZE} />,
-    text: 'Clicca il pulsante «Installa» qui sotto per avviare l’installazione',
-  }
+    text: "Clicca il pulsante «Installa» qui sotto per avviare l’installazione",
+  };
   switch (variant) {
-    case 'chrome-desktop':
+    case "chrome-desktop":
       return [
         step1,
         {
           icon: <IconDeviceDesktop size={STEP_SIZE} />,
-          text: 'Troverai l’app nel menu Applicazioni di Chrome o nel Dock',
+          text: "Troverai l’app nel menu Applicazioni di Chrome o nel Dock",
         },
-      ]
-    case 'chrome-android':
+      ];
+    case "chrome-android":
       return [
         step1,
         {
           icon: <IconDeviceMobile size={STEP_SIZE} />,
-          text: 'Troverai l’app nella schermata Home o nel drawer delle app. Si apre come un’app a parte, senza barra del browser',
+          text: "Troverai l’app nella schermata Home o nel drawer delle app. Si apre come un’app a parte, senza barra del browser",
         },
-      ]
-    case 'edge-desktop':
+      ];
+    case "edge-desktop":
       return [
         step1,
         {
           icon: <IconDeviceDesktop size={STEP_SIZE} />,
-          text: 'Troverai l’app nel menu App di Edge o nel Dock',
+          text: "Troverai l’app nel menu App di Edge o nel Dock",
         },
-      ]
-    case 'edge-android':
+      ];
+    case "edge-android":
       return [
         step1,
         {
           icon: <IconDeviceMobile size={STEP_SIZE} />,
-          text: 'Troverai l’app nella schermata Home o nel drawer delle app. Si apre come un’app a parte, senza barra del browser',
+          text: "Troverai l’app nella schermata Home o nel drawer delle app. Si apre come un’app a parte, senza barra del browser",
         },
-      ]
+      ];
     default:
       return [
         step1,
-        { icon: <IconDeviceDesktop size={STEP_SIZE} />, text: 'Troverai l’app nel menu Applicazioni o nel Dock' },
-      ]
+        {
+          icon: <IconDeviceDesktop size={STEP_SIZE} />,
+          text: "Troverai l’app nel menu Applicazioni o nel Dock",
+        },
+      ];
   }
 }
 
 /** Sottotitolo modale install: copy adattato a dispositivo e browser. */
 function getNativeSubtitle(variant: NativeVariant): string {
   switch (variant) {
-    case 'chrome-desktop':
-      return "Un click sul pulsante «Installa» aprirà una finestra di dialogo di Chrome. Conferma l'installazione, troverai l'app nel menu Applicazioni o nel Dock."
-    case 'chrome-android':
-      return 'Un tap sul pulsante «Installa» aprirà una finestra di dialogo di Chrome. Conferma l\'installazione, troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.'
-    case 'edge-desktop':
-      return 'Un click sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nel menu App di Edge o nel Dock.'
-    case 'edge-android':
-      return 'Un tap sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.'
+    case "chrome-desktop":
+      return "Un click sul pulsante «Installa» aprirà una finestra di dialogo di Chrome. Conferma l'installazione, troverai l'app nel menu Applicazioni o nel Dock.";
+    case "chrome-android":
+      return "Un tap sul pulsante «Installa» aprirà una finestra di dialogo di Chrome. Conferma l'installazione, troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.";
+    case "edge-desktop":
+      return "Un click sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nel menu App di Edge o nel Dock.";
+    case "edge-android":
+      return "Un tap sul pulsante «Installa» aprirà il dialogo di Edge. Troverai l’app nella Home o nel drawer delle app; si aprirà come un’app a parte.";
     default:
-      return 'Un click sul pulsante «Installa» aprirà il dialogo del browser. Troverai l’app nel menu del browser o nel Dock.'
+      return "Un click sul pulsante «Installa» aprirà il dialogo del browser. Troverai l’app nel menu del browser o nel Dock.";
   }
 }
 
@@ -108,51 +115,57 @@ function getNativeSubtitle(variant: NativeVariant): string {
 function getIOSSteps(): Step[] {
   return [
     {
-      icon: <IconShare size={STEP_SIZE} />,
-      text: 'Tap sull’icona Condividi (in basso oppure in alto nella barra di Safari o Chrome)',
+      icon: <IconUpload size={STEP_SIZE} />,
+      text: "Tap sull’icona Condividi (in basso oppure in alto nella barra di Safari o Chrome)",
     },
     {
       icon: <IconSquarePlus size={STEP_SIZE} />,
-      text: 'Scorri e scegli «Aggiungi alla schermata Home»',
+      text: "Scorri e scegli «Aggiungi alla schermata Home»",
     },
     {
       icon: <IconCircleCheck size={STEP_SIZE} />,
-      text: 'Conferma con «Aggiungi»',
+      text: "Conferma con «Aggiungi»",
     },
-  ]
+  ];
 }
 
-export type InstallModalVariant = 'native' | 'ios'
+export type InstallModalVariant = "native" | "ios";
 
 interface InstallAppModalProps {
-  variant: InstallModalVariant
-  onClose: () => void
+  variant: InstallModalVariant;
+  onClose: () => void;
   /** Solo per variant="native": chiamato al click su «Installa» */
-  onInstall?: () => void | Promise<void>
+  onInstall?: () => void | Promise<void>;
 }
 
-export default function InstallAppModal({ variant, onClose, onInstall }: InstallAppModalProps) {
-  const isIOSVariant = variant === 'ios'
-  const nativeVariant = getNativeVariant()
-  const steps = isIOSVariant ? getIOSSteps() : getNativeSteps(nativeVariant)
+export default function InstallAppModal({
+  variant,
+  onClose,
+  onInstall,
+}: InstallAppModalProps) {
+  const isIOSVariant = variant === "ios";
+  const nativeVariant = getNativeVariant();
+  const steps = isIOSVariant ? getIOSSteps() : getNativeSteps(nativeVariant);
 
   const subtitle = isIOSVariant ? (
     <p className="uninstall-modal-subtitle">
-      Su iPhone e iPad l’installazione non è automatica: Safari e Chrome usano gli stessi passaggi. Usa il menu Condividi
-      per aggiungere l’app alla Home e aprirla come un’app.
+      Usa il menu Condividi per aggiungere l’app alla Home e aprirla come
+      un’app.
     </p>
   ) : (
-    <p className="uninstall-modal-subtitle">{getNativeSubtitle(nativeVariant)}</p>
-  )
+    <p className="uninstall-modal-subtitle">
+      {getNativeSubtitle(nativeVariant)}
+    </p>
+  );
 
   return (
     <Modal
-      title={isIOSVariant ? 'Aggiungi alla Home' : 'Installa l’app'}
+      title={isIOSVariant ? "Aggiungi alla Home" : "Installa l’app"}
       buttonLabel="Annulla"
       onClose={onClose}
       wide
       singlePrimaryButton={isIOSVariant}
-      primaryLabel={isIOSVariant ? 'Ho capito' : 'Installa'}
+      primaryLabel={isIOSVariant ? "Ho capito" : "Installa"}
       onPrimaryClick={isIOSVariant ? onClose : onInstall}
     >
       {subtitle}
@@ -174,5 +187,5 @@ export default function InstallAppModal({ variant, onClose, onInstall }: Install
         ))}
       </div>
     </Modal>
-  )
+  );
 }

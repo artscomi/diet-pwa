@@ -76,6 +76,14 @@ button {
   text-align: left;
 }
 
+@media (max-width: 767px) {
+  .app-header {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+    padding-bottom: 0.625rem;
+  }
+}
+
 .app-header__inner {
   display: flex;
   flex-direction: row;
@@ -85,6 +93,12 @@ button {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .app-header__inner {
+    gap: 0.5rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -107,8 +121,8 @@ button {
 
 .app-header__logo {
   margin: 0;
-  flex-shrink: 0;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .site-logo-wrap {
@@ -131,34 +145,25 @@ button {
   max-width: none;
 }
 
-.app-header__center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
-  padding: 0 0.5rem;
-}
-
-.app-header__center .subtitle {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #334155;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
+@media (max-width: 767px) {
+  .site-logo--header {
+    height: 40px;
+  }
 }
 
 .app-header__meta {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem 0.75rem;
   min-width: 0;
-  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .app-header__meta {
+    gap: 0.35rem 0.5rem;
+  }
 }
 
 .app-header__meta .diet-source {
@@ -185,6 +190,14 @@ button {
   border: 1px solid rgba(16, 185, 129, 0.25);
   color: #059669;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+@media (max-width: 767px) {
+  .app-header__meta .change-diet-btn {
+    margin-left: 0;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+  }
 }
 
 .app-header__meta .change-diet-btn:hover {

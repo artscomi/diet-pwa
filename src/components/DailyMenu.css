@@ -35,6 +35,14 @@
   gap: 0.6rem;
 }
 
+.menu-header__date {
+  margin-right: auto;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: -0.02em;
+}
+
 .menu-header h3 {
   font-size: clamp(1.35rem, 3.5vw, 1.75rem);
   font-weight: 700;

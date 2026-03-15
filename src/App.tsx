@@ -156,9 +156,6 @@ export default function App() {
               />
             </span>
           </h1>
-          <div className="app-header__center">
-            <p className="subtitle">{formatDate(today)}</p>
-          </div>
           <div className="app-header__meta">
             <InstallAppCTA variant="button" />
             <button
@@ -180,6 +177,7 @@ export default function App() {
         {currentMenu && (
           <DailyMenu
             menu={currentMenu}
+            displayDate={formatDate(today)}
             onSave={handleSaveMenu}
             dietData={
               userDiet.dietData ??

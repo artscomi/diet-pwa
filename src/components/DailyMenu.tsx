@@ -9,6 +9,7 @@ import './DailyMenu.css'
 
 interface DailyMenuProps {
   menu: DailyMenu
+  displayDate?: string
   onSave?: (menu: DailyMenu) => void
   onCancel?: () => void
   dietData?: DietData
@@ -22,7 +23,7 @@ function formatFood(food: FoodItem | FoodItem[] | null | undefined): string | nu
   return `${food.name} (${food.quantity} ${food.unit})`
 }
 
-export default function DailyMenuComponent({ menu, onSave, onCancel, dietData: dietDataProp }: DailyMenuProps) {
+export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel, dietData: dietDataProp }: DailyMenuProps) {
   const dietData = dietDataProp ?? defaultDietData
   const [isEditing, setIsEditing] = useState(false)
   const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu)
@@ -225,6 +226,7 @@ export default function DailyMenuComponent({ menu, onSave, onCancel, dietData: d
   return (
     <div className="daily-menu-card">
       <div className="menu-header">
+        {displayDate && <span className="menu-header__date">{displayDate}</span>}
         <button className="menu-action-btn edit" onClick={() => setIsEditing(true)}>
           <EditIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
           Modifica

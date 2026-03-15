@@ -213,9 +213,18 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     [onDietLoaded],
   );
 
+  const isJsonFile = (file: File) =>
+    file.type === "application/json" || /\.json$/i.test(file.name);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target?.files?.[0];
-    if (file) processFile(file);
+    if (!file) return;
+    if (!isJsonFile(file)) {
+      setError("Supportiamo solo file JSON (.json). Carica un file della tua dieta in formato JSON.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    processFile(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -237,10 +246,13 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     setIsDragging(false);
     if (uploadStatus === "loading") return;
     const file = e.dataTransfer?.files?.[0];
-    if (file) {
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      processFile(file);
+    if (!file) return;
+    if (!isJsonFile(file)) {
+      setError("Supportiamo solo file JSON (.json). Carica un file della tua dieta in formato JSON.");
+      return;
     }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    processFile(file);
   };
 
   return (
@@ -310,7 +322,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="*/*"
+                accept=".json,application/json"
                 onChange={handleFileChange}
                 disabled={uploadStatus === "loading"}
                 className="landing-file-input"

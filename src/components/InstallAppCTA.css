@@ -4,7 +4,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  margin: 0 auto 1rem;
+  margin: 0 auto;
   max-width: 320px;
   text-align: center;
 }
@@ -86,7 +86,10 @@
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.25);
   color: #059669;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
 }
 
 .install-cta-btn--header:hover {
@@ -105,4 +108,3 @@
     font-size: 0.75rem;
   }
 }
-

@@ -48,8 +48,9 @@ L’app funziona subito con la **dieta predefinita**. Per abilitare il **caricam
    - OpenAI: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
    - Pexels: [pexels.com/api](https://www.pexels.com/api/) (gratuito, per le immagini di sfondo casuali).
    - **Microsoft Clarity** (opzionale): [clarity.microsoft.com](https://clarity.microsoft.com/) – crea un progetto, copia il Project ID e imposta `NEXT_PUBLIC_CLARITY_PROJECT_ID=...` in `.env.local` per heatmap e registrazioni sessione.
+   - **Hotjar** (opzionale): [hotjar.com](https://www.hotjar.com/) – imposta `NEXT_PUBLIC_HOTJAR_ID=...` (Site ID) e opzionalmente `NEXT_PUBLIC_HOTJAR_SV=6` (script version) per registrazioni e heatmap. Solo in produzione.
 
-Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` la landing userà immagini di fallback per lo sfondo. Senza `NEXT_PUBLIC_CLARITY_PROJECT_ID` Clarity non viene caricato.
+Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` la landing userà immagini di fallback per lo sfondo. Senza `NEXT_PUBLIC_CLARITY_PROJECT_ID` Clarity non viene caricato. Clarity e Hotjar vengono caricati solo in produzione (non su localhost).
 
 ## Avvio
 

@@ -2,15 +2,25 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import pdf from "pdf-parse";
 import type { DietData, DailyMenu } from "@/types/diet";
+import { isAllowedMime, MAX_UPLOAD_BYTES } from "@/constants/upload";
 
-/** Modello OpenAI per vision + estrazione JSON (immagini e testo). gpt-5.4 è il più avanzato con vision. */
+/** Modello OpenAI per vision + estrazione JSON (immagini e testo). */
 const PARSE_MODEL = "gpt-4o";
 
-const DIET_JSON_PROMPT = `Sei un assistente che estrae informazioni su diete e menu DAL TESTO/CONTENUTO FORNITO DALL'UTENTE.
-IMPORTANTE: Usa SOLO gli alimenti e le quantità presenti nel contenuto. Non inventare menu generici né copiare esempi: estrai esattamente ciò che è scritto nel file.
+const CLASSIFY_PROMPT = `L'utente ha fornito un contenuto (testo o immagine). Il contenuto descrive chiaramente una DIETA o un PIANO ALIMENTARE con pasti (colazione, pranzo, cena, spuntini) e quantità di alimenti (grammi, porzioni)?
 
-Restituisci SOLO un oggetto JSON valido, senza testo prima o dopo, senza markdown o blocchi di codice.
-Lo schema deve essere esattamente:
+Rispondi SOLO con un JSON valido, nient'altro:
+- Se SÌ (è una dieta/piano con pasti e quantità): {"isDiet": true}
+- Se NO (meme, fattura, lista della spesa generica, foto non pertinente, testo senza menu): {"isDiet": false}`;
+
+const DIET_JSON_PROMPT = `Sei un assistente che estrae informazioni su diete e menu DAL TESTO/CONTENUTO FORNITO DALL'UTENTE.
+
+REGOLA FONDAMENTALE: Se il contenuto NON descrive chiaramente una dieta o un piano alimentare con pasti (colazione, pranzo, cena, ecc.) e quantità di alimenti, NON inventare nulla. Restituisci SOLO: {"error":"not_a_diet"}
+
+Se invece il contenuto È una dieta/menu:
+- Usa SOLO gli alimenti e le quantità presenti nel contenuto. Non inventare menu generici né copiare esempi: estrai esattamente ciò che è scritto nel file.
+- Restituisci SOLO un oggetto JSON valido, senza testo prima o dopo, senza markdown o blocchi di codice.
+- Lo schema deve essere esattamente:
 
 {
   "dailyMenus": [
@@ -42,8 +52,9 @@ Lo schema deve essere esattamente:
 Per ogni giorno/menu presente nel contenuto dell'utente, crea un elemento in dailyMenus. Copia i nomi degli alimenti e le quantità DAL TESTO (es. "Pasta integrale 70g" -> name: "Pasta integrale", quantity: 70, unit: "g"). Se un pasto non è specificato nel testo, usa un valore ragionevole basato sul contesto. Restituisci SOLO il JSON.`;
 
 interface ParseResult {
-  dailyMenus: DailyMenu[];
+  dailyMenus?: DailyMenu[];
   dietData?: DietData;
+  error?: string;
 }
 
 function extractJsonFromText(text: string): ParseResult {
@@ -57,6 +68,60 @@ function extractJsonFromText(text: string): ParseResult {
     const jsonMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
     const toParse = jsonMatch ? jsonMatch[1].trim() : trimmed;
     return JSON.parse(toParse) as ParseResult;
+  }
+}
+
+async function classifyIsDiet(
+  openai: OpenAI,
+  mime: string,
+  imageBase64: string | null,
+  textContent: string | null,
+): Promise<boolean> {
+  if (imageBase64) {
+    const res = await openai.chat.completions.create({
+      model: PARSE_MODEL,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: CLASSIFY_PROMPT },
+            {
+              type: "image_url",
+              image_url: { url: `data:${mime};base64,${imageBase64}` },
+            },
+          ],
+        },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 100,
+    });
+    const raw = res.choices[0]?.message?.content;
+    if (!raw) return false;
+    try {
+      const parsed = JSON.parse(raw) as { isDiet?: boolean };
+      return parsed.isDiet === true;
+    } catch {
+      return false;
+    }
+  }
+  const text = (textContent ?? "").trim();
+  if (!text) return false;
+  const res = await openai.chat.completions.create({
+    model: PARSE_MODEL,
+    messages: [
+      { role: "system", content: CLASSIFY_PROMPT },
+      { role: "user", content: text.slice(0, 15000) },
+    ],
+    response_format: { type: "json_object" },
+    max_tokens: 100,
+  });
+  const raw = res.choices[0]?.message?.content;
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(raw) as { isDiet?: boolean };
+    return parsed.isDiet === true;
+  } catch {
+    return false;
   }
 }
 
@@ -79,9 +144,29 @@ export async function POST(request: Request) {
       );
     }
 
-    const mime = file.type;
+    const mime = file.type || "";
+    if (!isAllowedMime(mime)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Tipo di file non supportato. Usa PDF, TXT o immagini (JPG, PNG, WebP).",
+        },
+        { status: 400 },
+      );
+    }
+
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    if (buffer.length > MAX_UPLOAD_BYTES) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `File troppo grande. Dimensione massima: ${MAX_UPLOAD_BYTES / 1024 / 1024} MB.`,
+        },
+        { status: 400 },
+      );
+    }
 
     let textContent: string | null = null;
     let imageBase64: string | null = null;
@@ -96,6 +181,22 @@ export async function POST(request: Request) {
     }
 
     const openai = new OpenAI({ apiKey });
+
+    const NOT_A_DIET_MESSAGE =
+      "Il file non sembra contenere una dieta o un piano alimentare con pasti e quantità. Carica un documento o un'immagine con il menu (colazione, pranzo, cena, ecc.) e le quantità in grammi.";
+
+    const isDiet = await classifyIsDiet(
+      openai,
+      mime,
+      imageBase64,
+      textContent,
+    );
+    if (!isDiet) {
+      return NextResponse.json(
+        { success: false, error: NOT_A_DIET_MESSAGE },
+        { status: 400 },
+      );
+    }
 
     let result: ParseResult;
 
@@ -124,7 +225,7 @@ export async function POST(request: Request) {
       }
 
       try {
-        result = extractJsonFromText(content);
+        result = extractJsonFromText(content) as ParseResult;
       } catch (parseErr) {
         console.error("parse-diet image JSON parse error:", parseErr);
         return NextResponse.json(
@@ -158,7 +259,14 @@ export async function POST(request: Request) {
       });
       const content = response.choices[0]?.message?.content;
       if (!content) throw new Error("Risposta OpenAI vuota");
-      result = extractJsonFromText(content);
+      result = extractJsonFromText(content) as ParseResult;
+    }
+
+    if (result.error === "not_a_diet") {
+      return NextResponse.json(
+        { success: false, error: NOT_A_DIET_MESSAGE },
+        { status: 400 },
+      );
     }
 
     if (

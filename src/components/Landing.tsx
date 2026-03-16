@@ -8,6 +8,11 @@ import InstallAppCTA from "./InstallAppCTA";
 import Footer from "./Footer";
 import { validateDietJson } from "@/utils/validateDietJson";
 import type { UserDiet } from "@/types/diet";
+import {
+  isAllowedMime,
+  MAX_UPLOAD_BYTES,
+  ACCEPT_UPLOAD,
+} from "@/constants/upload";
 import "./Landing.css";
 
 /** Fallback se Pexels non è configurata o la richiesta fallisce */
@@ -73,9 +78,12 @@ interface LandingProps {
 
 const FOOD_QUERIES = ["healthy food", "salad", "diet", "hipster diet"];
 
+const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
+
 export default function Landing({ onDietLoaded }: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pendingDiet, setPendingDiet] = useState<UserDiet | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [bgImages, setBgImages] = useState<string[]>(LANDING_BG_FALLBACK);
   const [bgIndex, setBgIndex] = useState(0);
@@ -148,6 +156,23 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const processFile = useCallback(
     async (file: File) => {
       setError(null);
+      setPendingDiet(null);
+
+      if (!isAllowedMime(file.type)) {
+        setError(
+          "Tipo di file non supportato. Usa PDF, TXT o immagini (JPG, PNG, WebP).",
+        );
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setError(
+          `File troppo grande. Dimensione massima: ${MAX_FILE_SIZE_MB} MB.`,
+        );
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+
       setUploadStatus("loading");
 
       const formData = new FormData();
@@ -197,9 +222,9 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           dailyMenus: json.data.dailyMenus,
           ...(json.data.dietData && { dietData: json.data.dietData }),
         };
-        clearSavedDailyMenus();
-        saveUserDiet(toSave);
-        onDietLoaded(toSave);
+        setUploadStatus(null);
+        setPendingDiet(toSave);
+        if (fileInputRef.current) fileInputRef.current.value = "";
       } catch (err) {
         setUploadStatus(null);
         setError(
@@ -243,6 +268,18 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     }
   };
 
+  const handleConfirmDiet = () => {
+    if (!pendingDiet) return;
+    clearSavedDailyMenus();
+    saveUserDiet(pendingDiet);
+    onDietLoaded(pendingDiet);
+    setPendingDiet(null);
+  };
+
+  const handleCancelDiet = () => {
+    setPendingDiet(null);
+  };
+
   return (
     <div className="landing">
       <div className="landing-hero">
@@ -275,7 +312,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           </header>
 
           <main className="landing-main">
-            {process.env.NODE_ENV === "development" && (
+            {process.env.NODE_ENV === "development" && !pendingDiet && (
               <button
                 type="button"
                 className="landing-btn landing-btn-primary"
@@ -286,58 +323,85 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               </button>
             )}
 
-            <div
-              className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() =>
-                uploadStatus !== "loading" && fileInputRef.current?.click()
-              }
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (
-                  (e.key === "Enter" || e.key === " ") &&
-                  uploadStatus !== "loading"
-                ) {
-                  e.preventDefault();
-                  fileInputRef.current?.click();
-                }
-              }}
-              aria-label="Carica un file con la tua dieta"
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.txt,image/*,application/pdf,text/plain"
-                onChange={handleFileChange}
-                disabled={uploadStatus === "loading"}
-                className="landing-file-input"
-                id="diet-file"
-                aria-hidden
-              />
-              {uploadStatus === "loading" ? (
-                <p className="landing-dropzone-text">
-                  Stiamo generando il tuo menu del giorno...
+            {pendingDiet ? (
+              <div className="landing-confirm" role="region" aria-label="Conferma dieta">
+                <p className="landing-confirm-title">
+                  Abbiamo trovato {pendingDiet.dailyMenus.length} giorn{pendingDiet.dailyMenus.length === 1 ? "o" : "i"} di menu
                 </p>
-              ) : (
-                <>
-                  <IconFileUpload
-                    size={40}
-                    className="landing-dropzone-icon"
-                    stroke={1.5}
-                  />
-                  <p className="landing-dropzone-title">
-                    Carica il file della tua dieta
+                <p className="landing-confirm-hint">
+                  Controlla che i dati estratti siano corretti. Se sì, conferma per usare questa dieta nell’app.
+                </p>
+                <div className="landing-confirm-actions">
+                  <button
+                    type="button"
+                    className="landing-btn landing-btn-primary"
+                    onClick={handleConfirmDiet}
+                  >
+                    Conferma e usa questa dieta
+                  </button>
+                  <button
+                    type="button"
+                    className="landing-btn landing-btn-secondary"
+                    onClick={handleCancelDiet}
+                  >
+                    Annulla
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() =>
+                  uploadStatus !== "loading" && fileInputRef.current?.click()
+                }
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (
+                    (e.key === "Enter" || e.key === " ") &&
+                    uploadStatus !== "loading"
+                  ) {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+                aria-label="Carica un file con la tua dieta"
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPT_UPLOAD}
+                  onChange={handleFileChange}
+                  disabled={uploadStatus === "loading"}
+                  className="landing-file-input"
+                  id="diet-file"
+                  aria-hidden
+                />
+                {uploadStatus === "loading" ? (
+                  <p className="landing-dropzone-text">
+                    Stiamo generando il tuo menu del giorno...
                   </p>
-                  <p className="landing-dropzone-hint">
-                    Trascinalo qui oppure seleziona un file dal tuo dispositivo.
-                    Puoi caricare file PDF, TXT o immagini nitide della dieta.
-                  </p>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <IconFileUpload
+                      size={40}
+                      className="landing-dropzone-icon"
+                      stroke={1.5}
+                    />
+                    <p className="landing-dropzone-title">
+                      Carica il file della tua dieta
+                    </p>
+                    <p className="landing-dropzone-hint">
+                      Trascinalo qui oppure seleziona un file dal tuo dispositivo.
+                      Puoi caricare file PDF, TXT o immagini (max {MAX_FILE_SIZE_MB} MB).
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
 
             {error && (
               <p className="landing-error" role="alert">

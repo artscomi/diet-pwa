@@ -83,7 +83,6 @@ const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 export default function Landing({ onDietLoaded }: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pendingDiet, setPendingDiet] = useState<UserDiet | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [bgImages, setBgImages] = useState<string[]>(LANDING_BG_FALLBACK);
   const [bgIndex, setBgIndex] = useState(0);
@@ -156,7 +155,6 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const processFile = useCallback(
     async (file: File) => {
       setError(null);
-      setPendingDiet(null);
 
       if (!isAllowedMime(file.type)) {
         setError(
@@ -223,7 +221,9 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           ...(json.data.dietData && { dietData: json.data.dietData }),
         };
         setUploadStatus(null);
-        setPendingDiet(toSave);
+        clearSavedDailyMenus();
+        saveUserDiet(toSave);
+        onDietLoaded(toSave);
         if (fileInputRef.current) fileInputRef.current.value = "";
       } catch (err) {
         setUploadStatus(null);
@@ -268,18 +268,6 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     }
   };
 
-  const handleConfirmDiet = () => {
-    if (!pendingDiet) return;
-    clearSavedDailyMenus();
-    saveUserDiet(pendingDiet);
-    onDietLoaded(pendingDiet);
-    setPendingDiet(null);
-  };
-
-  const handleCancelDiet = () => {
-    setPendingDiet(null);
-  };
-
   return (
     <div className="landing">
       <div className="landing-hero">
@@ -312,7 +300,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           </header>
 
           <main className="landing-main">
-            {process.env.NODE_ENV === "development" && !pendingDiet && (
+            {process.env.NODE_ENV === "development" && (
               <button
                 type="button"
                 className="landing-btn landing-btn-primary"
@@ -323,33 +311,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               </button>
             )}
 
-            {pendingDiet ? (
-              <div className="landing-confirm" role="region" aria-label="Conferma dieta">
-                <p className="landing-confirm-title">
-                  Abbiamo trovato {pendingDiet.dailyMenus.length} giorn{pendingDiet.dailyMenus.length === 1 ? "o" : "i"} di menu
-                </p>
-                <p className="landing-confirm-hint">
-                  Controlla che i dati estratti siano corretti. Se sì, conferma per usare questa dieta nell’app.
-                </p>
-                <div className="landing-confirm-actions">
-                  <button
-                    type="button"
-                    className="landing-btn landing-btn-primary"
-                    onClick={handleConfirmDiet}
-                  >
-                    Conferma e usa questa dieta
-                  </button>
-                  <button
-                    type="button"
-                    className="landing-btn landing-btn-secondary"
-                    onClick={handleCancelDiet}
-                  >
-                    Annulla
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div
+            <div
                 className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -369,8 +331,8 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                   }
                 }}
                 aria-label="Carica un file con la tua dieta"
-              >
-                <input
+            >
+              <input
                   ref={fileInputRef}
                   type="file"
                   accept={ACCEPT_UPLOAD}
@@ -400,8 +362,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                     </p>
                   </>
                 )}
-              </div>
-            )}
+            </div>
 
             {error && (
               <p className="landing-error" role="alert">

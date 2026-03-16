@@ -310,7 +310,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="*/*"
+                accept=".pdf,.txt,application/pdf,text/plain"
                 onChange={handleFileChange}
                 disabled={uploadStatus === "loading"}
                 className="landing-file-input"
@@ -332,7 +332,8 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                     Carica il file della tua dieta
                   </p>
                   <p className="landing-dropzone-hint">
-                    Trascinalo qui oppure seleziona un file dal tuo dispositivo
+                    Trascinalo qui oppure seleziona un file dal tuo dispositivo.
+                    Puoi caricare solo file PDF o TXT.
                   </p>
                 </>
               )}

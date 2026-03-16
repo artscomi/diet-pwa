@@ -151,7 +151,35 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, data: result })
   } catch (err) {
     console.error('parse-diet error:', err)
-    const message = err instanceof Error ? err.message : "Errore durante l'analisi del file"
+
+    let message: string
+    if (
+      err instanceof SyntaxError ||
+      (err instanceof Error && /Unexpected token/.test(err.message))
+    ) {
+      message =
+        'Non riesco a leggere questo file come dieta. Carica un PDF o un TXT con il testo della tua dieta.'
+    } else if (err instanceof OpenAI.APIError) {
+      if (err.status === 401 || err.status === 403) {
+        message =
+          'C’è un problema con la configurazione del servizio di analisi. Riprova più tardi.'
+      } else if (err.status === 429) {
+        message =
+          'Il servizio di analisi ha ricevuto troppe richieste in questo momento. Riprova tra qualche minuto.'
+      } else if (err.status && err.status >= 500) {
+        message =
+          'Il servizio esterno che elabora la dieta sta avendo dei problemi. Riprova più tardi.'
+      } else {
+        message =
+          'Si è verificato un errore durante la richiesta al servizio di analisi della dieta. Riprova più tardi.'
+      }
+    } else {
+      message =
+        err instanceof Error
+          ? 'Si è verificato un errore imprevisto durante l’analisi del file. Riprova più tardi.'
+          : "Errore durante l'analisi del file"
+    }
+
     return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }

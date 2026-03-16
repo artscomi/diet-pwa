@@ -35,6 +35,13 @@
   gap: 0.6rem;
 }
 
+.menu-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .menu-header__date {
   margin-right: auto;
   font-size: 0.875rem;
@@ -121,6 +128,16 @@
   background: rgba(16, 185, 129, 0.1);
 }
 
+.menu-action-btn.preview {
+  background: rgba(0, 0, 0, 0.03);
+  color: #64748b;
+}
+
+.menu-action-btn.preview:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #334155;
+}
+
 .daily-menu-card.editing {
   border: 2px solid #10b981;
   box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
@@ -178,6 +195,107 @@
 .menu-section strong {
   font-weight: 600;
   color: #1a1a1a;
+}
+
+/* File caricato (anteprima in modale) */
+.menu-file-preview {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.menu-file-preview-title {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.02em;
+}
+
+.menu-file-preview-media {
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.menu-file-preview-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: contain;
+}
+
+.menu-file-preview-iframe {
+  width: 100%;
+  min-height: 320px;
+  border: none;
+  display: block;
+}
+
+.menu-file-preview-text {
+  margin: 0.5rem 0 0;
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #334155;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.menu-file-preview-fallback {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* Anteprima in modale: più spazio per iframe/testo/immagine */
+.menu-file-preview--modal .menu-file-preview-iframe {
+  min-height: 60vh;
+}
+
+.menu-file-preview--modal .menu-file-preview-text {
+  max-height: 55vh;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.menu-file-preview--modal .menu-file-preview-img {
+  max-height: 70vh;
+}
+
+@media (min-width: 768px) {
+  .menu-file-preview--modal .menu-file-preview-title {
+    font-size: 1.0625rem;
+  }
+
+  .menu-file-preview--modal .menu-file-preview-iframe {
+    min-height: 72vh;
+  }
+
+  .menu-file-preview--modal .menu-file-preview-text {
+    max-height: 68vh;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 1rem 1.25rem;
+  }
+
+  .menu-file-preview--modal .menu-file-preview-img {
+    max-height: 75vh;
+  }
+
+  .menu-file-preview--modal .menu-file-preview-fallback {
+    font-size: 1rem;
+  }
 }
 
 /* Mobile optimizations */

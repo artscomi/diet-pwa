@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { dietData as defaultDietData } from '@/data/dietData'
 import IngredientSelector from './IngredientSelector'
-import { SunIcon, UtensilsIcon, MoonIcon, PeanutIcon, DropletIcon, SaveIcon, TimesIcon, EditIcon } from './Icons'
-import type { DailyMenu, DietData, FoodItem } from '@/types/diet'
+import { SunIcon, UtensilsIcon, MoonIcon, PeanutIcon, DropletIcon, SaveIcon, TimesIcon, EditIcon, ListIcon } from './Icons'
+import Modal from './Modal'
+import type { DailyMenu, DietData, FoodItem, UploadedFileInfo } from '@/types/diet'
 import './DailyMenu.css'
 
 interface DailyMenuProps {
@@ -13,6 +15,8 @@ interface DailyMenuProps {
   onSave?: (menu: DailyMenu) => void
   onCancel?: () => void
   dietData?: DietData
+  /** Anteprima del file caricato (solo se dieta da upload) */
+  uploadedFile?: UploadedFileInfo | null
 }
 
 function formatFood(food: FoodItem | FoodItem[] | null | undefined): string | null {
@@ -23,10 +27,11 @@ function formatFood(food: FoodItem | FoodItem[] | null | undefined): string | nu
   return `${food.name} (${food.quantity} ${food.unit})`
 }
 
-export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel, dietData: dietDataProp }: DailyMenuProps) {
+export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel, dietData: dietDataProp, uploadedFile }: DailyMenuProps) {
   const dietData = dietDataProp ?? defaultDietData
   const [isEditing, setIsEditing] = useState(false)
   const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu)
+  const [previewModalOpen, setPreviewModalOpen] = useState(false)
 
   const handleSave = () => {
     if (onSave) {
@@ -206,19 +211,71 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
             />
           </div>
 
-          <div className="menu-section">
-            <h4>
-              <DropletIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
-              Durante la giornata
-            </h4>
-            <IngredientSelector
-              label="Olio"
-              options={dietData.olio}
-              selected={editedMenu.olio}
-              onSelect={(selected) => setEditedMenu({ ...editedMenu, olio: selected })}
-            />
-          </div>
+          {dietData.olio && dietData.olio.length > 0 && (
+            <div className="menu-section">
+              <h4>
+                <DropletIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
+                Durante la giornata
+              </h4>
+              <IngredientSelector
+                label="Olio"
+                options={dietData.olio}
+                selected={editedMenu.olio}
+                onSelect={(selected) => setEditedMenu({ ...editedMenu, olio: selected })}
+              />
+            </div>
+          )}
         </div>
+      </div>
+    )
+  }
+
+  const renderFilePreviewContent = () => {
+    if (!uploadedFile) return null
+    const { name, mimeType, previewDataUrl } = uploadedFile
+    return (
+      <div className="menu-file-preview menu-file-preview--modal" role="region" aria-label="File caricato">
+        <p className="menu-file-preview-title">{name}</p>
+        {previewDataUrl ? (
+          <>
+            {mimeType.startsWith('image/') && (
+              <div className="menu-file-preview-media">
+                <Image
+                  src={previewDataUrl}
+                  alt={`Anteprima ${name}`}
+                  className="menu-file-preview-img"
+                  width={600}
+                  height={400}
+                  unoptimized
+                  style={{ width: 'auto', height: 'auto', objectFit: 'contain' }}
+                />
+              </div>
+            )}
+            {mimeType === 'application/pdf' && (
+              <div className="menu-file-preview-media">
+                <iframe src={previewDataUrl} title={`Anteprima ${name}`} className="menu-file-preview-iframe" />
+              </div>
+            )}
+            {mimeType === 'text/plain' && (() => {
+              try {
+                const base64 = previewDataUrl.split(',')[1]
+                const text = base64 ? atob(base64) : ''
+                return (
+                  <pre className="menu-file-preview-text">{text}</pre>
+                )
+              } catch {
+                return <p className="menu-file-preview-fallback">Anteprima testo non disponibile.</p>
+              }
+            })()}
+            {!mimeType.startsWith('image/') && mimeType !== 'application/pdf' && mimeType !== 'text/plain' && previewDataUrl && (
+              <div className="menu-file-preview-media">
+                <iframe src={previewDataUrl} title={`Anteprima ${name}`} className="menu-file-preview-iframe" />
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="menu-file-preview-fallback">Anteprima non disponibile per file grandi.</p>
+        )}
       </div>
     )
   }
@@ -227,11 +284,36 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
     <div className="daily-menu-card">
       <div className="menu-header">
         {displayDate && <span className="menu-header__date">{displayDate}</span>}
-        <button className="menu-action-btn edit" onClick={() => setIsEditing(true)}>
-          <EditIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
-          Modifica
-        </button>
+        <div className="menu-header-actions">
+          {uploadedFile && (
+            <button
+              type="button"
+              className="menu-action-btn preview"
+              onClick={() => setPreviewModalOpen(true)}
+              aria-label="Apri file caricato"
+            >
+              <ListIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
+              File caricato
+            </button>
+          )}
+          <button className="menu-action-btn edit" onClick={() => setIsEditing(true)}>
+            <EditIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
+            Modifica
+          </button>
+        </div>
       </div>
+
+      {previewModalOpen && uploadedFile && (
+        <Modal
+          title="File caricato"
+          onClose={() => setPreviewModalOpen(false)}
+          buttonLabel="Chiudi"
+          wide
+          documentWide={uploadedFile.mimeType === 'application/pdf' || uploadedFile.mimeType === 'text/plain'}
+        >
+          {renderFilePreviewContent()}
+        </Modal>
+      )}
 
       <div className="menu-content">
         <div className="menu-section">
@@ -320,13 +402,14 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
           )}
         </div>
 
-        {menu.olio && (
+        {(menu.duranteLaGiornata || menu.olio) && (
           <div className="menu-section">
             <h4>
               <DropletIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Durante la giornata
             </h4>
-            <p>{formatFood(menu.olio)}</p>
+            {menu.duranteLaGiornata && <p className="menu-notes">{menu.duranteLaGiornata}</p>}
+            {menu.olio && <p>{formatFood(menu.olio)}</p>}
           </div>
         )}
       </div>

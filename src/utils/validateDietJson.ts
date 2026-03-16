@@ -40,7 +40,8 @@ function validateMenu(menu: unknown): boolean {
     if (c.verdure && !isFoodItem(c.verdure)) return false
     if (c.proteine && !isFoodItem(c.proteine)) return false
   }
-  if (m.olio && !isFoodItem(m.olio)) return false
+  if (m.olio != null && !isFoodItem(m.olio)) return false
+  if (m.duranteLaGiornata != null && typeof m.duranteLaGiornata !== 'string') return false
   return true
 }
 

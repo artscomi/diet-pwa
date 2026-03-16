@@ -7,7 +7,7 @@ import { dailyMenus } from "@/data/dailyMenus";
 import InstallAppCTA from "./InstallAppCTA";
 import Footer from "./Footer";
 import { validateDietJson } from "@/utils/validateDietJson";
-import type { UserDiet } from "@/types/diet";
+import type { UserDiet, UploadedFileInfo } from "@/types/diet";
 import {
   isAllowedMime,
   MAX_UPLOAD_BYTES,
@@ -79,6 +79,18 @@ interface LandingProps {
 const FOOD_QUERIES = ["healthy food", "salad", "diet", "hipster diet"];
 
 const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
+
+/** Limite per salvare l’anteprima in localStorage (500 KB) */
+const MAX_PREVIEW_BYTES = 500 * 1024;
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function Landing({ onDietLoaded }: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -216,9 +228,22 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           return;
         }
 
+        let uploadedFile: UploadedFileInfo | undefined;
+        if (file.size <= MAX_PREVIEW_BYTES) {
+          try {
+            const previewDataUrl = await readFileAsDataUrl(file);
+            uploadedFile = { name: file.name, mimeType: file.type, previewDataUrl };
+          } catch {
+            uploadedFile = { name: file.name, mimeType: file.type };
+          }
+        } else {
+          uploadedFile = { name: file.name, mimeType: file.type };
+        }
+
         const toSave: UserDiet = {
           dailyMenus: json.data.dailyMenus,
           ...(json.data.dietData && { dietData: json.data.dietData }),
+          ...(uploadedFile && { uploadedFile }),
         };
         setUploadStatus(null);
         clearSavedDailyMenus();

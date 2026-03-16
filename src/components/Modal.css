@@ -58,7 +58,6 @@
 @media (min-width: 768px) {
   .modal-card {
     flex: none;
-    width: auto;
     max-width: 420px;
     max-height: min(90vh, 640px);
     min-height: 0;
@@ -69,8 +68,13 @@
   }
 
   .modal-card--wide {
-    max-width: min(560px, 92vw);
-    max-height: min(90vh, 520px);
+    max-width: min(960px, 95vw);
+    max-height: min(90vh, 860px);
+  }
+
+  .modal-card--document {
+    max-width: min(1200px, 96vw);
+    max-height: min(90vh, 860px);
   }
 }
 

@@ -20,6 +20,8 @@ interface ModalProps {
   onPrimaryClick?: () => void
   /** Variante larga (es. per step affiancati in modale disinstallazione) */
   wide?: boolean
+  /** Se true, modale ancora più larga (es. per documenti PDF/testo) */
+  documentWide?: boolean
   /** Se true, mostra solo il pulsante primary (allineato a destra), nessun secondario */
   singlePrimaryButton?: boolean
 }
@@ -33,6 +35,7 @@ export default function Modal({
   primaryLabel,
   onPrimaryClick,
   wide = false,
+  documentWide = false,
   singlePrimaryButton = false,
 }: ModalProps) {
   const hasPrimary = primaryLabel != null && onPrimaryClick != null
@@ -60,7 +63,7 @@ export default function Modal({
         aria-hidden
       />
       <div
-        className={`modal-card${wide ? ' modal-card--wide' : ''}`}
+        className={`modal-card${wide ? ' modal-card--wide' : ''}${documentWide ? ' modal-card--document' : ''}`}
         role={role}
         aria-modal="true"
         aria-labelledby="modal-title"

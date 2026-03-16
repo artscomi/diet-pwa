@@ -84,7 +84,7 @@
 }
 
 .landing-subtitle {
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-size: clamp(0.97rem, 2.5vw, 1.125rem);
   color: #475569;
   line-height: 1.65;
   max-width: 440px;
@@ -165,7 +165,11 @@
   align-items: center;
   justify-content: center;
   touch-action: manipulation;
-  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Montserrat",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   outline: none;
   margin: 0 auto;
 }

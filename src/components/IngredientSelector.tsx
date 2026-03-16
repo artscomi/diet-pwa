@@ -10,6 +10,8 @@ interface IngredientSelectorProps {
   selected: FoodItem | null | undefined
   onSelect: (option: FoodItem) => void
   placeholder?: string
+  /** Azione (es. icona modifica) mostrata dentro il pulsante accanto al testo selezionato */
+  trailingAction?: React.ReactNode
 }
 
 export default function IngredientSelector({
@@ -18,6 +20,7 @@ export default function IngredientSelector({
   selected,
   onSelect,
   placeholder = 'Seleziona...',
+  trailingAction,
 }: IngredientSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -49,11 +52,12 @@ export default function IngredientSelector({
     <div className="ingredient-selector" ref={dropdownRef}>
       <label className="ingredient-label">{label}</label>
       <button
-        className={`ingredient-selector-button ${isOpen ? 'open' : ''}`}
+        className={`ingredient-selector-button ${isOpen ? 'open' : ''} ${trailingAction ? 'ingredient-selector-button--has-action' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         type="button"
       >
         <span className="ingredient-selector-text">{getDisplayText()}</span>
+        {trailingAction && <span className="ingredient-selector-trailing">{trailingAction}</span>}
         <span className="ingredient-selector-arrow">{isOpen ? '▲' : '▼'}</span>
       </button>
 

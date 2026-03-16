@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { dietData as defaultDietData } from '@/data/dietData'
 import IngredientSelector from './IngredientSelector'
+import EditableIngredientSelector from './EditableIngredientSelector'
 import { SunIcon, UtensilsIcon, MoonIcon, PeanutIcon, DropletIcon, SaveIcon, TimesIcon, EditIcon, ListIcon } from './Icons'
 import Modal from './Modal'
 import type { DailyMenu, DietData, FoodItem, UploadedFileInfo } from '@/types/diet'
@@ -70,7 +71,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
               <SunIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Colazione
             </h4>
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Carboidrati"
               options={dietData.colazione.carboidrati}
               selected={editedMenu.colazione?.carboidrati}
@@ -81,7 +82,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 })
               }
             />
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Frutta"
               options={dietData.colazione.frutta}
               selected={editedMenu.colazione?.frutta}
@@ -92,7 +93,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 })
               }
             />
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Proteine"
               options={dietData.colazione.proteine}
               selected={editedMenu.colazione?.proteine}
@@ -110,7 +111,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
               <PeanutIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Spuntino Mattutino
             </h4>
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Seleziona"
               options={dietData.spuntinoMattutino}
               selected={editedMenu.spuntinoMattutino}
@@ -123,7 +124,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
               <UtensilsIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Pranzo
             </h4>
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Carboidrati"
               options={dietData.pranzo.carboidrati}
               selected={editedMenu.pranzo?.carboidrati}
@@ -134,7 +135,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 })
               }
             />
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Proteine"
               options={dietData.pranzo.proteine}
               selected={editedMenu.pranzo?.proteine}
@@ -145,7 +146,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 })
               }
             />
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Verdure"
               options={dietData.pranzo.verdure}
               selected={editedMenu.pranzo?.verdure}
@@ -163,7 +164,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
               <PeanutIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Merenda
             </h4>
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Seleziona"
               options={dietData.merenda}
               selected={editedMenu.merenda}
@@ -176,7 +177,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
               <MoonIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Cena
             </h4>
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Pane"
               options={dietData.cena.pane}
               selected={editedMenu.cena?.pane}
@@ -187,7 +188,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 })
               }
             />
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Verdure"
               options={dietData.cena.verdure}
               selected={editedMenu.cena?.verdure}
@@ -198,7 +199,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 })
               }
             />
-            <IngredientSelector
+            <EditableIngredientSelector
               label="Proteine"
               options={dietData.cena.proteine}
               selected={editedMenu.cena?.proteine}
@@ -217,7 +218,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
                 <DropletIcon size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
                 Durante la giornata
               </h4>
-              <IngredientSelector
+              <EditableIngredientSelector
                 label="Olio"
                 options={dietData.olio}
                 selected={editedMenu.olio}

@@ -23,7 +23,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[0], // Verdure fresche (media) 200g
       proteine: dietData.cena.proteine[0] // Pollo - petto 170g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-2',
@@ -45,7 +45,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[2], // Pomodori da insalata 200g
       proteine: dietData.cena.proteine[1] // Sogliola 200g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-3',
@@ -67,7 +67,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[4], // Spinaci 100g
       proteine: dietData.cena.proteine[2] // Pollo coscia - senza pelle 160g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-4',
@@ -89,7 +89,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[7], // Zucchini 300g
       proteine: dietData.cena.proteine[10] // Merluzzo o nasello surgelato - filetti 250g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-5',
@@ -111,7 +111,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[9], // Cavolfiore 200g
       proteine: dietData.cena.proteine[3] // Tacchino petto 130g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-6',
@@ -133,7 +133,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[12], // Bieta 200g
       proteine: dietData.cena.proteine[4] // Anatra domestica 110g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-7',
@@ -155,7 +155,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[13], // Finocchi 300g
       proteine: dietData.cena.proteine[5] // Tacchino - fesa 160g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-8',
@@ -177,7 +177,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[14], // Peperoni 200g
       proteine: dietData.cena.proteine[6] // Vitello - filetto 160g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-9',
@@ -199,7 +199,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[15], // Sedano 200g
       proteine: dietData.cena.proteine[7] // Vitellone tagli magri 160g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-10',
@@ -221,7 +221,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[16], // Cetrioli 300g
       proteine: dietData.cena.proteine[8] // Vitellone - fesa 170g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-11',
@@ -243,7 +243,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[17], // Cipolle 200g
       proteine: dietData.cena.proteine[9] // Coniglio magro 170g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-12',
@@ -265,7 +265,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[18], // Asparagi di serra 200g
       proteine: dietData.cena.proteine[10] // Merluzzo o nasello surgelato - filetti 250g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-13',
@@ -287,7 +287,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[19], // Carciofi 200g
       proteine: dietData.cena.proteine[11] // Tonno sott'olio - sgocciolato 90g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   },
   {
     id: 'menu-14',
@@ -309,7 +309,7 @@ export const dailyMenus: DailyMenu[] = [
       verdure: dietData.cena.verdure[3], // Melanzane 200g
       proteine: dietData.cena.proteine[12] // Pesce persico 230g
     },
-    olio: dietData.olio[0] // Olio di oliva extra vergine 20g
+    olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
   }
 ]
 

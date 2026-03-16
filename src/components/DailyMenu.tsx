@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { dietData as defaultDietData } from '@/data/dietData'
 import IngredientSelector from './IngredientSelector'
@@ -33,6 +33,10 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
   const [isEditing, setIsEditing] = useState(false)
   const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu)
   const [previewModalOpen, setPreviewModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isEditing) setEditedMenu(menu)
+  }, [menu, isEditing])
 
   const handleSave = () => {
     if (onSave) {

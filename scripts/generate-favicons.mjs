@@ -24,53 +24,28 @@ const SIZES = [
 ];
 
 const svg = readFileSync(svgPath);
-
-const WHITE_BG = "#ffffff";
-/** Padding interno (0.1 = 10% per lato) così l'icona non viene tagliata dai bordi arrotondati */
-const ICON_PADDING = 0.1;
-/** Su iOS (Add to Home) Apple applica un ritaglio più aggressivo: più padding per apple-icon */
-const ICON_PADDING_APPLE = 0.14;
-/** Scala il logo leggermente dentro l'area interna per non tagliare il contorno (stroke) */
-const LOGO_SAFE_SCALE = 0.92;
+const SUPERSAMPLE = 4096;
 
 async function generate() {
+  const masterBuf = await sharp(svg, { density: 600 })
+    .resize(SUPERSAMPLE, SUPERSAMPLE, { fit: "cover", kernel: "lanczos3" })
+    .png()
+    .toBuffer();
+
   for (const { name, size } of SIZES) {
     const outPath = join(publicDir, name);
-    const padding = name === "apple-icon-180x180.png" ? ICON_PADDING_APPLE : ICON_PADDING;
-    const innerSize = Math.round(size * (1 - 2 * padding));
-    const offset = Math.round(size * padding);
-    const logoSize = Math.round(innerSize * LOGO_SAFE_SCALE);
-    const logoOffset = Math.round((innerSize - logoSize) / 2);
-    const logoBuf = await sharp(svg)
-      .resize(logoSize, logoSize, { fit: "contain", background: WHITE_BG })
-      .flatten({ background: WHITE_BG })
-      .png()
-      .toBuffer();
-    await sharp({
-      create: { width: size, height: size, background: WHITE_BG, channels: 3 },
-    })
-      .composite([{ input: logoBuf, left: offset + logoOffset, top: offset + logoOffset }])
-      .png()
+    await sharp(masterBuf)
+      .resize(size, size, { fit: "cover", kernel: "lanczos3" })
+      .sharpen({ sigma: size <= 32 ? 1.2 : 0.8 })
+      .png({ quality: 100, compressionLevel: 9 })
       .toFile(outPath);
     console.log("Generated:", name);
   }
-  // favicon.ico: come favicon 32x32
   const icoPath = join(publicDir, "favicon.ico");
-  const icoSize = 32;
-  const icoInnerSize = Math.round(icoSize * (1 - 2 * ICON_PADDING));
-  const icoOffset = Math.round(icoSize * ICON_PADDING);
-  const icoLogoSize = Math.round(icoInnerSize * LOGO_SAFE_SCALE);
-  const icoLogoOffset = Math.round((icoInnerSize - icoLogoSize) / 2);
-  const logoBufIco = await sharp(svg)
-    .resize(icoLogoSize, icoLogoSize, { fit: "contain", background: WHITE_BG })
-    .flatten({ background: WHITE_BG })
-    .png()
-    .toBuffer();
-  await sharp({
-    create: { width: icoSize, height: icoSize, background: WHITE_BG, channels: 3 },
-  })
-    .composite([{ input: logoBufIco, left: icoOffset + icoLogoOffset, top: icoOffset + icoLogoOffset }])
-    .png()
+  await sharp(masterBuf)
+    .resize(32, 32, { fit: "cover", kernel: "lanczos3" })
+    .sharpen({ sigma: 1.2 })
+    .png({ quality: 100, compressionLevel: 9 })
     .toFile(icoPath);
   console.log("Generated: favicon.ico (32x32 PNG)");
 }

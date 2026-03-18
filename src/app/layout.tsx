@@ -1,6 +1,7 @@
 import "./globals.css";
 import CookieBanner from "@/components/CookieBanner";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = {
   title: "My menoo - Il tuo menu del giorno",
@@ -48,6 +49,7 @@ export default function RootLayout({
         {children}
         <CookieBanner />
         <AnalyticsScripts />
+        <Analytics />
       </body>
     </html>
   );

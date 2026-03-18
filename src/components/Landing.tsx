@@ -400,15 +400,6 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                 )}
             </div>
 
-            <section className="landing-trust" aria-label="Info privacy e processo">
-              <p className="landing-trust__title">Privacy</p>
-              <p className="landing-trust__links">
-                Info su file, conservazione e AI:{" "}
-                <Link href="/privacy">Privacy Policy</Link> ·{" "}
-                <Link href="/termini">Termini</Link>
-              </p>
-            </section>
-
             {error && (
               <p className="landing-error" role="alert">
                 {error}

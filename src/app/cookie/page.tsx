@@ -39,9 +39,6 @@ export default function CookiePolicyPage() {
             )}
           </ul>
         )}
-        <p className="legal-muted">
-          Nota: gli script vengono caricati solo in produzione (non su localhost).
-        </p>
       </section>
 
       <section className="legal-section">

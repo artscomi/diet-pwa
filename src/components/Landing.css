@@ -421,29 +421,6 @@
   margin: 0 auto;
 }
 
-.landing-trust {
-  width: 100%;
-  max-width: 400px;
-  padding: 1rem 1rem;
-  border-radius: 16px;
-  background: rgba(2, 132, 199, 0.06);
-  border: 1px solid rgba(2, 132, 199, 0.16);
-  color: #0f172a;
-}
-
-.landing-trust__title {
-  margin: 0 0 0.5rem 0;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #0f172a;
-}
-
-.landing-trust__links {
-  margin: 0.25rem 0 0 0;
-  font-size: 0.875rem;
-  color: #475569;
-}
-
 .landing-install-wrap {
   margin-top: 1.5rem;
   width: 100%;

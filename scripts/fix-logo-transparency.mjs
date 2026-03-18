@@ -1,5 +1,5 @@
 /**
- * Rende trasparenti i pixel bianchi e grigi chiari (scacchiera) in menoo-logo.png
+ * Rende trasparenti i pixel bianchi e grigi chiari (scacchiera) in pocketdiet-logo.png
  */
 import sharp from "sharp";
 import { readFileSync, writeFileSync } from "fs";
@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const inputPath = join(root, "public", "menoo-logo.png");
+const inputPath = join(root, "public", "pocketdiet-logo.png");
 const outputPath = inputPath;
 
 const { data, info } = await sharp(inputPath)
@@ -37,4 +37,4 @@ await sharp(data, { raw: { width, height, channels } })
   .png()
   .toFile(outputPath);
 
-console.log("OK: public/menoo-logo.png aggiornato con sfondo trasparente.");
+console.log("OK: public/pocketdiet-logo.png aggiornato con sfondo trasparente.");

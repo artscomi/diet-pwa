@@ -1,5 +1,5 @@
 /**
- * Vettorializza menoo-logo.png in SVG con potrace
+ * Vettorializza pocketdiet-logo.png in SVG con potrace
  */
 import potrace from "potrace";
 import { writeFileSync } from "fs";
@@ -7,8 +7,8 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const inputPath = join(__dirname, "..", "public", "menoo-logo.png");
-const outputPath = join(__dirname, "..", "public", "menoo-logo.svg");
+const inputPath = join(__dirname, "..", "public", "pocketdiet-logo.png");
+const outputPath = join(__dirname, "..", "public", "pocketdiet-logo.svg");
 
 const params = {
   threshold: 200,
@@ -28,5 +28,5 @@ potrace.trace(inputPath, params, (err, svg) => {
     out = svgClean.replace(/<rect[^>]*width="100%"[^>]*\/?>/, (m) => m.replace(/fill="[^"]*"/, 'fill="none"'));
   }
   writeFileSync(outputPath, out, "utf8");
-  console.log("OK: public/menoo-logo.svg creato.");
+  console.log("OK: public/pocketdiet-logo.svg creato.");
 });

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy Policy — My menoo",
+  title: "Privacy Policy — PocketDiet",
   description: "Informativa privacy e trattamento dei dati.",
 };
 

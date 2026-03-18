@@ -313,21 +313,20 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         />
         <div className="landing-panel">
           <header className="landing-header">
-            <h1>
-              <span className="site-logo-wrap">
-                <Image
-                  src="/menoo-logo.svg"
-                  alt="My menoo"
-                  width={150}
-                  height={150}
-                  className="site-logo"
-                  priority
-                />
-              </span>
+            <h1 className="landing-logo">
+              <Image
+                src="/favicon-icon.svg"
+                alt="PocketDiet"
+                width={80}
+                height={80}
+                className="site-icon--landing"
+                priority
+              />
+              <span className="landing-logo__text">PocketDiet</span>
             </h1>
             <p className="landing-subtitle">
-              La dieta del nutrizionista, sempre con te. Caricala qui e consulta
-              i tuoi pasti del giorno, direttamente dal telefono.
+              La dieta del tuo nutrizionista, sempre con te. Caricala qui e
+              consulta i tuoi pasti del giorno, direttamente dal telefono.
             </p>
           </header>
 

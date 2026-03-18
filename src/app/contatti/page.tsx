@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Contatti — My menoo",
+  title: "Contatti — PocketDiet",
   description: "Come contattarci.",
 };
 

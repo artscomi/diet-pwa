@@ -145,16 +145,14 @@ export default function App() {
       <header className="app-header">
         <div className="app-header__inner">
           <h1 className="app-header__logo">
-            <span className="site-logo-wrap">
-              <Image
-                src="/menoo-logo.svg"
-                alt="My menoo"
-                width={140}
-                height={52}
-                className="site-logo site-logo--header"
-                priority
-              />
-            </span>
+            <Image
+              src="/favicon-icon.svg"
+              alt="PocketDiet"
+              width={32}
+              height={32}
+              className="site-icon--header"
+              priority
+            />
           </h1>
           <div className="app-header__meta">
             <InstallAppCTA variant="button" />

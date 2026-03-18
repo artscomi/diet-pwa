@@ -79,7 +79,22 @@
 }
 
 .landing-header h1 {
+  line-height: 1;
   margin-bottom: 1rem;
+}
+
+.landing-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.landing-logo__text {
+  font-family: "Baloo 2", cursive;
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: #10b981;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 

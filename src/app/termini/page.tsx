@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Termini di servizio — My menoo",
+  title: "Termini di servizio — PocketDiet",
   description: "Termini e condizioni d’uso del servizio.",
 };
 
@@ -12,9 +12,9 @@ export default function TermsPage() {
       <p className="legal-updated">Ultimo aggiornamento: 18/03/2026</p>
 
       <section className="legal-section">
-        <h2>Cos’è My menoo</h2>
+        <h2>Cos’è PocketDiet</h2>
         <p>
-          My menoo ti aiuta a trasformare una dieta (documento o immagine) in menu giornalieri
+          PocketDiet ti aiuta a trasformare una dieta (documento o immagine) in menu giornalieri
           consultabili e personalizzabili.
         </p>
       </section>
@@ -40,7 +40,7 @@ export default function TermsPage() {
       <section className="legal-section">
         <h2>Non è un servizio medico</h2>
         <p>
-          My menoo non fornisce consulenza medica e non sostituisce il parere di un professionista.
+          PocketDiet non fornisce consulenza medica e non sostituisce il parere di un professionista.
           Usalo come strumento di organizzazione della dieta già prescritta.
         </p>
       </section>

@@ -1,6 +1,6 @@
 {
-  "name": "My menoo",
-  "short_name": "My menoo",
+  "name": "PocketDiet",
+  "short_name": "PocketDiet",
   "description": "Your daily menu that follows your diet. Upload your file, customize ingredients.",
   "start_url": "/",
   "display": "standalone",

@@ -46,10 +46,43 @@ Se invece il contenuto È una dieta/menu:
       },
       "olio": { "name": "Olio di oliva extra vergine", "quantity": 20, "unit": "g" }
     }
-  ]
+  ],
+  "dietData": {
+    "colazione": {
+      "carboidrati": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+      "frutta": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+      "proteine": [ { "name": "...", "quantity": numero, "unit": "g" } ]
+    },
+    "spuntinoMattutino": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+    "pranzo": {
+      "carboidrati": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+      "proteine": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+      "verdure": [ { "name": "...", "quantity": numero, "unit": "g" } ]
+    },
+    "merenda": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+    "cena": {
+      "pane": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+      "verdure": [ { "name": "...", "quantity": numero, "unit": "g" } ],
+      "proteine": [ { "name": "...", "quantity": numero, "unit": "g" } ]
+    },
+    "olio": [ { "name": "...", "quantity": numero, "unit": "g" } ]
+  }
 }
 
-Per ogni giorno/menu presente nel contenuto dell'utente, crea un elemento in dailyMenus. Copia i nomi degli alimenti e le quantità DAL TESTO (es. "Pasta integrale 70g" -> name: "Pasta integrale", quantity: 70, unit: "g"). Se un pasto non è specificato nel testo, usa un valore ragionevole basato sul contesto. Restituisci SOLO il JSON.`;
+REGOLE PER dailyMenus:
+- Per ogni giorno/menu presente nel contenuto dell'utente, crea un elemento in dailyMenus.
+- Copia i nomi degli alimenti e le quantità DAL TESTO (es. "Pasta integrale 70g" -> name: "Pasta integrale", quantity: 70, unit: "g").
+- Se un pasto non è specificato nel testo, usa un valore ragionevole basato sul contesto.
+
+REGOLE PER dietData (IMPORTANTE):
+- dietData contiene TUTTE le alternative possibili per ogni categoria, raccolte da TUTTO il documento.
+- Includi ogni alimento unico menzionato nel documento per quella categoria (es. se il documento elenca "pollo OPPURE tacchino OPPURE pesce", mettili tutti come alternative in proteine).
+- Includi anche gli alimenti usati nei dailyMenus.
+- Se il documento contiene tabelle di sostituzione o liste di alternative, estraile tutte.
+- Ogni array deve avere almeno 1 elemento. Se il documento menziona un solo alimento per una categoria, metti solo quello.
+- NON inventare alternative non presenti nel documento.
+
+Restituisci SOLO il JSON.`;
 
 interface ParseResult {
   dailyMenus?: DailyMenu[];
@@ -217,7 +250,7 @@ export async function POST(request: Request) {
         ],
         // Chiediamo esplicitamente un JSON valido
         response_format: { type: "json_object" },
-        max_tokens: 4096,
+        max_tokens: 8192,
       });
       const content = response.choices[0]?.message?.content;
       if (!content) {
@@ -255,7 +288,7 @@ export async function POST(request: Request) {
           { role: "user", content: contentToSend },
         ],
         response_format: { type: "json_object" },
-        max_tokens: 4096,
+        max_tokens: 8192,
       });
       const content = response.choices[0]?.message?.content;
       if (!content) throw new Error("Risposta OpenAI vuota");

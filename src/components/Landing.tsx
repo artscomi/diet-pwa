@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { IconFileUpload } from "@tabler/icons-react";
 import { dailyMenus } from "@/data/dailyMenus";
 import InstallAppCTA from "./InstallAppCTA";
@@ -82,6 +83,8 @@ const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 
 /** Limite per salvare l’anteprima in localStorage (500 KB) */
 const MAX_PREVIEW_BYTES = 500 * 1024;
+
+const STEP_LABELS = ["Upload", "Analisi", "Generazione menu"] as const;
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -325,16 +328,14 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           </header>
 
           <main className="landing-main">
-            {process.env.NODE_ENV === "development" && (
-              <button
-                type="button"
-                className="landing-btn landing-btn-primary"
-                onClick={handleUseDefault}
-                disabled={uploadStatus === "loading"}
-              >
-                Usa dieta predefinita
-              </button>
-            )}
+            <button
+              type="button"
+              className="landing-btn landing-btn-secondary"
+              onClick={handleUseDefault}
+              disabled={uploadStatus === "loading"}
+            >
+              Prova demo
+            </button>
 
             <div
                 className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
@@ -368,9 +369,19 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                   aria-hidden
                 />
                 {uploadStatus === "loading" ? (
-                  <p className="landing-dropzone-text">
-                    Stiamo generando il tuo menu del giorno...
-                  </p>
+                  <div className="landing-loading">
+                    <p className="landing-dropzone-text">
+                      Stiamo generando il tuo menu del giorno...
+                    </p>
+                    <ol className="landing-steps" aria-label="Stato elaborazione">
+                      {STEP_LABELS.map((label, idx) => (
+                        <li key={label} className="landing-step landing-step--active">
+                          <span className="landing-step__badge">{idx + 1}</span>
+                          <span className="landing-step__label">{label}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
                 ) : (
                   <>
                     <IconFileUpload
@@ -388,6 +399,15 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                   </>
                 )}
             </div>
+
+            <section className="landing-trust" aria-label="Info privacy e processo">
+              <p className="landing-trust__title">Privacy</p>
+              <p className="landing-trust__links">
+                Info su file, conservazione e AI:{" "}
+                <Link href="/privacy">Privacy Policy</Link> ·{" "}
+                <Link href="/termini">Termini</Link>
+              </p>
+            </section>
 
             {error && (
               <p className="landing-error" role="alert">

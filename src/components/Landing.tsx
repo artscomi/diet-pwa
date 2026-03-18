@@ -326,8 +326,8 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               </span>
             </h1>
             <p className="landing-subtitle">
-              Un menu che rispetta la tua dieta, ogni giorno. Carica il file,
-              personalizza gli ingredienti e hai tutto a portata di mano.
+              La dieta del nutrizionista, sempre con te. Caricala qui e consulta
+              i tuoi pasti del giorno, direttamente dal telefono.
             </p>
           </header>
 
@@ -388,11 +388,10 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                     stroke={1.5}
                   />
                   <p className="landing-dropzone-title">
-                    Carica il file della tua dieta
+                    Carica la dieta del tuo nutrizionista
                   </p>
                   <p className="landing-dropzone-hint">
-                    Trascinalo qui oppure seleziona un file dal tuo dispositivo.
-                    Puoi caricare file PDF, TXT o immagini (max{" "}
+                    PDF, foto o testo del piano alimentare (max{" "}
                     {MAX_FILE_SIZE_MB} MB).
                   </p>
                 </>

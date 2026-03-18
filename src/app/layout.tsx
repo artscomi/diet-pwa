@@ -3,9 +3,9 @@ import CookieBanner from "@/components/CookieBanner";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
 
 export const metadata = {
-  title: "My menoo - Il tuo menu del giorno",
+  title: "My menoo — La dieta del nutrizionista, sempre in tasca",
   description:
-    "Un menu che rispetta la tua dieta, ogni giorno. Carica il file, personalizza gli ingredienti. Installa l’app per averla sempre a portata di mano.",
+    "Carica la dieta del tuo nutrizionista e consulta i tuoi pasti del giorno, direttamente dal telefono. Personalizza gli ingredienti e installa l'app.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

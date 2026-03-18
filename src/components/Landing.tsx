@@ -235,7 +235,11 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         if (file.size <= MAX_PREVIEW_BYTES) {
           try {
             const previewDataUrl = await readFileAsDataUrl(file);
-            uploadedFile = { name: file.name, mimeType: file.type, previewDataUrl };
+            uploadedFile = {
+              name: file.name,
+              mimeType: file.type,
+              previewDataUrl,
+            };
           } catch {
             uploadedFile = { name: file.name, mimeType: file.type };
           }
@@ -328,77 +332,81 @@ export default function Landing({ onDietLoaded }: LandingProps) {
           </header>
 
           <main className="landing-main">
+            <div
+              className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() =>
+                uploadStatus !== "loading" && fileInputRef.current?.click()
+              }
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (
+                  (e.key === "Enter" || e.key === " ") &&
+                  uploadStatus !== "loading"
+                ) {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              aria-label="Carica un file con la tua dieta"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ACCEPT_UPLOAD}
+                onChange={handleFileChange}
+                disabled={uploadStatus === "loading"}
+                className="landing-file-input"
+                id="diet-file"
+                aria-hidden
+              />
+              {uploadStatus === "loading" ? (
+                <div className="landing-loading">
+                  <p className="landing-dropzone-text">
+                    Stiamo generando il tuo menu del giorno...
+                  </p>
+                  <ol className="landing-steps" aria-label="Stato elaborazione">
+                    {STEP_LABELS.map((label, idx) => (
+                      <li
+                        key={label}
+                        className="landing-step landing-step--active"
+                      >
+                        <span className="landing-step__badge">{idx + 1}</span>
+                        <span className="landing-step__label">{label}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : (
+                <>
+                  <IconFileUpload
+                    size={40}
+                    className="landing-dropzone-icon"
+                    stroke={1.5}
+                  />
+                  <p className="landing-dropzone-title">
+                    Carica il file della tua dieta
+                  </p>
+                  <p className="landing-dropzone-hint">
+                    Trascinalo qui oppure seleziona un file dal tuo dispositivo.
+                    Puoi caricare file PDF, TXT o immagini (max{" "}
+                    {MAX_FILE_SIZE_MB} MB).
+                  </p>
+                </>
+              )}
+            </div>
+
             <button
               type="button"
-              className="landing-btn landing-btn-secondary"
+              className="landing-btn landing-btn-secondary landing-demo__cta"
               onClick={handleUseDefault}
               disabled={uploadStatus === "loading"}
             >
               Prova demo
             </button>
-
-            <div
-                className={`landing-dropzone ${isDragging ? "landing-dropzone--active" : ""} ${uploadStatus === "loading" ? "landing-dropzone--loading" : ""}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() =>
-                  uploadStatus !== "loading" && fileInputRef.current?.click()
-                }
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (
-                    (e.key === "Enter" || e.key === " ") &&
-                    uploadStatus !== "loading"
-                  ) {
-                    e.preventDefault();
-                    fileInputRef.current?.click();
-                  }
-                }}
-                aria-label="Carica un file con la tua dieta"
-            >
-              <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept={ACCEPT_UPLOAD}
-                  onChange={handleFileChange}
-                  disabled={uploadStatus === "loading"}
-                  className="landing-file-input"
-                  id="diet-file"
-                  aria-hidden
-                />
-                {uploadStatus === "loading" ? (
-                  <div className="landing-loading">
-                    <p className="landing-dropzone-text">
-                      Stiamo generando il tuo menu del giorno...
-                    </p>
-                    <ol className="landing-steps" aria-label="Stato elaborazione">
-                      {STEP_LABELS.map((label, idx) => (
-                        <li key={label} className="landing-step landing-step--active">
-                          <span className="landing-step__badge">{idx + 1}</span>
-                          <span className="landing-step__label">{label}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                ) : (
-                  <>
-                    <IconFileUpload
-                      size={40}
-                      className="landing-dropzone-icon"
-                      stroke={1.5}
-                    />
-                    <p className="landing-dropzone-title">
-                      Carica il file della tua dieta
-                    </p>
-                    <p className="landing-dropzone-hint">
-                      Trascinalo qui oppure seleziona un file dal tuo dispositivo.
-                      Puoi caricare file PDF, TXT o immagini (max {MAX_FILE_SIZE_MB} MB).
-                    </p>
-                  </>
-                )}
-            </div>
 
             {error && (
               <p className="landing-error" role="alert">

@@ -9,10 +9,13 @@ export default function AnalyticsScripts() {
   const hotjarId = process.env.NEXT_PUBLIC_HOTJAR_ID ?? "";
   const hotjarSv = process.env.NEXT_PUBLIC_HOTJAR_SV ?? "6";
   const isProduction = process.env.NODE_ENV === "production";
+  const showInDev =
+    (process.env.NEXT_PUBLIC_SHOW_COOKIE_BANNER_IN_DEV ?? "").toLowerCase() ===
+    "true";
 
   const hasAnalytics = useMemo(
-    () => Boolean(clarityProjectId || hotjarId) && isProduction,
-    [clarityProjectId, hotjarId, isProduction],
+    () => Boolean(clarityProjectId || hotjarId) && (isProduction || showInDev),
+    [clarityProjectId, hotjarId, isProduction, showInDev],
   );
 
   const [consent, setConsent] = useState<"accepted" | "rejected" | null>(null);

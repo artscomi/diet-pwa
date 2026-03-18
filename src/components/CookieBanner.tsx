@@ -8,19 +8,20 @@ export default function CookieBanner() {
   const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "";
   const hotjarId = process.env.NEXT_PUBLIC_HOTJAR_ID ?? "";
   const isProduction = process.env.NODE_ENV === "production";
+  const showInDev =
+    (process.env.NEXT_PUBLIC_SHOW_COOKIE_BANNER_IN_DEV ?? "").toLowerCase() ===
+    "true";
 
   const shouldShowBanner = useMemo(() => {
     const hasAnalytics = Boolean(clarityProjectId || hotjarId);
-    return hasAnalytics && isProduction;
-  }, [clarityProjectId, hotjarId, isProduction]);
+    return hasAnalytics && (isProduction || showInDev);
+  }, [clarityProjectId, hotjarId, isProduction, showInDev]);
 
-  const [consent, setConsent] = useState<"accepted" | "rejected" | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (!shouldShowBanner) return;
     const current = readCookieConsent();
-    setConsent(current);
     setIsVisible(current === null);
   }, [shouldShowBanner]);
 
@@ -41,7 +42,6 @@ export default function CookieBanner() {
             className="cookie-banner__btn cookie-banner__btn--secondary"
             onClick={() => {
               writeCookieConsent("rejected");
-              setConsent("rejected");
               setIsVisible(false);
             }}
           >
@@ -52,7 +52,6 @@ export default function CookieBanner() {
             className="cookie-banner__btn cookie-banner__btn--primary"
             onClick={() => {
               writeCookieConsent("accepted");
-              setConsent("accepted");
               setIsVisible(false);
               // Se l'utente accetta, gli script analytics verranno montati dal componente AnalyticsScripts
             }}

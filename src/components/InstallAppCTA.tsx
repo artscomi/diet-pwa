@@ -8,6 +8,8 @@ import './InstallAppCTA.css'
 /** Evento beforeinstallprompt (Chrome/Edge). Non disponibile su Safari/iOS. */
 type InstallPromptEvent = Event & { prompt: () => Promise<{ outcome: string }> }
 
+const INSTALL_DISMISSED_KEY = 'installCtaDismissed'
+
 /**
  * True se la pagina è aperta nella finestra PWA (icona app), false se aperta in un tab del browser.
  * Non indica "l'app è installata" ma "questa finestra è in modalità app (standalone) o browser (tab)".
@@ -19,6 +21,22 @@ export function isStandalone(): boolean {
     window.matchMedia('(display-mode: standalone)').matches ||
     (window.navigator as unknown as { standalone?: boolean }).standalone === true
   )
+}
+
+function wasInstallDismissed(): boolean {
+  try {
+    return localStorage.getItem(INSTALL_DISMISSED_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function markInstallDismissed(): void {
+  try {
+    localStorage.setItem(INSTALL_DISMISSED_KEY, '1')
+  } catch {
+    // ignore
+  }
 }
 
 function isIOS(): boolean {
@@ -71,7 +89,10 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
   const isButton = variant === 'button'
 
   useEffect(() => {
-    if (isStandalone()) return
+    if (isStandalone()) {
+      markInstallDismissed()
+      return
+    }
 
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault()
@@ -81,6 +102,7 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
 
     const handleInstalled = () => {
       installPromptRef.current = null
+      markInstallDismissed()
       setShowInstall(false)
     }
 
@@ -93,9 +115,11 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     }
   }, [])
 
-  // Nascondi CTA install (Chrome) se siamo già in standalone (es. dopo re-open)
   useEffect(() => {
-    if (isStandalone()) setShowInstall(false)
+    if (isStandalone()) {
+      markInstallDismissed()
+      setShowInstall(false)
+    }
   }, [])
 
   const handleInstallClick = async () => {
@@ -123,8 +147,8 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     handleCloseInstallModal()
   }
 
-  // In standalone il CTA «Vuoi disinstallare?» è mostrato in fondo al footer (UninstallFooterLink)
-  if (isStandalone()) {
+  // In standalone o già installata/dismissata: non mostrare CTA
+  if (isStandalone() || wasInstallDismissed()) {
     return null
   }
 

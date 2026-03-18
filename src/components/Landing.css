@@ -84,7 +84,7 @@
 }
 
 .landing-subtitle {
-  font-size: clamp(0.97rem, 2.5vw, 1.125rem);
+  font-size: 1rem;
   color: #475569;
   line-height: 1.65;
   max-width: 440px;

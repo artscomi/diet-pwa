@@ -4,7 +4,7 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@my-menoo.app";
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "help@pocket-diet.com";
   const poweredByLabel = process.env.NEXT_PUBLIC_POWERED_BY_LABEL ?? "artscomi";
 
   return (

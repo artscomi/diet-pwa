@@ -397,14 +397,14 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               )}
             </div>
 
-            <button
+            {/* <button
               type="button"
               className="landing-btn landing-btn-secondary landing-demo__cta"
               onClick={handleUseDefault}
               disabled={uploadStatus === "loading"}
             >
               Prova demo
-            </button>
+            </button> */}
 
             {error && (
               <p className="landing-error" role="alert">

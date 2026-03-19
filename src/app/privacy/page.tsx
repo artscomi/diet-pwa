@@ -4,13 +4,22 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "help@pocket-diet.com";
+  const contactEmail = "help@pocket-diet.com";
   const poweredByLabel = process.env.NEXT_PUBLIC_POWERED_BY_LABEL ?? "artscomi";
 
   return (
     <main className="legal-page">
       <h1 className="legal-title">Privacy Policy</h1>
       <p className="legal-updated">Ultimo aggiornamento: 18/03/2026</p>
+
+      <section className="legal-section">
+        <h2>Il progetto</h2>
+        <p>
+          PocketDiet è un progetto senza scopo di lucro, nato con l'unico obiettivo di
+          semplificare la consultazione quotidiana della dieta prescritta dal proprio
+          nutrizionista. Non ha finalità commerciali né pubblicitarie.
+        </p>
+      </section>
 
       <section className="legal-section">
         <h2>In breve</h2>

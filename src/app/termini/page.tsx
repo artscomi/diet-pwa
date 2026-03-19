@@ -4,7 +4,7 @@ export const metadata = {
 };
 
 export default function TermsPage() {
-  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "help@pocket-diet.com";
+  const contactEmail = "help@pocket-diet.com";
 
   return (
     <main className="legal-page">

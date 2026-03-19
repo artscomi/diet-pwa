@@ -90,3 +90,14 @@ export interface ValidationResult {
   valid: boolean
   error?: string
 }
+
+export type ShoppingCategory = "carboidrati" | "proteine" | "verdure" | "frutta" | "altro"
+
+export interface ShoppingItem {
+  id: string
+  name: string
+  totalQuantity: number
+  unit: string
+  category: ShoppingCategory
+  checked: boolean
+}

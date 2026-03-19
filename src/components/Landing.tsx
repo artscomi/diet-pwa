@@ -84,7 +84,9 @@ const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 /** Limite per salvare l’anteprima in localStorage (500 KB) */
 const MAX_PREVIEW_BYTES = 500 * 1024;
 
-const STEP_LABELS = ["Upload", "Analisi", "Generazione menu"] as const;
+const STEP_LABELS = ["Upload file", "Analisi contenuto", "Generazione menu"] as const;
+const STEP_EMOJIS = ["📄", "🔍", "🍽️"] as const;
+const STEP_DELAY_MS = [800, 2500] as const;
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -97,6 +99,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 
 export default function Landing({ onDietLoaded }: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [bgImages, setBgImages] = useState<string[]>(LANDING_BG_FALLBACK);
@@ -187,6 +190,9 @@ export default function Landing({ onDietLoaded }: LandingProps) {
       }
 
       setUploadStatus("loading");
+      setLoadingStep(0);
+      setTimeout(() => setLoadingStep(1), STEP_DELAY_MS[0]);
+      setTimeout(() => setLoadingStep(2), STEP_DELAY_MS[0] + STEP_DELAY_MS[1]);
 
       const formData = new FormData();
       formData.append("file", file);
@@ -364,19 +370,29 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               />
               {uploadStatus === "loading" ? (
                 <div className="landing-loading">
-                  <p className="landing-dropzone-text">
-                    Stiamo generando il tuo menu del giorno...
+                  <div className="landing-spinner" />
+                  <p className="landing-loading-title">
+                    Preparazione del tuo menu...
                   </p>
                   <ol className="landing-steps" aria-label="Stato elaborazione">
-                    {STEP_LABELS.map((label, idx) => (
-                      <li
-                        key={label}
-                        className="landing-step landing-step--active"
-                      >
-                        <span className="landing-step__badge">{idx + 1}</span>
-                        <span className="landing-step__label">{label}</span>
-                      </li>
-                    ))}
+                    {STEP_LABELS.map((label, idx) => {
+                      const status =
+                        idx < loadingStep ? "done" : idx === loadingStep ? "active" : "pending";
+                      return (
+                        <li
+                          key={label}
+                          className={`landing-step landing-step--${status}`}
+                        >
+                          <span className="landing-step__icon">
+                            {status === "done" ? "✓" : STEP_EMOJIS[idx]}
+                          </span>
+                          <span className="landing-step__label">{label}</span>
+                          {status === "active" && (
+                            <span className="landing-step__dots" />
+                          )}
+                        </li>
+                      );
+                    })}
                   </ol>
                 </div>
               ) : (

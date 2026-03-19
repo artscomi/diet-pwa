@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { dailyMenus } from "@/data/dailyMenus";
 import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
 import DailyMenu from "@/components/DailyMenu";
+import ShoppingList from "@/components/ShoppingList";
 import Landing, {
   loadUserDiet,
   clearUserDiet,
@@ -13,12 +13,16 @@ import Landing, {
 } from "@/components/Landing";
 import Footer from "@/components/Footer";
 import InstallAppCTA from "@/components/InstallAppCTA";
+import { IconShoppingCart, IconToolsKitchen2 } from "@tabler/icons-react";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
+
+type AppView = "menu" | "shopping";
 
 export default function App() {
   const [userDiet, setUserDiet] = useState<UserDiet | null>(loadUserDiet);
   const [currentMenu, setCurrentMenu] = useState<DailyMenuType | null>(null);
   const [todayDate, setTodayDate] = useState(new Date().toDateString());
+  const [view, setView] = useState<AppView>("menu");
 
   const dailyMenusSource = userDiet?.dailyMenus ?? dailyMenus;
 
@@ -145,16 +149,32 @@ export default function App() {
       <header className="app-header">
         <div className="app-header__inner">
           <h1 className="app-header__logo">
-            <Image
-              src="/favicon-icon.svg"
-              alt="PocketDiet"
-              width={32}
-              height={32}
-              className="site-icon--header"
-              priority
-            />
+            <button
+              type="button"
+              className="app-header__home-link"
+              onClick={() => {
+                clearSavedDailyMenus();
+                clearUserDiet();
+                setUserDiet(null);
+                setView("menu");
+              }}
+            >
+              PocketDiet
+            </button>
           </h1>
           <div className="app-header__meta">
+            <button
+              type="button"
+              className="app-view-toggle"
+              onClick={() => setView(view === "menu" ? "shopping" : "menu")}
+              title={view === "menu" ? "Lista della spesa" : "Menu del giorno"}
+            >
+              {view === "menu" ? (
+                <IconShoppingCart size={18} stroke={2} />
+              ) : (
+                <IconToolsKitchen2 size={18} stroke={2} />
+              )}
+            </button>
             <InstallAppCTA variant="button" />
             <button
               type="button"
@@ -163,6 +183,7 @@ export default function App() {
                 clearSavedDailyMenus();
                 clearUserDiet();
                 setUserDiet(null);
+                setView("menu");
               }}
             >
               Cambia dieta
@@ -172,18 +193,22 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        {currentMenu && (
-          <DailyMenu
-            menu={currentMenu}
-            displayDate={formatDate(today)}
-            onSave={handleSaveMenu}
-            dietData={
-              userDiet.dietData ??
-              buildDietDataFromMenus(userDiet.dailyMenus) ??
-              defaultDietData
-            }
-            uploadedFile={userDiet.uploadedFile}
-          />
+        {view === "menu" ? (
+          currentMenu && (
+            <DailyMenu
+              menu={currentMenu}
+              displayDate={formatDate(today)}
+              onSave={handleSaveMenu}
+              dietData={
+                userDiet.dietData ??
+                buildDietDataFromMenus(userDiet.dailyMenus) ??
+                defaultDietData
+              }
+              uploadedFile={userDiet.uploadedFile}
+            />
+          )
+        ) : (
+          <ShoppingList dailyMenus={dailyMenusSource} />
         )}
       </main>
 

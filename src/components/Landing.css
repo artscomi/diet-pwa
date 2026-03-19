@@ -90,7 +90,7 @@
 }
 
 .landing-logo__text {
-  font-family: "Baloo 2", cursive;
+  font-family: var(--font-baloo2), cursive;
   font-weight: 700;
   font-size: 2.2rem;
   color: #10b981;
@@ -181,7 +181,7 @@
   justify-content: center;
   touch-action: manipulation;
   font-family:
-    "Montserrat",
+    var(--font-montserrat),
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;

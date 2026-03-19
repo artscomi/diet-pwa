@@ -1,7 +1,22 @@
 import "./globals.css";
+import { Montserrat, Baloo_2 } from "next/font/google";
 import CookieBanner from "@/components/CookieBanner";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
 import { Analytics } from "@vercel/analytics/next";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+const baloo2 = Baloo_2({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-baloo2",
+  display: "swap",
+});
 
 export const metadata = {
   title: "PocketDiet — La dieta del nutrizionista, sempre in tasca",
@@ -28,18 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="it">
+    <html lang="it" className={`${montserrat.variable} ${baloo2.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Montserrat:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link
           rel="apple-touch-icon"

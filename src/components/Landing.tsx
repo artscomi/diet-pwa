@@ -88,6 +88,9 @@ const STEP_LABELS = ["Upload file", "Analisi contenuto", "Generazione menu"] as 
 const STEP_EMOJIS = ["📄", "🔍", "🍽️"] as const;
 const STEP_DELAY_MS = [800, 2500] as const;
 
+const DIET_PARSE_VALIDATION_USER_MESSAGE =
+  "Non siamo riusciti a leggere correttamente la dieta da questo file. A volte basta un secondo tentativo, puoi riprovare per favore?";
+
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -232,7 +235,10 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         const validation = validateDietJson(json.data);
         if (!validation.valid) {
           setUploadStatus(null);
-          setError(validation.error || "Il file non contiene una dieta valida");
+          if (process.env.NODE_ENV === "development" && validation.error) {
+            console.warn("[validateDietJson]", validation.error);
+          }
+          setError(DIET_PARSE_VALIDATION_USER_MESSAGE);
           if (fileInputRef.current) fileInputRef.current.value = "";
           return;
         }

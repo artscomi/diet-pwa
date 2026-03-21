@@ -21,6 +21,119 @@
   max-width: 420px;
 }
 
+/* Variante discreta: link in footer / sotto la landing */
+.install-cta--minimal {
+  display: block;
+  padding: 0;
+  margin: 0.5rem auto 0;
+  max-width: none;
+  text-align: center;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+.install-cta-link {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+
+.install-cta-link:hover {
+  color: #64748b;
+  text-decoration: underline;
+}
+
+/* Fascia sticky in basso (sotto la CTA principale nell’app, sola sulla landing) */
+.install-sticky-bar {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0.4rem 1rem;
+  padding-bottom: max(0.45rem, calc(env(safe-area-inset-bottom) + 0.2rem));
+  background: rgba(248, 250, 252, 0.98);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+}
+
+.install-sticky-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.install-sticky-bar__hint {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(20rem, 100%);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #64748b;
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.install-sticky-bar__btn {
+  margin: 0;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: #10b981;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.install-sticky-bar__btn:hover {
+  background: #059669;
+}
+
+.install-sticky-bar__btn:active {
+  transform: scale(0.98);
+}
+
+@media (min-width: 768px) {
+  .install-sticky-bar {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .install-sticky-bar__inner {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .install-sticky-bar {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .install-sticky-bar__inner {
+    max-width: 960px;
+  }
+}
+
 .install-cta-uninstall-wrap {
   margin-top: 1.25rem;
 }

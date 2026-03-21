@@ -20,6 +20,10 @@
   box-sizing: border-box;
 }
 
+.landing:not(.landing--standalone) .landing-hero {
+  padding-bottom: max(1rem, calc(3.25rem + env(safe-area-inset-bottom)));
+}
+
 .landing-bg {
   position: absolute;
   inset: 0;
@@ -155,13 +159,8 @@
 
   .landing-dropzone,
   .landing-confirm,
-  .landing-btn,
-  .landing-install-wrap {
+  .landing-btn {
     max-width: 100%;
-  }
-
-  .landing-install-wrap {
-    width: 100%;
   }
 }
 
@@ -502,8 +501,15 @@
   font-size: 0.875rem;
 }
 
-.landing-install-wrap {
-  margin-top: 1.5rem;
-  width: 100%;
-  max-width: 400px;
+.landing-install-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.landing-install-dock > * {
+  pointer-events: auto;
 }

@@ -13,7 +13,7 @@ import Landing, {
   clearSavedDailyMenus,
 } from "@/components/Landing";
 import Footer from "@/components/Footer";
-import InstallAppCTA from "@/components/InstallAppCTA";
+import InstallAppCTA, { isStandalone } from "@/components/InstallAppCTA";
 import { IconShoppingCart, IconToolsKitchen2 } from "@tabler/icons-react";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 
@@ -26,8 +26,13 @@ export default function App() {
   const [view, setView] = useState<AppView>("menu");
   const [menuPendingSave, setMenuPendingSave] = useState(false);
   const menuRef = useRef<DailyMenuHandle>(null);
+  const [appStandalone, setAppStandalone] = useState(false);
 
   const dailyMenusSource = userDiet?.dailyMenus ?? dailyMenus;
+
+  useEffect(() => {
+    setAppStandalone(isStandalone());
+  }, []);
 
   const getTodayMenu = useCallback((): DailyMenuType => {
     const today = new Date();
@@ -148,7 +153,7 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className={`app${appStandalone ? " app--standalone" : ""}`}>
       <header className="app-header">
         <div className="app-header__inner">
           <h1 className="app-header__logo">
@@ -166,7 +171,6 @@ export default function App() {
             </button>
           </h1>
           <div className="app-header__meta">
-            <InstallAppCTA variant="button" />
             <button
               type="button"
               className="change-diet-btn"
@@ -209,38 +213,41 @@ export default function App() {
         )}
       </main>
 
-      <div className="app-view-cta-bar">
-        {view === "menu" ? (
-          menuPendingSave ? (
-            <button
-              type="button"
-              className="app-view-cta app-view-cta--primary"
-              onClick={() => menuRef.current?.save()}
-              aria-label="Salva modifiche al menu"
-            >
-              <SaveIcon size={24} style={{ flexShrink: 0 }} />
-              <span>Salva</span>
-            </button>
+      <div className="app-bottom-dock">
+        <div className="app-view-cta-bar">
+          {view === "menu" ? (
+            menuPendingSave ? (
+              <button
+                type="button"
+                className="app-view-cta app-view-cta--primary"
+                onClick={() => menuRef.current?.save()}
+                aria-label="Salva modifiche al menu"
+              >
+                <SaveIcon size={24} style={{ flexShrink: 0 }} />
+                <span>Salva</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="app-view-cta app-view-cta--primary"
+                onClick={() => setView("shopping")}
+              >
+                <IconShoppingCart size={24} stroke={2} aria-hidden />
+                <span>Lista della spesa</span>
+              </button>
+            )
           ) : (
             <button
               type="button"
-              className="app-view-cta app-view-cta--primary"
-              onClick={() => setView("shopping")}
+              className="app-view-cta app-view-cta--secondary"
+              onClick={() => setView("menu")}
             >
-              <IconShoppingCart size={24} stroke={2} aria-hidden />
-              <span>Lista della spesa</span>
+              <IconToolsKitchen2 size={24} stroke={2} aria-hidden />
+              <span>Menu del giorno</span>
             </button>
-          )
-        ) : (
-          <button
-            type="button"
-            className="app-view-cta app-view-cta--secondary"
-            onClick={() => setView("menu")}
-          >
-            <IconToolsKitchen2 size={24} stroke={2} aria-hidden />
-            <span>Menu del giorno</span>
-          </button>
-        )}
+          )}
+        </div>
+        {!appStandalone && <InstallAppCTA variant="stickyBar" />}
       </div>
 
       <Footer showInstallCTA={false} />

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IconFileUpload } from "@tabler/icons-react";
 import { dailyMenus } from "@/data/dailyMenus";
-import InstallAppCTA from "./InstallAppCTA";
+import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
 import Footer from "./Footer";
 import { validateDietJson } from "@/utils/validateDietJson";
 import type { UserDiet, UploadedFileInfo } from "@/types/diet";
@@ -110,6 +110,11 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const [bgVisible, setBgVisible] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bgTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [landingStandalone, setLandingStandalone] = useState(false);
+
+  useEffect(() => {
+    setLandingStandalone(isStandalone());
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -323,7 +328,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const showDevDefaultLoader = process.env.NODE_ENV === "development";
 
   return (
-    <div className="landing">
+    <div className={`landing${landingStandalone ? " landing--standalone" : ""}`}>
       <div className="landing-hero">
         <div
           className="landing-bg"
@@ -448,14 +453,17 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               </p>
             )}
 
-            <div className="landing-install-wrap">
-              <InstallAppCTA />
-            </div>
           </main>
 
           <Footer showInstallCTA={false} />
         </div>
       </div>
+
+      {!landingStandalone && (
+        <div className="landing-install-dock">
+          <InstallAppCTA variant="stickyBar" />
+        </div>
+      )}
     </div>
   );
 }

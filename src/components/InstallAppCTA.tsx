@@ -43,6 +43,9 @@ function isMobile(): boolean {
   return isIOS() || isAndroid()
 }
 
+/** Fascia install su mobile (Chrome + iOS). */
+const INSTALL_STICKY_HINT_MOBILE = 'La tua dieta, sempre in tasca'
+
 function isEdge(): boolean {
   if (typeof navigator === 'undefined') return false
   return /Edg/.test(navigator.userAgent)
@@ -59,8 +62,8 @@ export function getUninstallPlatform(): UninstallPlatform {
 }
 
 interface InstallAppCTAProps {
-  /** "banner" = box con testo (footer/landing), "button" = solo pulsante per header */
-  variant?: 'banner' | 'button'
+  /** "banner" = box evidenziato, "button" = header, "minimal" = link footer, "stickyBar" = fascia sticky in basso */
+  variant?: 'banner' | 'button' | 'minimal' | 'stickyBar'
 }
 
 export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps) {
@@ -68,6 +71,8 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
   const [installModalVariant, setInstallModalVariant] = useState<InstallModalVariant | null>(null)
   const installPromptRef = useRef<InstallPromptEvent | null>(null)
   const isButton = variant === 'button'
+  const isMinimal = variant === 'minimal'
+  const isStickyBar = variant === 'stickyBar'
 
   useEffect(() => {
     try {
@@ -152,6 +157,55 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
         </>
       )
     }
+    if (isMinimal) {
+      return (
+        <>
+          <div className="install-cta install-cta--minimal">
+            <button
+              type="button"
+              className="install-cta-link"
+              onClick={() => handleOpenInstallModal('native')}
+            >
+              Installa app
+            </button>
+          </div>
+          {installModalVariant === 'native' && (
+            <InstallAppModal
+              variant="native"
+              onClose={handleCloseInstallModal}
+              onInstall={handleInstallFromModal}
+            />
+          )}
+        </>
+      )
+    }
+    if (isStickyBar) {
+      return (
+        <>
+          <div className="install-sticky-bar" role="region" aria-label="Installazione app">
+            <div className="install-sticky-bar__inner">
+              <span className="install-sticky-bar__hint">
+                {isMobile() ? INSTALL_STICKY_HINT_MOBILE : 'Usa PocketDiet come app'}
+              </span>
+              <button
+                type="button"
+                className="install-sticky-bar__btn"
+                onClick={() => handleOpenInstallModal('native')}
+              >
+                Installa app
+              </button>
+            </div>
+          </div>
+          {installModalVariant === 'native' && (
+            <InstallAppModal
+              variant="native"
+              onClose={handleCloseInstallModal}
+              onInstall={handleInstallFromModal}
+            />
+          )}
+        </>
+      )
+    }
     return (
       <>
         <div className="install-cta install-cta-native">
@@ -177,7 +231,36 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     )
   }
 
-  // Chrome/Edge senza prompt install: nulla (disinstallare visibile solo in standalone).
+  /* Chrome/Edge senza beforeinstallprompt: la fascia sticky resta (menu, lista spesa, ecc.) con istruzioni dal menu ⋮ */
+  if (isChromeOrEdge() && isStickyBar && !showInstall) {
+    return (
+      <>
+        <div className="install-sticky-bar" role="region" aria-label="Installazione app">
+          <div className="install-sticky-bar__inner">
+            <span className="install-sticky-bar__hint">
+              {isMobile() ? INSTALL_STICKY_HINT_MOBILE : 'Usa PocketDiet come app'}
+            </span>
+            <button
+              type="button"
+              className="install-sticky-bar__btn"
+              onClick={() => handleOpenInstallModal('native')}
+            >
+              Installa app
+            </button>
+          </div>
+        </div>
+        {installModalVariant === 'native' && (
+          <InstallAppModal
+            variant="native"
+            onClose={handleCloseInstallModal}
+            nativePromptAvailable={false}
+          />
+        )}
+      </>
+    )
+  }
+
+  // Chrome/Edge senza prompt e senza sticky: nessuna CTA install.
   if (isChromeOrEdge()) {
     return null
   }
@@ -190,6 +273,47 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
           <button type="button" className="install-cta-btn install-cta-btn--header" onClick={() => handleOpenInstallModal('ios')}>
             Aggiungi alla Home
           </button>
+          {installModalVariant === 'ios' && (
+            <InstallAppModal variant="ios" onClose={handleCloseInstallModal} />
+          )}
+        </>
+      )
+    }
+    if (isMinimal) {
+      return (
+        <>
+          <div className="install-cta install-cta--minimal">
+            <button
+              type="button"
+              className="install-cta-link"
+              onClick={() => handleOpenInstallModal('ios')}
+            >
+              Aggiungi alla Home
+            </button>
+          </div>
+          {installModalVariant === 'ios' && (
+            <InstallAppModal variant="ios" onClose={handleCloseInstallModal} />
+          )}
+        </>
+      )
+    }
+    if (isStickyBar) {
+      return (
+        <>
+          <div className="install-sticky-bar" role="region" aria-label="Aggiungi alla Home">
+            <div className="install-sticky-bar__inner">
+              <span className="install-sticky-bar__hint">
+                {isMobile() ? INSTALL_STICKY_HINT_MOBILE : 'Usa PocketDiet come app'}
+              </span>
+              <button
+                type="button"
+                className="install-sticky-bar__btn"
+                onClick={() => handleOpenInstallModal('ios')}
+              >
+                Aggiungi alla Home
+              </button>
+            </div>
+          </div>
           {installModalVariant === 'ios' && (
             <InstallAppModal variant="ios" onClose={handleCloseInstallModal} />
           )}

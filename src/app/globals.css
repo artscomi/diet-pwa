@@ -211,21 +211,58 @@ button {
   flex-direction: column;
   background: #ffffff;
   color: #1a1a1a;
-  /* Spazio da riservare sopra la CTA fissa in basso (altezza barra ≈ padding + pulsante + safe area) */
-  --app-view-cta-stack: max(5.75rem, calc(4.85rem + env(safe-area-inset-bottom)));
+  /* Altezza dock basso: CTA menu/lista + fascia install (browser) */
+  --app-main-cta-stack: max(
+    5.75rem,
+    calc(4.85rem + env(safe-area-inset-bottom))
+  );
+  --app-install-sticky-stack: 2.4rem;
+  --app-view-cta-stack: calc(
+    var(--app-main-cta-stack) + var(--app-install-sticky-stack)
+  );
+}
+
+.app.app--standalone {
+  --app-install-sticky-stack: 0px;
+  --app-view-cta-stack: var(--app-main-cta-stack);
 }
 
 @media (min-width: 768px) {
   .app {
-    --app-view-cta-stack: max(5.25rem, calc(4.35rem + env(safe-area-inset-bottom)));
+    --app-main-cta-stack: max(
+      5.25rem,
+      calc(4.35rem + env(safe-area-inset-bottom))
+    );
+    --app-install-sticky-stack: 2.25rem;
+    --app-view-cta-stack: calc(
+      var(--app-main-cta-stack) + var(--app-install-sticky-stack)
+    );
+  }
+
+  .app.app--standalone {
+    --app-view-cta-stack: var(--app-main-cta-stack);
   }
 }
 
-/* Footer sotto la CTA fissa: padding extra così link e testo non finiscono sotto la barra */
+/* Footer sotto il dock fisso in basso */
 .app > .site-footer {
-  padding-bottom: calc(
-    max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem)) + var(--app-view-cta-stack)
-  );
+  padding-bottom: calc(max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem)));
+}
+
+/* Dock: CTA principale sopra, install sotto (verso il bordo schermo) */
+.app-bottom-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.app-bottom-dock > * {
+  pointer-events: auto;
 }
 
 .app-header {
@@ -373,17 +410,13 @@ button {
   }
 }
 
-/* Sticky bottom CTA: menu ↔ lista spesa */
+/* CTA menu ↔ lista spesa (nel dock, sopra la fascia install) */
 .app-view-cta-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 90;
+  position: relative;
   display: flex;
   justify-content: center;
   padding: 0.75rem 1rem;
-  padding-bottom: max(0.75rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+  padding-bottom: 0.75rem;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -576,10 +609,7 @@ button {
   flex: 1;
   width: 100%;
   padding: 1rem 1.25rem;
-  padding-bottom: max(
-    1.5rem,
-    calc(env(safe-area-inset-bottom) + 5.5rem)
-  );
+  padding-bottom: max(5rem, calc(env(safe-area-inset-bottom)));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

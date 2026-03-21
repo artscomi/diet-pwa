@@ -123,6 +123,71 @@ function getNativeSubtitle(variant: NativeVariant): string {
   }
 }
 
+/** Installazione da menu browser quando non c’è `beforeinstallprompt` (es. alcune pagine interne). */
+function getNativeManualSteps(variant: NativeVariant): Step[] {
+  switch (variant) {
+    case "chrome-android":
+      return [
+        {
+          icon: <IconDots size={STEP_SIZE} />,
+          text: "Apri il menu di Chrome (⋮) in alto a destra",
+        },
+        {
+          icon: <IconSquarePlus size={STEP_SIZE} />,
+          text: "Tocca «Installa app» o «Aggiungi a schermata Home» e conferma",
+        },
+      ];
+    case "edge-android":
+      return [
+        {
+          icon: <IconDots size={STEP_SIZE} />,
+          text: "Apri il menu di Edge (⋯) in basso o in alto",
+        },
+        {
+          icon: <IconSquarePlus size={STEP_SIZE} />,
+          text: "Tocca «Aggiungi a telefono» o «Installa app» e conferma",
+        },
+      ];
+    case "edge-desktop":
+      return [
+        {
+          icon: <IconDots size={STEP_SIZE} />,
+          text: "Apri il menu di Edge (⋯) in alto a destra",
+        },
+        {
+          icon: <IconSquarePlus size={STEP_SIZE} />,
+          text: "Scegli «App» → «Installa questa pagina come app» (o voce simile)",
+        },
+      ];
+    case "chrome-desktop":
+    default:
+      return [
+        {
+          icon: <IconDots size={STEP_SIZE} />,
+          text: "Apri il menu di Chrome (⋮) in alto a destra",
+        },
+        {
+          icon: <IconSquarePlus size={STEP_SIZE} />,
+          text: "Cerca «Installa PocketDiet…» / «Installa app…». Se non compare: Altri strumenti → Salva e condividi → Installa pagina come app…",
+        },
+      ];
+  }
+}
+
+function getNativeManualSubtitle(variant: NativeVariant): string {
+  switch (variant) {
+    case "chrome-android":
+      return "Da questa pagina il browser a volte non mostra il pulsante rapido: puoi installare PocketDiet dal menu di Chrome.";
+    case "edge-android":
+      return "Da questa pagina Edge a volte non offre il dialogo rapido: installa dal menu del browser.";
+    case "edge-desktop":
+      return "Da questa pagina Edge può non mostrare il dialogo automatico: usa il menu del browser per installare l’app.";
+    case "chrome-desktop":
+    default:
+      return "Da questa pagina Chrome a volte non mostra il dialogo automatico: installa PocketDiet dal menu ⋮ del browser.";
+  }
+}
+
 /** Passi per iOS: su iPhone/iPad (Safari e Chrome) non c’è installazione automatica, solo “Aggiungi alla Home”. */
 function getIOSSteps(): Step[] {
   const browser = getIOSBrowser();
@@ -163,16 +228,24 @@ interface InstallAppModalProps {
   onClose: () => void;
   /** Solo per variant="native": chiamato al click su «Installa» */
   onInstall?: () => void | Promise<void>;
+  /** false = solo istruzioni dal menu (nessun prompt integrato) */
+  nativePromptAvailable?: boolean;
 }
 
 export default function InstallAppModal({
   variant,
   onClose,
   onInstall,
+  nativePromptAvailable = true,
 }: InstallAppModalProps) {
   const isIOSVariant = variant === "ios";
   const nativeVariant = getNativeVariant();
-  const steps = isIOSVariant ? getIOSSteps() : getNativeSteps(nativeVariant);
+  const nativeManualOnly = variant === "native" && !nativePromptAvailable;
+  const steps = isIOSVariant
+    ? getIOSSteps()
+    : nativeManualOnly
+      ? getNativeManualSteps(nativeVariant)
+      : getNativeSteps(nativeVariant);
 
   const iosBrowser = getIOSBrowser();
   const iosSubtitle =
@@ -183,11 +256,17 @@ export default function InstallAppModal({
         : "Usa il menu Condividi per aggiungere l'app alla Home e aprirla come un'app.";
   const subtitle = isIOSVariant ? (
     <p className="uninstall-modal-subtitle">{iosSubtitle}</p>
+  ) : nativeManualOnly ? (
+    <p className="uninstall-modal-subtitle">
+      {getNativeManualSubtitle(nativeVariant)}
+    </p>
   ) : (
     <p className="uninstall-modal-subtitle">
       {getNativeSubtitle(nativeVariant)}
     </p>
   );
+
+  const singlePrimary = isIOSVariant || nativeManualOnly;
 
   return (
     <Modal
@@ -195,9 +274,9 @@ export default function InstallAppModal({
       buttonLabel="Annulla"
       onClose={onClose}
       wide
-      singlePrimaryButton={isIOSVariant}
-      primaryLabel={isIOSVariant ? "Ho capito" : "Installa"}
-      onPrimaryClick={isIOSVariant ? onClose : onInstall}
+      singlePrimaryButton={singlePrimary}
+      primaryLabel={singlePrimary ? "Ho capito" : "Installa"}
+      onPrimaryClick={singlePrimary ? onClose : onInstall}
     >
       {subtitle}
       <div className="uninstall-modal-steps" role="list">

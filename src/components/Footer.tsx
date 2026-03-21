@@ -12,7 +12,7 @@ interface FooterProps {
 
 const currentYear = new Date().getFullYear();
 
-export default function Footer({ showInstallCTA = true }: FooterProps) {
+export default function Footer({ showInstallCTA = false }: FooterProps) {
   const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "";
   const hotjarId = process.env.NEXT_PUBLIC_HOTJAR_ID ?? "";
   const showCookiePolicy = Boolean(clarityProjectId || hotjarId);
@@ -51,7 +51,7 @@ export default function Footer({ showInstallCTA = true }: FooterProps) {
         </span>
         <span>© {currentYear}</span>
       </p>
-      {showInstallCTA && <InstallAppCTA />}
+      {showInstallCTA && <InstallAppCTA variant="minimal" />}
       {showInstallCTA && <UninstallFooterLink />}
     </footer>
   );

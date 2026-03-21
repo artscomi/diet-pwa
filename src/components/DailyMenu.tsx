@@ -1,26 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react'
 import Image from 'next/image'
 import { dietData as defaultDietData } from '@/data/dietData'
 import IngredientSelector from './IngredientSelector'
 import EditableIngredientSelector from './EditableIngredientSelector'
 import { SunIcon, UtensilsIcon, MoonIcon, PeanutIcon, DropletIcon, SaveIcon, TimesIcon, EditIcon, ListIcon } from './Icons'
 import Modal from './Modal'
-import type { DailyMenu, DietData, FoodItem, UploadedFileInfo } from '@/types/diet'
+import type {
+  DailyMenu,
+  DietData,
+  FoodItem,
+  FoodItemOrAlternatives,
+  UploadedFileInfo,
+} from '@/types/diet'
+import { firstFoodItem, updateFoodAlternativesSlot } from '@/utils/foodAlternatives'
+import { dailyMenusEqual } from '@/utils/dailyMenuCompare'
 import './DailyMenu.css'
+
+export type DailyMenuHandle = { save: () => void }
 
 interface DailyMenuProps {
   menu: DailyMenu
   displayDate?: string
   onSave?: (menu: DailyMenu) => void
   onCancel?: () => void
+  /** Modifiche in modifica non ancora salvate (per CTA sticky). */
+  onPendingChange?: (pending: boolean) => void
   dietData?: DietData
   /** Anteprima del file caricato (solo se dieta da upload) */
   uploadedFile?: UploadedFileInfo | null
 }
 
-function formatFood(food: FoodItem | FoodItem[] | null | undefined): string | null {
+function formatFood(food: FoodItemOrAlternatives | null | undefined): string | null {
   if (!food) return null
   if (Array.isArray(food)) {
     return food.map((f) => `${f.name} (${f.quantity} ${f.unit})`).join(', ')
@@ -28,7 +40,10 @@ function formatFood(food: FoodItem | FoodItem[] | null | undefined): string | nu
   return `${food.name} (${food.quantity} ${food.unit})`
 }
 
-export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel, dietData: dietDataProp, uploadedFile }: DailyMenuProps) {
+const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(function DailyMenuComponent(
+  { menu, displayDate, onSave, onCancel, onPendingChange, dietData: dietDataProp, uploadedFile },
+  ref,
+) {
   const dietData = dietDataProp ?? defaultDietData
   const [isEditing, setIsEditing] = useState(false)
   const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu)
@@ -38,12 +53,18 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
     if (!isEditing) setEditedMenu(menu)
   }, [menu, isEditing])
 
-  const handleSave = () => {
+  const commitSave = useCallback(() => {
     if (onSave) {
       onSave(editedMenu)
     }
     setIsEditing(false)
-  }
+  }, [editedMenu, onSave])
+
+  useImperativeHandle(ref, () => ({ save: commitSave }), [commitSave])
+
+  useEffect(() => {
+    onPendingChange?.(isEditing && !dailyMenusEqual(editedMenu, menu))
+  }, [isEditing, editedMenu, menu, onPendingChange])
 
   const handleCancel = () => {
     setEditedMenu(menu)
@@ -58,7 +79,7 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
       <div className="daily-menu-card editing">
         <div className="menu-header">
           <div className="menu-actions">
-            <button className="menu-action-btn save" onClick={handleSave}>
+            <button className="menu-action-btn save" onClick={commitSave}>
               <SaveIcon size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle', display: 'inline-block' }} />
               Salva
             </button>
@@ -89,11 +110,17 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
             <EditableIngredientSelector
               label="Frutta"
               options={dietData.colazione.frutta}
-              selected={editedMenu.colazione?.frutta}
+              selected={firstFoodItem(editedMenu.colazione?.frutta)}
               onSelect={(selected) =>
                 setEditedMenu({
                   ...editedMenu,
-                  colazione: { ...editedMenu.colazione, frutta: selected },
+                  colazione: {
+                    ...editedMenu.colazione,
+                    frutta: updateFoodAlternativesSlot(
+                      editedMenu.colazione?.frutta,
+                      selected,
+                    ),
+                  },
                 })
               }
             />
@@ -153,11 +180,17 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
             <EditableIngredientSelector
               label="Verdure"
               options={dietData.pranzo.verdure}
-              selected={editedMenu.pranzo?.verdure}
+              selected={firstFoodItem(editedMenu.pranzo?.verdure)}
               onSelect={(selected) =>
                 setEditedMenu({
                   ...editedMenu,
-                  pranzo: { ...editedMenu.pranzo, verdure: selected },
+                  pranzo: {
+                    ...editedMenu.pranzo,
+                    verdure: updateFoodAlternativesSlot(
+                      editedMenu.pranzo?.verdure,
+                      selected,
+                    ),
+                  },
                 })
               }
             />
@@ -195,11 +228,17 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
             <EditableIngredientSelector
               label="Verdure"
               options={dietData.cena.verdure}
-              selected={editedMenu.cena?.verdure}
+              selected={firstFoodItem(editedMenu.cena?.verdure)}
               onSelect={(selected) =>
                 setEditedMenu({
                   ...editedMenu,
-                  cena: { ...editedMenu.cena, verdure: selected },
+                  cena: {
+                    ...editedMenu.cena,
+                    verdure: updateFoodAlternativesSlot(
+                      editedMenu.cena?.verdure,
+                      selected,
+                    ),
+                  },
                 })
               }
             />
@@ -420,4 +459,6 @@ export default function DailyMenuComponent({ menu, displayDate, onSave, onCancel
       </div>
     </div>
   )
-}
+})
+
+export default DailyMenuComponent

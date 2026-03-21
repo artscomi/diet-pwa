@@ -13,6 +13,13 @@ function isFoodItem(obj: unknown): obj is FoodItem {
   )
 }
 
+/** Una FoodItem o un array non vuoto di FoodItem (alternative frutta/verdure). */
+function isFoodItemOrAlternatives(v: unknown): boolean {
+  if (isFoodItem(v)) return true
+  if (!Array.isArray(v) || v.length === 0) return false
+  return v.every(isFoodItem)
+}
+
 function validateMenu(menu: unknown): boolean {
   if (!menu || typeof menu !== 'object') return false
   const m = menu as Record<string, unknown>
@@ -21,7 +28,7 @@ function validateMenu(menu: unknown): boolean {
   if (colazione && typeof colazione === 'object') {
     const c = colazione as Record<string, unknown>
     if (c.carboidrati && !isFoodItem(c.carboidrati)) return false
-    if (c.frutta && !isFoodItem(c.frutta)) return false
+    if (c.frutta && !isFoodItemOrAlternatives(c.frutta)) return false
     if (c.proteine && !isFoodItem(c.proteine)) return false
   }
   if (m.spuntinoMattutino && !isFoodItem(m.spuntinoMattutino)) return false
@@ -30,14 +37,14 @@ function validateMenu(menu: unknown): boolean {
     const p = pranzo as Record<string, unknown>
     if (p.carboidrati && !isFoodItem(p.carboidrati)) return false
     if (p.proteine && !isFoodItem(p.proteine)) return false
-    if (p.verdure && !isFoodItem(p.verdure)) return false
+    if (p.verdure && !isFoodItemOrAlternatives(p.verdure)) return false
   }
   if (m.merenda && !isFoodItem(m.merenda)) return false
   const cena = m.cena
   if (cena && typeof cena === 'object') {
     const c = cena as Record<string, unknown>
     if (c.pane && !isFoodItem(c.pane)) return false
-    if (c.verdure && !isFoodItem(c.verdure)) return false
+    if (c.verdure && !isFoodItemOrAlternatives(c.verdure)) return false
     if (c.proteine && !isFoodItem(c.proteine)) return false
   }
   if (m.olio != null && !isFoodItem(m.olio)) return false

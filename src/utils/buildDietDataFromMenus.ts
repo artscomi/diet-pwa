@@ -1,4 +1,5 @@
 import type { DailyMenu, DietData, FoodItem } from '@/types/diet'
+import { flattenFoodSlot } from '@/utils/foodAlternatives'
 
 function foodItemKey(f: FoodItem): string {
   return `${f.name}|${f.quantity}|${f.unit}`
@@ -35,15 +36,15 @@ export function buildDietDataFromMenus(menus: DailyMenu[]): DietData {
 
   for (const m of menus) {
     if (m.colazione?.carboidrati) colazioneCarb.push(m.colazione.carboidrati)
-    if (m.colazione?.frutta) colazioneFrutta.push(m.colazione.frutta)
+    for (const f of flattenFoodSlot(m.colazione?.frutta)) colazioneFrutta.push(f)
     if (m.colazione?.proteine) colazioneProteine.push(m.colazione.proteine)
     if (m.spuntinoMattutino) spuntino.push(m.spuntinoMattutino)
     if (m.pranzo?.carboidrati) pranzoCarb.push(m.pranzo.carboidrati)
     if (m.pranzo?.proteine) pranzoProteine.push(m.pranzo.proteine)
-    if (m.pranzo?.verdure) pranzoVerdure.push(m.pranzo.verdure)
+    for (const f of flattenFoodSlot(m.pranzo?.verdure)) pranzoVerdure.push(f)
     if (m.merenda) merenda.push(m.merenda)
     if (m.cena?.pane) cenaPane.push(m.cena.pane)
-    if (m.cena?.verdure) cenaVerdure.push(m.cena.verdure)
+    for (const f of flattenFoodSlot(m.cena?.verdure)) cenaVerdure.push(f)
     if (m.cena?.proteine) cenaProteine.push(m.cena.proteine)
     if (m.olio) olio.push(m.olio)
   }

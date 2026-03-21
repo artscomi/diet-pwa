@@ -4,21 +4,24 @@ export interface FoodItem {
   unit: string
 }
 
+/** Una frutta/verdura o più alternative distinte per lo stesso pasto (lista spesa: una riga per voce). */
+export type FoodItemOrAlternatives = FoodItem | FoodItem[]
+
 export interface Colazione {
   carboidrati: FoodItem
-  frutta: FoodItem
+  frutta: FoodItemOrAlternatives
   proteine: FoodItem
 }
 
 export interface Pranzo {
   carboidrati: FoodItem
   proteine: FoodItem
-  verdure: FoodItem
+  verdure: FoodItemOrAlternatives
 }
 
 export interface Cena {
   pane: FoodItem
-  verdure: FoodItem
+  verdure: FoodItemOrAlternatives
   proteine: FoodItem
 }
 

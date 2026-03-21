@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import UninstallInstructionsModal, { type UninstallPlatform } from './UninstallInstructionsModal'
+import type { UninstallPlatform } from './UninstallInstructionsModal'
 import InstallAppModal, { type InstallModalVariant } from './InstallAppModal'
 import './InstallAppCTA.css'
 
 /** Evento beforeinstallprompt (Chrome/Edge). Non disponibile su Safari/iOS. */
 type InstallPromptEvent = Event & { prompt: () => Promise<{ outcome: string }> }
-
-const INSTALL_DISMISSED_KEY = 'installCtaDismissed'
 
 /**
  * True se la pagina è aperta nella finestra PWA (icona app), false se aperta in un tab del browser.
@@ -21,22 +19,6 @@ export function isStandalone(): boolean {
     window.matchMedia('(display-mode: standalone)').matches ||
     (window.navigator as unknown as { standalone?: boolean }).standalone === true
   )
-}
-
-function wasInstallDismissed(): boolean {
-  try {
-    return localStorage.getItem(INSTALL_DISMISSED_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-function markInstallDismissed(): void {
-  try {
-    localStorage.setItem(INSTALL_DISMISSED_KEY, '1')
-  } catch {
-    // ignore
-  }
 }
 
 function isIOS(): boolean {
@@ -83,16 +65,20 @@ interface InstallAppCTAProps {
 
 export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps) {
   const [showInstall, setShowInstall] = useState(false)
-  const [showUninstallModal, setShowUninstallModal] = useState(false)
   const [installModalVariant, setInstallModalVariant] = useState<InstallModalVariant | null>(null)
   const installPromptRef = useRef<InstallPromptEvent | null>(null)
   const isButton = variant === 'button'
 
   useEffect(() => {
-    if (isStandalone()) {
-      markInstallDismissed()
-      return
+    try {
+      localStorage.removeItem('installCtaDismissed')
+    } catch {
+      // ignore
     }
+  }, [])
+
+  useEffect(() => {
+    if (isStandalone()) return
 
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault()
@@ -102,7 +88,6 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
 
     const handleInstalled = () => {
       installPromptRef.current = null
-      markInstallDismissed()
       setShowInstall(false)
     }
 
@@ -112,13 +97,6 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall)
       window.removeEventListener('appinstalled', handleInstalled)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (isStandalone()) {
-      markInstallDismissed()
-      setShowInstall(false)
     }
   }, [])
 
@@ -147,8 +125,8 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     handleCloseInstallModal()
   }
 
-  // In standalone o già installata/dismissata: non mostrare CTA
-  if (isStandalone() || wasInstallDismissed()) {
+  // Solo nella finestra browser: in standalone (icona Home) la CTA install non serve
+  if (isStandalone()) {
     return null
   }
 

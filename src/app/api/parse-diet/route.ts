@@ -29,7 +29,9 @@ Se invece il contenuto È una dieta/menu:
       "name": "Menu Giorno 1",
       "colazione": {
         "carboidrati": { "name": "...", "quantity": numero, "unit": "g" },
-        "frutta": { "name": "...", "quantity": numero, "unit": "g" },
+        "frutta": { "name": "...", "quantity": numero, "unit": "g" }
+          OPPURE se nel documento sono indicate PIÙ frutta diverse per la stessa colazione (es. "mela o pera o kiwi" come alternative da acquistare tutte):
+          [ { "name": "...", "quantity": numero, "unit": "g" }, ... ],
         "proteine": { "name": "...", "quantity": numero, "unit": "g" }
       },
       "spuntinoMattutino": { "name": "...", "quantity": numero, "unit": "g" },
@@ -37,11 +39,14 @@ Se invece il contenuto È una dieta/menu:
         "carboidrati": { "name": "...", "quantity": numero, "unit": "g" },
         "proteine": { "name": "...", "quantity": numero, "unit": "g" },
         "verdure": { "name": "...", "quantity": numero, "unit": "g" }
+          OPPURE più verdure distinte (es. zucchine, carote, peperoni) come voci separate:
+          [ { "name": "...", "quantity": numero, "unit": "g" }, ... ]
       },
       "merenda": { "name": "...", "quantity": numero, "unit": "g" },
       "cena": {
         "pane": { "name": "...", "quantity": numero, "unit": "g" },
-        "verdure": { "name": "...", "quantity": numero, "unit": "g" },
+        "verdure": { "name": "...", "quantity": numero, "unit": "g" }
+          OPPURE array di verdure distinte come sopra,
         "proteine": { "name": "...", "quantity": numero, "unit": "g" }
       },
       "olio": { "name": "Olio di oliva extra vergine", "quantity": 20, "unit": "g" }
@@ -73,6 +78,7 @@ REGOLE PER dailyMenus:
 - Per ogni giorno/menu presente nel contenuto dell'utente, crea un elemento in dailyMenus.
 - Copia i nomi degli alimenti e le quantità DAL TESTO (es. "Pasta integrale 70g" -> name: "Pasta integrale", quantity: 70, unit: "g").
 - Se un pasto non è specificato nel testo, usa un valore ragionevole basato sul contesto.
+- Per "frutta" (colazione) e "verdure" (pranzo e cena): se il documento elenca PIÙ tipi da consumare insieme o da alternare come acquisti distinti (es. "200g verdure a scelta: zucchine, carote, melanzane"), usa un ARRAY di oggetti { name, quantity, unit } con UNA voce per ogni tipo e la quantità indicata o ripartita in modo sensato; NON unificare tutto in un solo nome generico "Verdure" o "Frutta" se i tipi sono specificati.
 
 REGOLE PER dietData (IMPORTANTE):
 - dietData contiene TUTTE le alternative possibili per ogni categoria, raccolte da TUTTO il documento.

@@ -1,4 +1,11 @@
-import type { DailyMenu, FoodItem, ShoppingItem, ShoppingCategory } from "@/types/diet";
+import type {
+  DailyMenu,
+  FoodItem,
+  FoodItemOrAlternatives,
+  ShoppingItem,
+  ShoppingCategory,
+} from "@/types/diet";
+import { flattenFoodSlot } from "@/utils/foodAlternatives";
 
 const CATEGORY_MAP: Record<string, ShoppingCategory> = {
   "colazione.carboidrati": "carboidrati",
@@ -22,16 +29,25 @@ function extractItems(menu: DailyMenu): Array<{ item: FoodItem; category: Shoppi
     if (item?.name && item.quantity > 0) results.push({ item, category: cat });
   };
 
+  const pushAlternatives = (
+    slot: FoodItemOrAlternatives | undefined,
+    cat: ShoppingCategory,
+  ) => {
+    for (const item of flattenFoodSlot(slot)) {
+      results.push({ item, category: cat });
+    }
+  };
+
   push(menu.colazione?.carboidrati, CATEGORY_MAP["colazione.carboidrati"]);
-  push(menu.colazione?.frutta, CATEGORY_MAP["colazione.frutta"]);
+  pushAlternatives(menu.colazione?.frutta, CATEGORY_MAP["colazione.frutta"]);
   push(menu.colazione?.proteine, CATEGORY_MAP["colazione.proteine"]);
   push(menu.spuntinoMattutino, CATEGORY_MAP["spuntinoMattutino"]);
   push(menu.pranzo?.carboidrati, CATEGORY_MAP["pranzo.carboidrati"]);
   push(menu.pranzo?.proteine, CATEGORY_MAP["pranzo.proteine"]);
-  push(menu.pranzo?.verdure, CATEGORY_MAP["pranzo.verdure"]);
+  pushAlternatives(menu.pranzo?.verdure, CATEGORY_MAP["pranzo.verdure"]);
   push(menu.merenda, CATEGORY_MAP["merenda"]);
   push(menu.cena?.pane, CATEGORY_MAP["cena.pane"]);
-  push(menu.cena?.verdure, CATEGORY_MAP["cena.verdure"]);
+  pushAlternatives(menu.cena?.verdure, CATEGORY_MAP["cena.verdure"]);
   push(menu.cena?.proteine, CATEGORY_MAP["cena.proteine"]);
   push(menu.olio, CATEGORY_MAP["olio"]);
 
@@ -42,20 +58,34 @@ function makeId(name: string, unit: string): string {
   return `${name.toLowerCase().trim()}__${unit.toLowerCase().trim()}`;
 }
 
+export type BuildShoppingListOptions = {
+  /** Menu di oggi personalizzato (salvato in locale); sostituisce il solo template del giorno 0. */
+  todayMenu?: DailyMenu | null;
+  /** Chiave giorno (es. `Date.toDateString()`); deve coincidere con `todayMenu.date` se presente. */
+  todayKey?: string;
+};
+
 export function buildShoppingList(
   dailyMenus: DailyMenu[],
   days: number,
   checkedIds: Set<string> = new Set(),
+  opts?: BuildShoppingListOptions,
 ): ShoppingItem[] {
   const today = new Date();
   const startOfYear = new Date(today.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+  const todayKey = opts?.todayKey ?? today.toDateString();
 
   const aggregated = new Map<string, { name: string; totalQuantity: number; unit: string; category: ShoppingCategory }>();
 
   for (let d = 0; d < days; d++) {
     const menuIndex = ((dayOfYear + d) % dailyMenus.length);
-    const menu = dailyMenus[menuIndex];
+    const override = opts?.todayMenu;
+    const useOverride =
+      d === 0 &&
+      override &&
+      (override.date === undefined || override.date === todayKey);
+    const menu = useOverride ? override : dailyMenus[menuIndex];
     if (!menu) continue;
 
     for (const { item, category } of extractItems(menu)) {

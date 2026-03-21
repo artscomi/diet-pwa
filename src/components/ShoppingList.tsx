@@ -6,6 +6,7 @@ import {
   CATEGORY_LABELS,
   CATEGORY_ORDER,
 } from "@/utils/buildShoppingList";
+import { formatShoppingQuantityDisplay } from "@/utils/formatShoppingQuantity";
 import { ChevronDownIcon, TrashIcon, ShareIcon, ClipboardCheckIcon } from "./Icons";
 import type { DailyMenu as DailyMenuType } from "@/types/diet";
 import type { ShoppingCategory, ShoppingItem } from "@/types/diet";
@@ -44,16 +45,28 @@ function saveDays(d: number) {
 
 interface ShoppingListProps {
   dailyMenus: DailyMenuType[];
+  /** Menu del giorno corrente (modifiche salvate): usato per la lista al posto del template di oggi. */
+  todayMenu?: DailyMenuType | null;
+  /** Allineato al giorno “oggi” dell’app (`Date.toDateString()`). */
+  todayKey: string;
 }
 
-export default function ShoppingList({ dailyMenus }: ShoppingListProps) {
+export default function ShoppingList({
+  dailyMenus,
+  todayMenu = null,
+  todayKey,
+}: ShoppingListProps) {
   const [days, setDays] = useState(loadDays);
   const [checkedIds, setCheckedIds] = useState(loadChecked);
   const [collapsedCats, setCollapsedCats] = useState<Set<ShoppingCategory>>(new Set());
 
   const items = useMemo(
-    () => buildShoppingList(dailyMenus, days, checkedIds),
-    [dailyMenus, days, checkedIds],
+    () =>
+      buildShoppingList(dailyMenus, days, checkedIds, {
+        todayMenu,
+        todayKey,
+      }),
+    [dailyMenus, days, checkedIds, todayMenu, todayKey],
   );
 
   const grouped = useMemo(() => {
@@ -120,7 +133,9 @@ export default function ShoppingList({ dailyMenus }: ShoppingListProps) {
       lines.push(`\n${CATEGORY_LABELS[cat]}:`);
       catItems.forEach((item: ShoppingItem) => {
         const mark = item.checked ? "\u2611" : "\u2610";
-        lines.push(`  ${mark} ${item.name} — ${item.totalQuantity} ${item.unit}`);
+        lines.push(
+          `  ${mark} ${item.name} — ${formatShoppingQuantityDisplay(item.totalQuantity, item.unit)}`,
+        );
       });
     });
 
@@ -152,16 +167,6 @@ export default function ShoppingList({ dailyMenus }: ShoppingListProps) {
         <h2 className="sl-title">Lista della spesa</h2>
         <div className="sl-header-actions">
           <span className="sl-counter">{checkedCount}/{totalItems}</span>
-          {totalItems > 0 && (
-            <button
-              type="button"
-              className={`sl-share-btn ${shared ? "sl-share-btn--done" : ""}`}
-              onClick={handleShare}
-              title={shared ? "Copiato!" : "Condividi lista"}
-            >
-              {shared ? <ClipboardCheckIcon size={16} /> : <ShareIcon size={16} />}
-            </button>
-          )}
         </div>
       </div>
 
@@ -179,6 +184,17 @@ export default function ShoppingList({ dailyMenus }: ShoppingListProps) {
             </button>
           ))}
         </div>
+        {totalItems > 0 && (
+          <button
+            type="button"
+            className={`sl-share-btn ${shared ? "sl-share-btn--done" : ""}`}
+            onClick={handleShare}
+            title={shared ? "Copiato!" : "Condividi lista"}
+            aria-label={shared ? "Copiato negli appunti" : "Condividi lista"}
+          >
+            {shared ? <ClipboardCheckIcon size={22} /> : <ShareIcon size={22} />}
+          </button>
+        )}
       </div>
 
       {totalItems === 0 ? (
@@ -232,7 +248,10 @@ export default function ShoppingList({ dailyMenus }: ShoppingListProps) {
                             </span>
                             <span className="sl-item-name">{item.name}</span>
                             <span className="sl-item-qty">
-                              {item.totalQuantity} {item.unit}
+                              {formatShoppingQuantityDisplay(
+                                item.totalQuantity,
+                                item.unit,
+                              )}
                             </span>
                           </label>
                         </li>

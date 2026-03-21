@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { dailyMenus } from "@/data/dailyMenus";
 import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
-import DailyMenu from "@/components/DailyMenu";
+import DailyMenu, { type DailyMenuHandle } from "@/components/DailyMenu";
+import { SaveIcon } from "@/components/Icons";
 import ShoppingList from "@/components/ShoppingList";
 import Landing, {
   loadUserDiet,
@@ -23,6 +24,8 @@ export default function App() {
   const [currentMenu, setCurrentMenu] = useState<DailyMenuType | null>(null);
   const [todayDate, setTodayDate] = useState(new Date().toDateString());
   const [view, setView] = useState<AppView>("menu");
+  const [menuPendingSave, setMenuPendingSave] = useState(false);
+  const menuRef = useRef<DailyMenuHandle>(null);
 
   const dailyMenusSource = userDiet?.dailyMenus ?? dailyMenus;
 
@@ -163,18 +166,6 @@ export default function App() {
             </button>
           </h1>
           <div className="app-header__meta">
-            <button
-              type="button"
-              className="app-view-toggle"
-              onClick={() => setView(view === "menu" ? "shopping" : "menu")}
-              title={view === "menu" ? "Lista della spesa" : "Menu del giorno"}
-            >
-              {view === "menu" ? (
-                <IconShoppingCart size={18} stroke={2} />
-              ) : (
-                <IconToolsKitchen2 size={18} stroke={2} />
-              )}
-            </button>
             <InstallAppCTA variant="button" />
             <button
               type="button"
@@ -196,9 +187,11 @@ export default function App() {
         {view === "menu" ? (
           currentMenu && (
             <DailyMenu
+              ref={menuRef}
               menu={currentMenu}
               displayDate={formatDate(today)}
               onSave={handleSaveMenu}
+              onPendingChange={setMenuPendingSave}
               dietData={
                 userDiet.dietData ??
                 buildDietDataFromMenus(userDiet.dailyMenus) ??
@@ -208,9 +201,47 @@ export default function App() {
             />
           )
         ) : (
-          <ShoppingList dailyMenus={dailyMenusSource} />
+          <ShoppingList
+            dailyMenus={dailyMenusSource}
+            todayMenu={currentMenu}
+            todayKey={todayDate}
+          />
         )}
       </main>
+
+      <div className="app-view-cta-bar">
+        {view === "menu" ? (
+          menuPendingSave ? (
+            <button
+              type="button"
+              className="app-view-cta app-view-cta--primary"
+              onClick={() => menuRef.current?.save()}
+              aria-label="Salva modifiche al menu"
+            >
+              <SaveIcon size={24} style={{ flexShrink: 0 }} />
+              <span>Salva</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="app-view-cta app-view-cta--primary"
+              onClick={() => setView("shopping")}
+            >
+              <IconShoppingCart size={24} stroke={2} aria-hidden />
+              <span>Lista della spesa</span>
+            </button>
+          )
+        ) : (
+          <button
+            type="button"
+            className="app-view-cta app-view-cta--secondary"
+            onClick={() => setView("menu")}
+          >
+            <IconToolsKitchen2 size={24} stroke={2} aria-hidden />
+            <span>Menu del giorno</span>
+          </button>
+        )}
+      </div>
 
       <Footer showInstallCTA={false} />
     </div>

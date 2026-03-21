@@ -306,6 +306,16 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     }
   };
 
+  const handleLoadDefaultList = useCallback(() => {
+    const diet = getDefaultUserDiet();
+    clearSavedDailyMenus();
+    saveUserDiet(diet);
+    setError(null);
+    onDietLoaded(diet);
+  }, [onDietLoaded]);
+
+  const showDevDefaultLoader = process.env.NODE_ENV === "development";
+
   return (
     <div className="landing">
       <div className="landing-hero">
@@ -413,14 +423,18 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               )}
             </div>
 
-            {/* <button
-              type="button"
-              className="landing-btn landing-btn-secondary landing-demo__cta"
-              onClick={handleUseDefault}
-              disabled={uploadStatus === "loading"}
-            >
-              Prova demo
-            </button> */}
+            {showDevDefaultLoader && (
+              <div className="landing-dev-default-wrap">
+                <button
+                  type="button"
+                  className="landing-btn landing-btn-secondary landing-dev-default-btn"
+                  onClick={handleLoadDefaultList}
+                  disabled={uploadStatus === "loading"}
+                >
+                  Carica lista default
+                </button>
+              </div>
+            )}
 
             {error && (
               <p className="landing-error" role="alert">

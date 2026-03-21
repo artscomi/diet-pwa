@@ -211,6 +211,21 @@ button {
   flex-direction: column;
   background: #ffffff;
   color: #1a1a1a;
+  /* Spazio da riservare sopra la CTA fissa in basso (altezza barra ≈ padding + pulsante + safe area) */
+  --app-view-cta-stack: max(5.75rem, calc(4.85rem + env(safe-area-inset-bottom)));
+}
+
+@media (min-width: 768px) {
+  .app {
+    --app-view-cta-stack: max(5.25rem, calc(4.35rem + env(safe-area-inset-bottom)));
+  }
+}
+
+/* Footer sotto la CTA fissa: padding extra così link e testo non finiscono sotto la barra */
+.app > .site-footer {
+  padding-bottom: calc(
+    max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem)) + var(--app-view-cta-stack)
+  );
 }
 
 .app-header {
@@ -352,33 +367,112 @@ button {
   min-width: 0;
 }
 
-.app-view-toggle {
+@media (max-width: 767px) {
+  .app-header__meta {
+    gap: 0.35rem 0.5rem;
+  }
+}
+
+/* Sticky bottom CTA: menu ↔ lista spesa */
+.app-view-cta-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  padding-bottom: max(0.75rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 -2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.app-view-cta {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border-radius: 10px;
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 100%;
+  min-height: 3.25rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-radius: 14px;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
-.app-view-toggle:hover {
+.app-view-cta--primary {
+  color: #fff;
+  background: #10b981;
+  border: 1px solid rgba(5, 150, 105, 0.45);
+  box-shadow: none;
+}
+
+.app-view-cta--primary:hover {
+  background: #059669;
+  border-color: rgba(4, 120, 87, 0.55);
+}
+
+.app-view-cta--primary:active {
+  transform: scale(0.99);
+}
+
+.app-view-cta--secondary {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: none;
+}
+
+.app-view-cta--secondary:hover {
   background: rgba(16, 185, 129, 0.16);
   border-color: rgba(16, 185, 129, 0.4);
 }
 
-.app-view-toggle:active {
-  transform: scale(0.95);
+.app-view-cta--secondary:active {
+  transform: scale(0.99);
 }
 
-@media (max-width: 767px) {
-  .app-header__meta {
-    gap: 0.35rem 0.5rem;
+@media (min-width: 768px) {
+  .app-view-cta-bar {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .app-view-cta {
+    max-width: 17rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 1rem;
+    font-size: 0.9375rem;
+    border-radius: 12px;
+    gap: 0.5rem;
+  }
+
+  .app-view-cta svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-view-cta-bar {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
@@ -482,7 +576,10 @@ button {
   flex: 1;
   width: 100%;
   padding: 1rem 1.25rem;
-  padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+  padding-bottom: max(
+    1.5rem,
+    calc(env(safe-area-inset-bottom) + 5.5rem)
+  );
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

@@ -578,7 +578,12 @@ export default function Landing({ onDietLoaded }: LandingProps) {
 
             <div className="landing-value-prop">
               <p className="landing-value-prop__eyebrow">
-                Cosa puoi fare con PocketDiet
+                <span className="landing-value-prop__eyebrowLead">
+                  Cosa puoi fare con
+                </span>{" "}
+                <span className="landing-value-prop__eyebrowBrand">
+                  PocketDiet
+                </span>
               </p>
               <div
                 ref={valuePropTrackRef}

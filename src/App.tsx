@@ -157,18 +157,7 @@ export default function App() {
       <header className="app-header">
         <div className="app-header__inner">
           <h1 className="app-header__logo">
-            <button
-              type="button"
-              className="app-header__home-link"
-              onClick={() => {
-                clearSavedDailyMenus();
-                clearUserDiet();
-                setUserDiet(null);
-                setView("menu");
-              }}
-            >
-              PocketDiet
-            </button>
+            <span className="app-header__title">PocketDiet</span>
           </h1>
           <div className="app-header__meta">
             <button

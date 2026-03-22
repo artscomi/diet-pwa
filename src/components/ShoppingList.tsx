@@ -45,7 +45,7 @@ function saveDays(d: number) {
 
 interface ShoppingListProps {
   dailyMenus: DailyMenuType[];
-  /** Menu del giorno corrente (modifiche salvate): usato per la lista al posto del template di oggi. */
+  /** Pasti del giorno correnti (modifiche salvate): usato per la lista al posto del template di oggi. */
   todayMenu?: DailyMenuType | null;
   /** Allineato al giorno “oggi” dell’app (`Date.toDateString()`). */
   todayKey: string;

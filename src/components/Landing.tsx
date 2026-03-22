@@ -23,6 +23,26 @@ const LANDING_BG_FALLBACK = [
 ];
 const LANDING_BG_INTERVAL_MS = 12000;
 const LANDING_BG_FADE_MS = 450;
+/** Ultimo step (card “Condividi”): immagine fissa scelta dall’utente — Pexels 3850213 */
+const VALUE_PROP_LAST_STEP_IMAGE =
+  "https://images.pexels.com/photos/3850213/pexels-photo-3850213.jpeg?auto=compress&cs=tinysrgb&w=800";
+
+/**
+ * Immagini di default per le 3 card (1–2 aggiornabili da API; ultima sempre VALUE_PROP_LAST_STEP_IMAGE).
+ */
+const VALUE_PROP_CARD_FALLBACK: [string, string, string] = [
+  "https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "https://images.pexels.com/photos/264507/pexels-photo-264507.jpeg?auto=compress&cs=tinysrgb&w=800",
+  VALUE_PROP_LAST_STEP_IMAGE,
+];
+
+/** Ricerche Pexels solo per le prime due card */
+const VALUE_PROP_PEXELS_QUERIES = [
+  "colorful healthy lunch plate",
+  "fresh vegetables tomatoes ingredients kitchen",
+] as const;
+/** Auto-scroll orizzontale tra le card (non tra le foto nella stessa card) */
+const VALUE_PROP_SCROLL_INTERVAL_MS = 5500;
 /** Carosello foto solo da questa larghezza in su (allineato al CSS) */
 const LANDING_DESKTOP_BG_MQ = "(min-width: 768px)";
 
@@ -33,6 +53,16 @@ function shuffle<T>(arr: T[]): T[] {
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
+}
+
+function mergeValuePropCardImages(
+  fromApi: [string | undefined, string | undefined],
+): [string, string, string] {
+  return [
+    fromApi[0] ?? VALUE_PROP_CARD_FALLBACK[0],
+    fromApi[1] ?? VALUE_PROP_CARD_FALLBACK[1],
+    VALUE_PROP_LAST_STEP_IMAGE,
+  ];
 }
 
 const FOOD_QUERIES = ["healthy food", "salad", "diet", "hipster diet"];
@@ -82,10 +112,30 @@ interface LandingProps {
 
 const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 
+const LANDING_VALUE_STEPS = [
+  {
+    title: "I tuoi pasti",
+    blurb:
+      "Colazione, pranzo e cena con porzioni e alternative: tutto il giorno in un’unica schermata. Sempre a portata di mano.",
+  },
+  {
+    title: "Lista della spesa",
+    blurb: "Genera la lista della spesa in base ai pasti della tua dieta.",
+  },
+  {
+    title: "Condividi",
+    blurb: "Condividi la lista della spesa con chi vuoi.",
+  },
+] as const;
+
 /** Limite per salvare l’anteprima in localStorage (500 KB) */
 const MAX_PREVIEW_BYTES = 500 * 1024;
 
-const STEP_LABELS = ["Upload file", "Analisi contenuto", "Generazione menu"] as const;
+const STEP_LABELS = [
+  "Caricamento file",
+  "Analisi della dieta",
+  "Preparazione dei menu",
+] as const;
 const STEP_EMOJIS = ["📄", "🔍", "🍽️"] as const;
 const STEP_DELAY_MS = [800, 2500] as const;
 
@@ -110,7 +160,11 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const [bgImages, setBgImages] = useState<string[]>(LANDING_BG_FALLBACK);
   const [bgIndex, setBgIndex] = useState(0);
   const [bgVisible, setBgVisible] = useState(true);
+  const [valuePropCardImages, setValuePropCardImages] = useState<
+    [string, string, string]
+  >(() => [...VALUE_PROP_CARD_FALLBACK]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const valuePropTrackRef = useRef<HTMLDivElement>(null);
   const bgTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [landingStandalone, setLandingStandalone] = useState(false);
 
@@ -152,6 +206,67 @@ export default function Landing({ onDietLoaded }: LandingProps) {
       cancelled = true;
     };
   }, [desktopCarouselBg]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadValuePropPexels() {
+      try {
+        const responses = await Promise.all(
+          VALUE_PROP_PEXELS_QUERIES.map((query, i) =>
+            fetch(
+              `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=6&page=${i + 1}`,
+            ),
+          ),
+        );
+        if (cancelled) return;
+        const picked: [string | undefined, string | undefined] = [
+          undefined,
+          undefined,
+        ];
+        for (let i = 0; i < responses.length; i++) {
+          const res = responses[i];
+          if (!res.ok) continue;
+          const data = (await res.json()) as { urls?: string[] };
+          if (cancelled) return;
+          const u = data.urls?.[0];
+          if (u) picked[i] = u;
+        }
+        if (picked.some(Boolean)) {
+          setValuePropCardImages(mergeValuePropCardImages(picked));
+        }
+      } catch {
+        /* fallback già in stato */
+      }
+    }
+    loadValuePropPexels();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const track = valuePropTrackRef.current;
+    if (!track) return;
+    const stepCount = LANDING_VALUE_STEPS.length;
+    if (stepCount < 2) return;
+    let slide = 0;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const advance = () => {
+      slide = (slide + 1) % stepCount;
+      const card = track.querySelectorAll<HTMLElement>(
+        ".landing-value-prop__card",
+      )[slide];
+      if (!card) return;
+      track.scrollTo({
+        left: card.offsetLeft,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    };
+    const id = setInterval(advance, VALUE_PROP_SCROLL_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     if (!desktopCarouselBg) return;
@@ -334,7 +449,9 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const showDevDefaultLoader = process.env.NODE_ENV === "development";
 
   return (
-    <div className={`landing${landingStandalone ? " landing--standalone" : ""}`}>
+    <div
+      className={`landing${landingStandalone ? " landing--standalone" : ""}`}
+    >
       <div className="landing-hero">
         {desktopCarouselBg && (
           <div
@@ -406,7 +523,11 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                   <ol className="landing-steps" aria-label="Stato elaborazione">
                     {STEP_LABELS.map((label, idx) => {
                       const status =
-                        idx < loadingStep ? "done" : idx === loadingStep ? "active" : "pending";
+                        idx < loadingStep
+                          ? "done"
+                          : idx === loadingStep
+                            ? "active"
+                            : "pending";
                       return (
                         <li
                           key={label}
@@ -455,12 +576,55 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               </div>
             )}
 
+            <div className="landing-value-prop">
+              <p className="landing-value-prop__eyebrow">
+                Cosa puoi fare con PocketDiet
+              </p>
+              <div
+                ref={valuePropTrackRef}
+                className="landing-value-prop__track"
+                role="list"
+                aria-label="Scorri per vedere i passaggi"
+              >
+                {LANDING_VALUE_STEPS.map((step, i) => {
+                  const src =
+                    valuePropCardImages[i] ?? VALUE_PROP_CARD_FALLBACK[i];
+                  return (
+                    <div
+                      key={step.title}
+                      className="landing-value-prop__card"
+                      role="listitem"
+                    >
+                      <div className="landing-value-prop__photo" aria-hidden>
+                        <Image
+                          className="landing-value-prop__photoImg"
+                          src={src}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 80vw, 320px"
+                          style={{
+                            objectFit: "cover",
+                            objectPosition: "center center",
+                          }}
+                        />
+                      </div>
+                      <span className="landing-value-prop__stepTitle">
+                        {step.title}
+                      </span>
+                      <span className="landing-value-prop__stepBlurb">
+                        {step.blurb}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {error && (
               <p className="landing-error" role="alert">
                 {error}
               </p>
             )}
-
           </main>
 
           <Footer showInstallCTA={false} />

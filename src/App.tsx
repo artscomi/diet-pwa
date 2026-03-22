@@ -232,7 +232,7 @@ export default function App() {
               onClick={() => setView("menu")}
             >
               <IconToolsKitchen2 size={24} stroke={2} aria-hidden />
-              <span>Menu del giorno</span>
+              <span>I tuoi pasti</span>
             </button>
           )}
         </div>

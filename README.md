@@ -6,7 +6,7 @@ App Next.js per il menu del giorno che rispetta la tua dieta: usa i 14 menu pred
 
 - **Pagina iniziale**: scegli “Usa dieta predefinita” o “Carica un file” con la tua dieta
 - **Caricamento file**: PDF, immagini (JPG, PNG, WebP) o testo analizzati da OpenAI per generare i menu
-- **Menu del giorno**: visualizzazione e modifica del menu del giorno, con salvataggio in localStorage
+- **I tuoi pasti**: visualizzazione e modifica dei pasti del giorno, con salvataggio in localStorage
 - **Cambia dieta**: pulsante per tornare alla schermata iniziale e scegliere un’altra dieta
 - **Responsive**: layout adatto a mobile e desktop
 - **Installabile**: configurabile come PWA (manifest e icone in `public/`)
@@ -46,7 +46,7 @@ L’app funziona subito con la **dieta predefinita**. Per abilitare il **caricam
    PEXELS_API_KEY=...   # opzionale: carosello foto sulla landing (solo desktop)
    ```
    - OpenAI: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-   - Pexels: [pexels.com/api](https://www.pexels.com/api/) — per lo sfondo a rotazione su desktop; su mobile la landing usa solo il gradiente verde.
+   - Pexels: [pexels.com/api](https://www.pexels.com/api/) — per lo sfondo a rotazione su desktop; su mobile la landing usa uno sfondo neutro (slate) e il pannello bianco.
    - **Microsoft Clarity** (opzionale): [clarity.microsoft.com](https://clarity.microsoft.com/) – crea un progetto, copia il Project ID e imposta `NEXT_PUBLIC_CLARITY_PROJECT_ID=...` in `.env.local` per heatmap e registrazioni sessione.
    - **Hotjar** (opzionale): [hotjar.com](https://www.hotjar.com/) – imposta `NEXT_PUBLIC_HOTJAR_ID=...` (Site ID) e opzionalmente `NEXT_PUBLIC_HOTJAR_SV=6` (script version) per registrazioni e heatmap. Solo in produzione.
 

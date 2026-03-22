@@ -33,7 +33,7 @@ export default function ContactPage() {
         <h2>Cosa puoi fare con PocketDiet</h2>
         <ul>
           <li>Caricare la dieta in formato PDF, immagine o testo</li>
-          <li>Consultare il menu del giorno con gli ingredienti e le quantità</li>
+          <li>Consultare i pasti del giorno con ingredienti e quantità</li>
           <li>Personalizzare gli ingredienti scegliendo tra le alternative previste dalla dieta</li>
           <li>Generare una lista della spesa automatica per 1, 3 o 7 giorni</li>
           <li>Installare l&apos;app sul telefono per averla sempre a portata di mano</li>

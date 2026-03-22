@@ -87,7 +87,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           Non conserviamo il documento oltre il tempo necessario all’elaborazione. L’app salva sul tuo
-          dispositivo i dati risultanti (menu) tramite localStorage per mostrarti il menu del giorno e
+          dispositivo i dati risultanti (menu) tramite localStorage per mostrarti i pasti del giorno e
           le tue modifiche.
         </p>
       </section>

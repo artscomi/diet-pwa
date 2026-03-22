@@ -15,7 +15,6 @@ import type {
   UploadedFileInfo,
 } from '@/types/diet'
 import { firstFoodItem, updateFoodAlternativesSlot } from '@/utils/foodAlternatives'
-import { dailyMenusEqual } from '@/utils/dailyMenuCompare'
 import './DailyMenu.css'
 
 export type DailyMenuHandle = { save: () => void }
@@ -25,7 +24,7 @@ interface DailyMenuProps {
   displayDate?: string
   onSave?: (menu: DailyMenu) => void
   onCancel?: () => void
-  /** Modifiche in modifica non ancora salvate (per CTA sticky). */
+  /** True mentre il menu è in modalità modifica (CTA sticky → Salva). */
   onPendingChange?: (pending: boolean) => void
   dietData?: DietData
   /** Anteprima del file caricato (solo se dieta da upload) */
@@ -63,8 +62,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(function 
   useImperativeHandle(ref, () => ({ save: commitSave }), [commitSave])
 
   useEffect(() => {
-    onPendingChange?.(isEditing && !dailyMenusEqual(editedMenu, menu))
-  }, [isEditing, editedMenu, menu, onPendingChange])
+    onPendingChange?.(isEditing)
+  }, [isEditing, onPendingChange])
 
   const handleCancel = () => {
     setEditedMenu(menu)

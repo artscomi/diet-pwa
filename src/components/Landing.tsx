@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { IconFileUpload } from "@tabler/icons-react";
 import { dailyMenus } from "@/data/dailyMenus";
 import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
@@ -16,7 +15,7 @@ import {
 } from "@/constants/upload";
 import "./Landing.css";
 
-/** Fallback se Pexels non è configurata o la richiesta fallisce */
+/** Fallback desktop se Pexels non risponde */
 const LANDING_BG_FALLBACK = [
   "/landing-bg.png",
   "https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&w=1920",
@@ -24,6 +23,8 @@ const LANDING_BG_FALLBACK = [
 ];
 const LANDING_BG_INTERVAL_MS = 12000;
 const LANDING_BG_FADE_MS = 450;
+/** Carosello foto solo da questa larghezza in su (allineato al CSS) */
+const LANDING_DESKTOP_BG_MQ = "(min-width: 768px)";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = [...arr];
@@ -33,6 +34,8 @@ function shuffle<T>(arr: T[]): T[] {
   }
   return out;
 }
+
+const FOOD_QUERIES = ["healthy food", "salad", "diet", "hipster diet"];
 
 const USER_DIET_KEY = "userDiet";
 const DIET_MENU_PREFIX = "dietMenu_";
@@ -77,8 +80,6 @@ interface LandingProps {
   onDietLoaded: (diet: UserDiet) => void;
 }
 
-const FOOD_QUERIES = ["healthy food", "salad", "diet", "hipster diet"];
-
 const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 
 /** Limite per salvare l’anteprima in localStorage (500 KB) */
@@ -105,6 +106,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [desktopCarouselBg, setDesktopCarouselBg] = useState(false);
   const [bgImages, setBgImages] = useState<string[]>(LANDING_BG_FALLBACK);
   const [bgIndex, setBgIndex] = useState(0);
   const [bgVisible, setBgVisible] = useState(true);
@@ -117,6 +119,15 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   }, []);
 
   useEffect(() => {
+    const mq = window.matchMedia(LANDING_DESKTOP_BG_MQ);
+    const sync = () => setDesktopCarouselBg(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!desktopCarouselBg) return;
     let cancelled = false;
     async function loadPexels() {
       const query =
@@ -140,11 +151,12 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [desktopCarouselBg]);
 
   useEffect(() => {
+    if (!desktopCarouselBg) return;
     const len = bgImages.length;
-    if (len === 0) return;
+    if (len <= 1) return;
     const runFade = () => {
       setBgVisible(false);
       bgTimeoutRef.current = setTimeout(() => {
@@ -158,25 +170,19 @@ export default function Landing({ onDietLoaded }: LandingProps) {
       clearInterval(t);
       if (bgTimeoutRef.current) clearTimeout(bgTimeoutRef.current);
     };
-  }, [bgImages.length]);
+  }, [bgImages.length, desktopCarouselBg]);
 
   useEffect(() => {
+    if (!desktopCarouselBg) return;
     const len = bgImages.length;
-    if (len === 0) return;
+    if (len <= 1) return;
     const nextIndex = (bgIndex + 1) % len;
     const url = bgImages[nextIndex];
     if (url?.startsWith("http")) {
       const img = document.createElement("img");
       img.src = url;
     }
-  }, [bgIndex, bgImages]);
-
-  const handleUseDefault = () => {
-    clearSavedDailyMenus();
-    const defaultDiet = getDefaultUserDiet();
-    saveUserDiet(defaultDiet);
-    onDietLoaded(defaultDiet);
-  };
+  }, [bgIndex, bgImages, desktopCarouselBg]);
 
   const processFile = useCallback(
     async (file: File) => {
@@ -330,14 +336,16 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   return (
     <div className={`landing${landingStandalone ? " landing--standalone" : ""}`}>
       <div className="landing-hero">
-        <div
-          className="landing-bg"
-          aria-hidden
-          style={{
-            backgroundImage: `url(${bgImages[bgIndex] ?? bgImages[0]})`,
-            opacity: bgVisible ? 1 : 0,
-          }}
-        />
+        {desktopCarouselBg && (
+          <div
+            className="landing-bg"
+            aria-hidden
+            style={{
+              backgroundImage: `url(${bgImages[bgIndex] ?? bgImages[0]})`,
+              opacity: bgVisible ? 1 : 0,
+            }}
+          />
+        )}
         <div className="landing-panel">
           <header className="landing-header">
             <h1 className="landing-logo">

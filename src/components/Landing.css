@@ -1,6 +1,7 @@
-/* Layout stile WeTransfer: contenuto a sx, immagini a tutto sfondo a dx */
+/* Landing: mobile = gradiente verde; desktop = carosello Pexels (layer .landing-bg) */
 .landing {
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -10,7 +11,6 @@
 
 .landing-hero {
   position: relative;
-  min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -20,8 +20,34 @@
   box-sizing: border-box;
 }
 
-.landing:not(.landing--standalone) .landing-hero {
-  padding-bottom: max(1rem, calc(3.25rem + env(safe-area-inset-bottom)));
+@media (max-width: 767.98px) {
+  .landing {
+    background: #d1fae5;
+  }
+
+  .landing-hero {
+    flex: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background:
+      radial-gradient(
+        ellipse 100% 70% at 15% 10%,
+        rgba(16, 185, 129, 0.14),
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 90% 60% at 92% 88%,
+        rgba(52, 211, 153, 0.2),
+        transparent 50%
+      ),
+      linear-gradient(
+        152deg,
+        #f0fdf4 0%,
+        #ecfdf5 32%,
+        #d1fae5 62%,
+        #a7f3d0 100%
+      );
+  }
 }
 
 .landing-bg {
@@ -32,6 +58,10 @@
   background-position: center;
   background-repeat: no-repeat;
   transition: opacity 0.45s ease-in-out;
+}
+
+.landing:not(.landing--standalone) .landing-hero {
+  padding-bottom: max(1rem, calc(3.25rem + env(safe-area-inset-bottom)));
 }
 
 .landing-panel {
@@ -120,9 +150,15 @@
   gap: 1.25rem;
 }
 
-/* Desktop: box centrato sulla pagina, sfondo a tutto schermo */
+/* Desktop: box centrato, carosello Pexels sul layer .landing-bg */
 @media (min-width: 768px) {
+  .landing {
+    background: #ffffff;
+  }
+
   .landing-hero {
+    min-height: 100vh;
+    background: #e2e8f0;
     padding: 2rem;
   }
 

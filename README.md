@@ -43,14 +43,14 @@ L’app funziona subito con la **dieta predefinita**. Per abilitare il **caricam
 2. Apri `.env.local` e imposta:
    ```env
    OPENAI_API_KEY=sk-proj-...
-   PEXELS_API_KEY=...   # opzionale: slider sfondo a tema food sulla landing
+   PEXELS_API_KEY=...   # opzionale: carosello foto sulla landing (solo desktop)
    ```
    - OpenAI: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-   - Pexels: [pexels.com/api](https://www.pexels.com/api/) (gratuito, per le immagini di sfondo casuali).
+   - Pexels: [pexels.com/api](https://www.pexels.com/api/) — per lo sfondo a rotazione su desktop; su mobile la landing usa solo il gradiente verde.
    - **Microsoft Clarity** (opzionale): [clarity.microsoft.com](https://clarity.microsoft.com/) – crea un progetto, copia il Project ID e imposta `NEXT_PUBLIC_CLARITY_PROJECT_ID=...` in `.env.local` per heatmap e registrazioni sessione.
    - **Hotjar** (opzionale): [hotjar.com](https://www.hotjar.com/) – imposta `NEXT_PUBLIC_HOTJAR_ID=...` (Site ID) e opzionalmente `NEXT_PUBLIC_HOTJAR_SV=6` (script version) per registrazioni e heatmap. Solo in produzione.
 
-Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` la landing userà immagini di fallback per lo sfondo. Senza `NEXT_PUBLIC_CLARITY_PROJECT_ID` Clarity non viene caricato. Clarity e Hotjar vengono caricati solo in produzione (non su localhost).
+Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` lo sfondo desktop usa immagini di fallback. Senza `NEXT_PUBLIC_CLARITY_PROJECT_ID` Clarity non viene caricato. Clarity e Hotjar vengono caricati solo in produzione (non su localhost).
 
 ## Avvio
 

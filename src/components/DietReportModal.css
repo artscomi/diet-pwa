@@ -1,0 +1,136 @@
+.diet-report-share {
+  margin-top: 1.35rem;
+  padding: 1.1rem 1rem 1.15rem;
+  background: linear-gradient(
+    160deg,
+    rgba(16, 185, 129, 0.08) 0%,
+    rgba(248, 250, 252, 0.95) 50%,
+    rgba(59, 130, 246, 0.06) 100%
+  );
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 8px 22px rgba(15, 23, 42, 0.05);
+}
+
+.diet-report-share__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  margin-bottom: 0.95rem;
+}
+
+.diet-report-share__header-icon {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.diet-report-share__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.diet-report-share__blurb {
+  margin: 0;
+  max-width: 24rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.diet-report-share__actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+@media (min-width: 400px) {
+  .diet-report-share__actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+}
+
+.diet-report-share__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: 5.5rem;
+  padding: 1rem 0.85rem;
+  font-family: inherit;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  background: #fff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 2px 8px rgba(15, 23, 42, 0.05);
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.diet-report-share__tile:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 6px 18px rgba(16, 185, 129, 0.12);
+}
+
+.diet-report-share__tile:active {
+  transform: scale(0.98);
+}
+
+.diet-report-share__tile--whatsapp:hover {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(37, 211, 102, 0.07) 100%);
+}
+
+.diet-report-share__tile--mail:hover {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(71, 85, 105, 0.07) 100%);
+}
+
+.diet-report-share__tile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  line-height: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.diet-report-share__tile:hover .diet-report-share__tile-icon {
+  transform: scale(1.06);
+}
+
+.diet-report-share__tile--whatsapp .diet-report-share__tile-icon {
+  color: #25d366;
+}
+
+.diet-report-share__tile--mail .diet-report-share__tile-icon {
+  color: #64748b;
+}
+
+.diet-report-share__tile-label {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+  line-height: 1;
+}

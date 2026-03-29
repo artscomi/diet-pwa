@@ -5,7 +5,6 @@ import { dailyMenus } from "@/data/dailyMenus";
 import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
 import DailyMenu, { type DailyMenuHandle } from "@/components/DailyMenu";
-import { SaveIcon } from "@/components/Icons";
 import ShoppingList from "@/components/ShoppingList";
 import Landing, {
   loadUserDiet,
@@ -14,10 +13,13 @@ import Landing, {
 } from "@/components/Landing";
 import Footer from "@/components/Footer";
 import InstallAppCTA, { isStandalone } from "@/components/InstallAppCTA";
-import { IconShoppingCart, IconToolsKitchen2 } from "@tabler/icons-react";
+import DietReportModal from "@/components/DietReportModal";
+import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
+import { IconDeviceFloppy, IconRefresh } from "@tabler/icons-react";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
+import { clearAdherenceScores } from "@/utils/dietAdherenceScores";
 
-type AppView = "menu" | "shopping";
+type AppView = AppContentView;
 
 export default function App() {
   const [userDiet, setUserDiet] = useState<UserDiet | null>(loadUserDiet);
@@ -27,12 +29,19 @@ export default function App() {
   const [menuPendingSave, setMenuPendingSave] = useState(false);
   const menuRef = useRef<DailyMenuHandle>(null);
   const [appStandalone, setAppStandalone] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   const dailyMenusSource = userDiet?.dailyMenus ?? dailyMenus;
 
   useEffect(() => {
     setAppStandalone(isStandalone());
   }, []);
+
+  useEffect(() => {
+    if (view !== "menu") {
+      setMenuPendingSave(false);
+    }
+  }, [view]);
 
   const getTodayMenu = useCallback((): DailyMenuType => {
     const today = new Date();
@@ -53,6 +62,39 @@ export default function App() {
       day: "numeric",
     });
   };
+
+  const trySetView = useCallback(
+    (next: AppView) => {
+      if (menuPendingSave && view === "menu" && next !== "menu") {
+        if (
+          !window.confirm(
+            "Hai modifiche non salvate al menu. Uscire senza salvare?",
+          )
+        ) {
+          return;
+        }
+      }
+      setView(next);
+    },
+    [menuPendingSave, view],
+  );
+
+  const handleNewDiet = useCallback(() => {
+    clearSavedDailyMenus();
+    clearAdherenceScores();
+    clearUserDiet();
+    setUserDiet(null);
+  }, []);
+
+  const handleChangeDietClick = useCallback(() => {
+    const warnUnsaved =
+      menuPendingSave && view === "menu"
+        ? "Hai modifiche non salvate al menu. "
+        : "";
+    const msg = `${warnUnsaved}Vuoi cambiare dieta? La dieta attuale e i dati collegati verranno rimossi da questo dispositivo.`;
+    if (!window.confirm(msg)) return;
+    handleNewDiet();
+  }, [handleNewDiet, menuPendingSave, view]);
 
   useEffect(() => {
     if (!userDiet) return;
@@ -152,32 +194,35 @@ export default function App() {
     return <Landing onDietLoaded={setUserDiet} />;
   }
 
+  const appClassName = [
+    "app",
+    appStandalone ? "app--standalone" : "",
+    menuPendingSave && view === "menu" ? "app--pending-menu-save" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className={`app${appStandalone ? " app--standalone" : ""}`}>
+    <div className={appClassName}>
       <header className="app-header">
         <div className="app-header__inner">
           <h1 className="app-header__logo">
             <span className="app-header__title">PocketDiet</span>
           </h1>
-          <div className="app-header__meta">
-            <button
-              type="button"
-              className="change-diet-btn"
-              onClick={() => {
-                clearSavedDailyMenus();
-                clearUserDiet();
-                setUserDiet(null);
-                setView("menu");
-              }}
-            >
-              Cambia dieta
-            </button>
-          </div>
+          <button
+            type="button"
+            className="app-header__change-diet"
+            onClick={handleChangeDietClick}
+            aria-label="Cambia dieta e ricomincia da capo"
+          >
+            <IconRefresh size={18} stroke={2} aria-hidden />
+            Cambia dieta
+          </button>
         </div>
       </header>
 
       <main className="app-main">
-        {view === "menu" ? (
+        {view === "menu" &&
           currentMenu && (
             <DailyMenu
               ref={menuRef}
@@ -191,9 +236,10 @@ export default function App() {
                 defaultDietData
               }
               uploadedFile={userDiet.uploadedFile}
+              adherenceDateKey={currentMenu?.date ?? todayDate}
             />
-          )
-        ) : (
+          )}
+        {view === "shopping" && (
           <ShoppingList
             dailyMenus={dailyMenusSource}
             todayMenu={currentMenu}
@@ -203,41 +249,33 @@ export default function App() {
       </main>
 
       <div className="app-bottom-dock">
-        <div className="app-view-cta-bar">
-          {view === "menu" ? (
-            menuPendingSave ? (
-              <button
-                type="button"
-                className="app-view-cta app-view-cta--primary"
-                onClick={() => menuRef.current?.save()}
-                aria-label="Salva modifiche al menu"
-              >
-                <SaveIcon size={24} style={{ flexShrink: 0 }} />
-                <span>Salva</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="app-view-cta app-view-cta--primary"
-                onClick={() => setView("shopping")}
-              >
-                <IconShoppingCart size={24} stroke={2} aria-hidden />
-                <span>Lista della spesa</span>
-              </button>
-            )
-          ) : (
+        {menuPendingSave && view === "menu" && (
+          <div className="app-save-bar">
             <button
               type="button"
-              className="app-view-cta app-view-cta--secondary"
-              onClick={() => setView("menu")}
+              className="app-save-bar__btn"
+              onClick={() => menuRef.current?.save()}
+              aria-label="Salva le modifiche al menu del giorno"
             >
-              <IconToolsKitchen2 size={24} stroke={2} aria-hidden />
-              <span>I tuoi pasti</span>
+              <IconDeviceFloppy size={20} stroke={2} aria-hidden />
+              Salva modifiche
             </button>
-          )}
+          </div>
+        )}
+        <div className="app-bottom-panel">
+          <AppBottomNav
+            active={view}
+            onSelectView={trySetView}
+            onOpenReport={() => setReportModalOpen(true)}
+          />
         </div>
         {!appStandalone && <InstallAppCTA variant="stickyBar" />}
       </div>
+
+      <DietReportModal
+        open={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+      />
 
       <Footer showInstallCTA={false} />
     </div>

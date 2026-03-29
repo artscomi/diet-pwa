@@ -10,7 +10,7 @@ interface IngredientSelectorProps {
   selected: FoodItem | null | undefined
   onSelect: (option: FoodItem) => void
   placeholder?: string
-  /** Azione (es. icona modifica) mostrata dentro il pulsante accanto al testo selezionato */
+  /** Contenuto opzionale accanto al testo selezionato (es. azione secondaria) */
   trailingAction?: React.ReactNode
 }
 

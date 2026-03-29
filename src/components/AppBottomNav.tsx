@@ -27,15 +27,6 @@ export default function AppBottomNav({
     <nav className="app-tab-nav" aria-label="Navigazione principale">
       <button
         type="button"
-        className="app-tab-nav__item app-tab-nav__item--action"
-        onClick={onOpenReport}
-        aria-label="Apri il report sul rispetto della dieta"
-      >
-        <IconChartBar size={ICON} stroke={STROKE} aria-hidden className="app-tab-nav__icon" />
-        <span className="app-tab-nav__label">Report</span>
-      </button>
-      <button
-        type="button"
         className={`app-tab-nav__item${active === "menu" ? " app-tab-nav__item--active" : ""}`}
         onClick={() => onSelectView("menu")}
         aria-current={active === "menu" ? "page" : undefined}
@@ -61,6 +52,15 @@ export default function AppBottomNav({
           className="app-tab-nav__icon"
         />
         <span className="app-tab-nav__label">Spesa</span>
+      </button>
+      <button
+        type="button"
+        className="app-tab-nav__item app-tab-nav__item--action"
+        onClick={onOpenReport}
+        aria-label="Apri il report sul rispetto della dieta"
+      >
+        <IconChartBar size={ICON} stroke={STROKE} aria-hidden className="app-tab-nav__icon" />
+        <span className="app-tab-nav__label">Report</span>
       </button>
     </nav>
   );

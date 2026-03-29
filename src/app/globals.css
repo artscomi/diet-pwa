@@ -215,51 +215,34 @@ button {
   flex-direction: column;
   background: #ffffff;
   color: #1a1a1a;
-  /* Dock: tab bar (+ striscia Salva se presente) + install sticky */
-  --app-dock-tab: max(
-    4.35rem,
-    calc(3.85rem + env(safe-area-inset-bottom))
-  );
-  --app-save-strip: 0px;
-  --app-main-cta-stack: calc(var(--app-dock-tab) + var(--app-save-strip));
-  --app-install-sticky-stack: 2.4rem;
-  --app-view-cta-stack: calc(
-    var(--app-main-cta-stack) + var(--app-install-sticky-stack)
+}
+
+/* Barra fissa in basso (tab / Salva + Install): solo il footer dell’app aggiunge il padding sotto */
+
+.app > .site-footer {
+  padding-bottom: calc(
+    2rem + max(4.35rem, calc(3.85rem + env(safe-area-inset-bottom, 0px))) + 2.4rem
   );
 }
 
-.app.app--pending-menu-save {
-  --app-save-strip: max(3.05rem, calc(2.65rem + env(safe-area-inset-bottom) * 0.35));
-}
-
-.app.app--standalone {
-  --app-install-sticky-stack: 0px;
-  --app-view-cta-stack: var(--app-main-cta-stack);
+.app.app--standalone > .site-footer {
+  padding-bottom: calc(
+    2rem + max(4.35rem, calc(3.85rem + env(safe-area-inset-bottom, 0px)))
+  );
 }
 
 @media (min-width: 768px) {
-  .app {
-    --app-dock-tab: max(
-      4rem,
-      calc(3.55rem + env(safe-area-inset-bottom))
-    );
-    --app-install-sticky-stack: 2.25rem;
-    --app-view-cta-stack: calc(
-      var(--app-main-cta-stack) + var(--app-install-sticky-stack)
+  .app > .site-footer {
+    padding-bottom: calc(
+      2rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px))) + 2.25rem
     );
   }
 
-  .app.app--standalone {
-    --app-view-cta-stack: var(--app-main-cta-stack);
+  .app.app--standalone > .site-footer {
+    padding-bottom: calc(
+      2rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px)))
+    );
   }
-}
-
-/* Footer: stesso respiro sotto su mobile e desktop (dock CTA + install) */
-.app > .site-footer {
-  padding-bottom: calc(
-    max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem)) +
-      var(--app-view-cta-stack) + 0.5rem
-  );
 }
 
 /* Dock: CTA principale sopra, install sotto (verso il bordo schermo) */
@@ -455,6 +438,44 @@ button {
   border-bottom: 1px solid rgba(16, 185, 129, 0.2);
 }
 
+/* Sostituisce la tab bar: stesso pannello bianco, safe area come AppBottomNav */
+.app-bottom-panel > .app-save-bar {
+  border-bottom: none;
+  padding-top: 0.5rem;
+  padding-bottom: max(0.45rem, calc(0.35rem + env(safe-area-inset-bottom, 0px)));
+}
+
+.app-save-bar__inner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .app-bottom-panel > .app-save-bar {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .app-save-bar__inner {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-save-bar__inner {
+    max-width: 960px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
 .app-save-bar__btn {
   display: inline-flex;
   align-items: center;
@@ -646,16 +667,8 @@ button {
   flex: 1;
   width: 100%;
   padding: 1rem 1.25rem;
-  padding-bottom: calc(1rem + var(--app-view-cta-stack));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 767px) {
-  .app-main {
-    /* Meno respiro “vuoto” sotto il menu: il dock è già coperto da --app-view-cta-stack */
-    padding-bottom: calc(0.35rem + var(--app-view-cta-stack));
-  }
 }
 
 @media (min-width: 768px) {

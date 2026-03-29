@@ -194,11 +194,7 @@ export default function App() {
     return <Landing onDietLoaded={setUserDiet} />;
   }
 
-  const appClassName = [
-    "app",
-    appStandalone ? "app--standalone" : "",
-    menuPendingSave && view === "menu" ? "app--pending-menu-save" : "",
-  ]
+  const appClassName = ["app", appStandalone ? "app--standalone" : ""]
     .filter(Boolean)
     .join(" ");
 
@@ -249,25 +245,28 @@ export default function App() {
       </main>
 
       <div className="app-bottom-dock">
-        {menuPendingSave && view === "menu" && (
-          <div className="app-save-bar">
-            <button
-              type="button"
-              className="app-save-bar__btn"
-              onClick={() => menuRef.current?.save()}
-              aria-label="Salva le modifiche al menu del giorno"
-            >
-              <IconDeviceFloppy size={20} stroke={2} aria-hidden />
-              Salva modifiche
-            </button>
-          </div>
-        )}
         <div className="app-bottom-panel">
-          <AppBottomNav
-            active={view}
-            onSelectView={trySetView}
-            onOpenReport={() => setReportModalOpen(true)}
-          />
+          {menuPendingSave && view === "menu" ? (
+            <div className="app-save-bar">
+              <div className="app-save-bar__inner">
+                <button
+                  type="button"
+                  className="app-save-bar__btn"
+                  onClick={() => menuRef.current?.save()}
+                  aria-label="Salva le modifiche al menu del giorno"
+                >
+                  <IconDeviceFloppy size={20} stroke={2} aria-hidden />
+                  Salva modifiche
+                </button>
+              </div>
+            </div>
+          ) : (
+            <AppBottomNav
+              active={view}
+              onSelectView={trySetView}
+              onOpenReport={() => setReportModalOpen(true)}
+            />
+          )}
         </div>
         {!appStandalone && <InstallAppCTA variant="stickyBar" />}
       </div>

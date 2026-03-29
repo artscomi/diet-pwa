@@ -9,7 +9,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { dietData as defaultDietData } from "@/data/dietData";
-import EditableIngredientSelector from "./EditableIngredientSelector";
+import IngredientSelector from "./IngredientSelector";
 import {
   SunIcon,
   UtensilsIcon,
@@ -136,7 +136,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Colazione
               </h4>
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Carboidrati"
                 options={dietData.colazione.carboidrati}
                 selected={editedMenu.colazione?.carboidrati}
@@ -150,7 +150,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   })
                 }
               />
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Frutta"
                 options={dietData.colazione.frutta}
                 selected={firstFoodItem(editedMenu.colazione?.frutta)}
@@ -167,7 +167,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   })
                 }
               />
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Proteine"
                 options={dietData.colazione.proteine}
                 selected={editedMenu.colazione?.proteine}
@@ -192,7 +192,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Spuntino Mattutino
               </h4>
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Seleziona"
                 options={dietData.spuntinoMattutino}
                 selected={editedMenu.spuntinoMattutino}
@@ -214,7 +214,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Pranzo
               </h4>
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Carboidrati"
                 options={dietData.pranzo.carboidrati}
                 selected={editedMenu.pranzo?.carboidrati}
@@ -225,7 +225,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   })
                 }
               />
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Proteine"
                 options={dietData.pranzo.proteine}
                 selected={editedMenu.pranzo?.proteine}
@@ -236,7 +236,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   })
                 }
               />
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Verdure"
                 options={dietData.pranzo.verdure}
                 selected={firstFoodItem(editedMenu.pranzo?.verdure)}
@@ -267,7 +267,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Merenda
               </h4>
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Seleziona"
                 options={dietData.merenda}
                 selected={editedMenu.merenda}
@@ -289,7 +289,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Cena
               </h4>
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Pane"
                 options={dietData.cena.pane}
                 selected={editedMenu.cena?.pane}
@@ -300,7 +300,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   })
                 }
               />
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Verdure"
                 options={dietData.cena.verdure}
                 selected={firstFoodItem(editedMenu.cena?.verdure)}
@@ -317,7 +317,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   })
                 }
               />
-              <EditableIngredientSelector
+              <IngredientSelector
                 label="Proteine"
                 options={dietData.cena.proteine}
                 selected={editedMenu.cena?.proteine}
@@ -343,7 +343,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Durante la giornata
                 </h4>
-                <EditableIngredientSelector
+                <IngredientSelector
                   label="Olio"
                   options={dietData.olio}
                   selected={editedMenu.olio}

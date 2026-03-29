@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import Image from "next/image";
 import { dietData as defaultDietData } from "@/data/dietData";
 import EditableIngredientSelector from "./EditableIngredientSelector";

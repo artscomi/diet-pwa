@@ -43,18 +43,33 @@ function saveDays(d: number) {
   localStorage.setItem(LS_DAYS, String(d));
 }
 
+const DIET_MENU_PREFIX = "dietMenu_";
+
+function loadSavedMenuForDateKey(dateKey: string): DailyMenuType | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(`${DIET_MENU_PREFIX}${dateKey}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as DailyMenuType & { date?: string };
+    if (parsed.date !== undefined && parsed.date !== dateKey) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 interface ShoppingListProps {
   dailyMenus: DailyMenuType[];
-  /** Pasti del giorno correnti (modifiche salvate): usato per la lista al posto del template di oggi. */
-  todayMenu?: DailyMenuType | null;
   /** Allineato al giorno “oggi” dell’app (`Date.toDateString()`). */
   todayKey: string;
+  /** Incrementato al salvataggio di un menu (qualsiasi giorno) per ricalcolare la lista. */
+  menuSaveRevision?: number;
 }
 
 export default function ShoppingList({
   dailyMenus,
-  todayMenu = null,
   todayKey,
+  menuSaveRevision = 0,
 }: ShoppingListProps) {
   const [days, setDays] = useState(loadDays);
   const [checkedIds, setCheckedIds] = useState(loadChecked);
@@ -63,10 +78,10 @@ export default function ShoppingList({
   const items = useMemo(
     () =>
       buildShoppingList(dailyMenus, days, checkedIds, {
-        todayMenu,
         todayKey,
+        resolveSavedMenu: loadSavedMenuForDateKey,
       }),
-    [dailyMenus, days, checkedIds, todayMenu, todayKey],
+    [dailyMenus, days, checkedIds, todayKey, menuSaveRevision], // eslint-disable-line react-hooks/exhaustive-deps -- menuSaveRevision dopo salvataggio su qualsiasi giorno
   );
 
   const grouped = useMemo(() => {

@@ -58,11 +58,32 @@ function makeId(name: string, unit: string): string {
   return `${name.toLowerCase().trim()}__${unit.toLowerCase().trim()}`;
 }
 
+function addDaysToDateKey(dateKey: string, deltaDays: number): string {
+  const d = new Date(dateKey);
+  d.setDate(d.getDate() + deltaDays);
+  return d.toDateString();
+}
+
+/** Stesso criterio di rotazione menu dell’app (`getMenuForDateKey`). */
+function menuIndexForDateKey(dateKey: string, menuCount: number): number {
+  if (menuCount <= 0) return 0;
+  const d = new Date(dateKey);
+  const startOfYear = new Date(d.getFullYear(), 0, 0);
+  const diff = d.getTime() - startOfYear.getTime();
+  const dayMs = 1000 * 60 * 60 * 24;
+  if (!Number.isFinite(diff)) return 0;
+  const dayOfYear = Math.floor(diff / dayMs);
+  return ((dayOfYear % menuCount) + menuCount) % menuCount;
+}
+
 export type BuildShoppingListOptions = {
-  /** Menu di oggi personalizzato (salvato in locale); sostituisce il solo template del giorno 0. */
-  todayMenu?: DailyMenu | null;
-  /** Chiave giorno (es. `Date.toDateString()`); deve coincidere con `todayMenu.date` se presente. */
+  /** Chiave del giorno 0 (`Date.toDateString()`). Default: oggi locale. */
   todayKey?: string;
+  /**
+   * Per ogni giorno del periodo: se restituisce un menu con `date` assente o uguale a quella data,
+   * quella versione sostituisce il template (es. menu modificato salvato in locale).
+   */
+  resolveSavedMenu?: (dateKey: string) => DailyMenu | null | undefined;
 };
 
 export function buildShoppingList(
@@ -72,20 +93,21 @@ export function buildShoppingList(
   opts?: BuildShoppingListOptions,
 ): ShoppingItem[] {
   const today = new Date();
-  const startOfYear = new Date(today.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-  const todayKey = opts?.todayKey ?? today.toDateString();
+  const baseKey = opts?.todayKey ?? today.toDateString();
+  const len = dailyMenus.length;
 
   const aggregated = new Map<string, { name: string; totalQuantity: number; unit: string; category: ShoppingCategory }>();
 
   for (let d = 0; d < days; d++) {
-    const menuIndex = ((dayOfYear + d) % dailyMenus.length);
-    const override = opts?.todayMenu;
-    const useOverride =
-      d === 0 &&
-      override &&
-      (override.date === undefined || override.date === todayKey);
-    const menu = useOverride ? override : dailyMenus[menuIndex];
+    const dateKey = addDaysToDateKey(baseKey, d);
+    const menuIndex = menuIndexForDateKey(dateKey, len);
+    const template = len > 0 ? dailyMenus[menuIndex] : undefined;
+
+    const resolved = opts?.resolveSavedMenu?.(dateKey);
+    const useSaved =
+      resolved &&
+      (resolved.date === undefined || resolved.date === dateKey);
+    const menu = useSaved ? resolved : template;
     if (!menu) continue;
 
     for (const { item, category } of extractItems(menu)) {

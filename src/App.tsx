@@ -44,7 +44,7 @@ export default function App() {
   const menuRef = useRef<DailyMenuHandle>(null);
   const [appStandalone, setAppStandalone] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
-  /** Invalida il menu “oggi” per la lista spesa dopo un salvataggio su quella data. */
+  /** Incrementato a ogni salvataggio menu: la lista spesa rilegge i `dietMenu_*` in locale. */
   const [shoppingMenuRev, setShoppingMenuRev] = useState(0);
   const todayDateRef = useRef(todayDate);
   todayDateRef.current = todayDate;
@@ -99,22 +99,6 @@ export default function App() {
     },
     [dailyMenusSource],
   );
-
-  const shoppingTodayMenu = useMemo((): DailyMenuType => {
-    if (typeof window === "undefined") {
-      return getMenuForDateKey(todayDate);
-    }
-    const saved = localStorage.getItem(`dietMenu_${todayDate}`);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as DailyMenuType & { date?: string };
-        if (parsed.date === todayDate) return parsed;
-      } catch {
-        /* ignore */
-      }
-    }
-    return getMenuForDateKey(todayDate);
-  }, [todayDate, getMenuForDateKey, shoppingMenuRev]); // eslint-disable-line react-hooks/exhaustive-deps -- shoppingMenuRev forza rilettura LS dopo salvataggio su oggi
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("it-IT", {
@@ -230,9 +214,7 @@ export default function App() {
       JSON.stringify(menuToSave),
     );
     setCurrentMenu(menuToSave);
-    if (viewedDateKey === todayDate) {
-      setShoppingMenuRev((r) => r + 1);
-    }
+    setShoppingMenuRev((r) => r + 1);
   };
 
   if (!userDiet) {
@@ -319,8 +301,8 @@ export default function App() {
         {view === "shopping" && (
           <ShoppingList
             dailyMenus={dailyMenusSource}
-            todayMenu={shoppingTodayMenu}
             todayKey={todayDate}
+            menuSaveRevision={shoppingMenuRev}
           />
         )}
       </main>

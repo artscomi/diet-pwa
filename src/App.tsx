@@ -15,6 +15,7 @@ import Landing, {
 import Footer from "@/components/Footer";
 import InstallAppCTA, { isStandalone } from "@/components/InstallAppCTA";
 import DietReportModal from "@/components/DietReportModal";
+import AppToast from "@/components/AppToast";
 import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
 import {
   IconChevronLeft,
@@ -24,6 +25,10 @@ import {
 } from "@tabler/icons-react";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 import { clearAdherenceScores } from "@/utils/dietAdherenceScores";
+import {
+  applyMealSlotFromSource,
+  type ReplicateMealSlot,
+} from "@/utils/replicateMeal";
 
 type AppView = AppContentView;
 
@@ -46,6 +51,8 @@ export default function App() {
   const [reportModalOpen, setReportModalOpen] = useState(false);
   /** Incrementato a ogni salvataggio menu: la lista spesa rilegge i `dietMenu_*` in locale. */
   const [shoppingMenuRev, setShoppingMenuRev] = useState(0);
+  const [replicateToast, setReplicateToast] = useState<string | null>(null);
+  const dismissReplicateToast = useCallback(() => setReplicateToast(null), []);
   const todayDateRef = useRef(todayDate);
   todayDateRef.current = todayDate;
 
@@ -217,6 +224,29 @@ export default function App() {
     setShoppingMenuRev((r) => r + 1);
   };
 
+  const handleReplicateMealToNextDay = useCallback(
+    (slot: ReplicateMealSlot) => {
+      if (!currentMenu) return;
+      const nextKey = addDaysToDateKey(viewedDateKey, 1);
+      let base: DailyMenuType = getMenuForDateKey(nextKey);
+      try {
+        const raw = localStorage.getItem(`dietMenu_${nextKey}`);
+        if (raw) {
+          const parsed = JSON.parse(raw) as DailyMenuType & { date?: string };
+          if (parsed.date === nextKey) base = parsed;
+        }
+      } catch {
+        /* ignore */
+      }
+      const merged = applyMealSlotFromSource(base, currentMenu, slot);
+      const toSave = { ...merged, date: nextKey };
+      localStorage.setItem(`dietMenu_${nextKey}`, JSON.stringify(toSave));
+      setShoppingMenuRev((r) => r + 1);
+      setReplicateToast("Pasto copiato nel giorno successivo.");
+    },
+    [currentMenu, viewedDateKey, getMenuForDateKey],
+  );
+
   if (!userDiet) {
     return <Landing onDietLoaded={setUserDiet} />;
   }
@@ -288,6 +318,7 @@ export default function App() {
             ref={menuRef}
             menu={currentMenu}
             onSave={handleSaveMenu}
+            onReplicateMealToNextDay={handleReplicateMealToNextDay}
             onPendingChange={setMenuPendingSave}
             dietData={
               userDiet.dietData ??
@@ -338,6 +369,8 @@ export default function App() {
         open={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
       />
+
+      <AppToast message={replicateToast} onDismiss={dismissReplicateToast} />
 
       <Footer showInstallCTA={false} />
     </div>

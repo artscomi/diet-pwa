@@ -32,6 +32,8 @@ import {
   updateFoodAlternativesSlot,
 } from "@/utils/foodAlternatives";
 import MenuAdherenceBlock from "./MenuAdherenceBlock";
+import type { ReplicateMealSlot } from "@/utils/replicateMeal";
+import { IconCalendarRepeat } from "@tabler/icons-react";
 import "./DailyMenu.css";
 
 export type DailyMenuHandle = { save: () => void };
@@ -40,6 +42,8 @@ interface DailyMenuProps {
   menu: DailyMenu;
   displayDate?: string;
   onSave?: (menu: DailyMenu) => void;
+  /** Copia un solo pasto nel menu del giorno calendariale successivo (salvato in locale). */
+  onReplicateMealToNextDay?: (slot: ReplicateMealSlot) => void;
   onCancel?: () => void;
   /** True mentre il menu è in modalità modifica (CTA sticky → Salva). */
   onPendingChange?: (pending: boolean) => void;
@@ -59,12 +63,45 @@ function formatFood(
   return `${item.name} (${item.quantity} ${item.unit})`;
 }
 
+function SectionHeadActions({
+  onReplicate,
+  onEdit,
+}: {
+  onReplicate?: () => void;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="menu-section__actions">
+      {onReplicate ? (
+        <button
+          type="button"
+          className="menu-section__replicate"
+          onClick={onReplicate}
+          title="Copia nel giorno successivo"
+          aria-label="Copia questo pasto nel giorno successivo"
+        >
+          <IconCalendarRepeat size={18} stroke={2} aria-hidden />
+        </button>
+      ) : null}
+      <button
+        type="button"
+        className="menu-section__edit"
+        onClick={onEdit}
+        aria-label="Modifica il menu del giorno"
+      >
+        <EditIcon size={18} />
+      </button>
+    </div>
+  );
+}
+
 const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
   function DailyMenuComponent(
     {
       menu,
       displayDate,
       onSave,
+      onReplicateMealToNextDay,
       onCancel,
       onPendingChange,
       dietData: dietDataProp,
@@ -492,14 +529,14 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Colazione
               </h4>
-              <button
-                type="button"
-                className="menu-section__edit"
-                onClick={() => setIsEditing(true)}
-                aria-label="Modifica il menu del giorno"
-              >
-                <EditIcon size={18} />
-              </button>
+              <SectionHeadActions
+                onReplicate={
+                  onReplicateMealToNextDay
+                    ? () => onReplicateMealToNextDay("colazione")
+                    : undefined
+                }
+                onEdit={() => setIsEditing(true)}
+              />
             </div>
             {menu.colazione?.carboidrati && (
               <p>
@@ -533,14 +570,14 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Spuntino Mattutino
                 </h4>
-                <button
-                  type="button"
-                  className="menu-section__edit"
-                  onClick={() => setIsEditing(true)}
-                  aria-label="Modifica il menu del giorno"
-                >
-                  <EditIcon size={18} />
-                </button>
+                <SectionHeadActions
+                  onReplicate={
+                    onReplicateMealToNextDay
+                      ? () => onReplicateMealToNextDay("spuntinoMattutino")
+                      : undefined
+                  }
+                  onEdit={() => setIsEditing(true)}
+                />
               </div>
               <p>{formatFood(menu.spuntinoMattutino)}</p>
             </div>
@@ -559,14 +596,14 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Pranzo
               </h4>
-              <button
-                type="button"
-                className="menu-section__edit"
-                onClick={() => setIsEditing(true)}
-                aria-label="Modifica il menu del giorno"
-              >
-                <EditIcon size={18} />
-              </button>
+              <SectionHeadActions
+                onReplicate={
+                  onReplicateMealToNextDay
+                    ? () => onReplicateMealToNextDay("pranzo")
+                    : undefined
+                }
+                onEdit={() => setIsEditing(true)}
+              />
             </div>
             {menu.pranzo?.carboidrati && (
               <p>
@@ -600,14 +637,14 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Merenda
                 </h4>
-                <button
-                  type="button"
-                  className="menu-section__edit"
-                  onClick={() => setIsEditing(true)}
-                  aria-label="Modifica il menu del giorno"
-                >
-                  <EditIcon size={18} />
-                </button>
+                <SectionHeadActions
+                  onReplicate={
+                    onReplicateMealToNextDay
+                      ? () => onReplicateMealToNextDay("merenda")
+                      : undefined
+                  }
+                  onEdit={() => setIsEditing(true)}
+                />
               </div>
               <p>{formatFood(menu.merenda)}</p>
             </div>
@@ -626,14 +663,14 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Cena
               </h4>
-              <button
-                type="button"
-                className="menu-section__edit"
-                onClick={() => setIsEditing(true)}
-                aria-label="Modifica il menu del giorno"
-              >
-                <EditIcon size={18} />
-              </button>
+              <SectionHeadActions
+                onReplicate={
+                  onReplicateMealToNextDay
+                    ? () => onReplicateMealToNextDay("cena")
+                    : undefined
+                }
+                onEdit={() => setIsEditing(true)}
+              />
             </div>
             {menu.cena?.pane && (
               <p>
@@ -666,14 +703,14 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Durante la giornata
                 </h4>
-                <button
-                  type="button"
-                  className="menu-section__edit"
-                  onClick={() => setIsEditing(true)}
-                  aria-label="Modifica il menu del giorno"
-                >
-                  <EditIcon size={18} />
-                </button>
+                <SectionHeadActions
+                  onReplicate={
+                    onReplicateMealToNextDay
+                      ? () => onReplicateMealToNextDay("duranteLaGiornata")
+                      : undefined
+                  }
+                  onEdit={() => setIsEditing(true)}
+                />
               </div>
               {menu.duranteLaGiornata && (
                 <p className="menu-notes">{menu.duranteLaGiornata}</p>

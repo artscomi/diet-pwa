@@ -183,6 +183,47 @@
   min-width: 0;
 }
 
+.menu-section__actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.2rem;
+}
+
+.menu-section__replicate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.menu-section__replicate:hover {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+}
+
+.menu-section__replicate:focus-visible {
+  outline: 2px solid #64748b;
+  outline-offset: 2px;
+}
+
+.menu-section__replicate:active {
+  transform: scale(0.95);
+}
+
 .menu-section__edit {
   flex-shrink: 0;
   display: flex;

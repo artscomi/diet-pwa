@@ -8,6 +8,8 @@ import {
   useImperativeHandle,
   forwardRef,
   useRef,
+  type Dispatch,
+  type SetStateAction,
 } from "react";
 import Image from "next/image";
 import { dietData as defaultDietData } from "@/data/dietData";
@@ -18,7 +20,6 @@ import {
   MoonIcon,
   PeanutIcon,
   DropletIcon,
-  TimesIcon,
   EditIcon,
   ListIcon,
 } from "./Icons";
@@ -71,6 +72,224 @@ const MEAL_SLOT_GROUP_LABEL: Record<ReplicateMealSlot, string> = {
   duranteLaGiornata: "Stato durante la giornata",
 };
 
+/** Titoli pasto (icone custom in `h4`): stessa dimensione in lettura e modifica. */
+const MEAL_CARD_HEADING_ICON_PX = 20;
+/** Barra azioni (copia / checkbox / modifica) e voci pannello stato: stessa dimensione. */
+const MEAL_CARD_ACTION_ICON_PX = 22;
+
+const MEAL_EDIT_MODAL_TITLE: Record<ReplicateMealSlot, string> = {
+  colazione: "Modifica colazione",
+  spuntinoMattutino: "Modifica spuntino mattutino",
+  pranzo: "Modifica pranzo",
+  merenda: "Modifica merenda",
+  cena: "Modifica cena",
+  duranteLaGiornata: "Modifica durante la giornata",
+};
+
+function cloneMenu(m: DailyMenu): DailyMenu {
+  return typeof structuredClone === "function"
+    ? structuredClone(m)
+    : (JSON.parse(JSON.stringify(m)) as DailyMenu);
+}
+
+function MealEditModalFields({
+  slot,
+  draft,
+  setDraft,
+  dietData,
+}: {
+  slot: ReplicateMealSlot;
+  draft: DailyMenu;
+  setDraft: Dispatch<SetStateAction<DailyMenu>>;
+  dietData: DietData;
+}) {
+  switch (slot) {
+    case "colazione":
+      return (
+        <div className="meal-edit-modal-fields">
+          <IngredientSelector
+            label="Carboidrati"
+            options={dietData.colazione.carboidrati}
+            selected={draft.colazione?.carboidrati}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                colazione: {
+                  ...prev.colazione,
+                  carboidrati: selected,
+                },
+              }))
+            }
+          />
+          <IngredientSelector
+            label="Frutta"
+            options={dietData.colazione.frutta}
+            selected={firstFoodItem(draft.colazione?.frutta)}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                colazione: {
+                  ...prev.colazione,
+                  frutta: updateFoodAlternativesSlot(
+                    prev.colazione?.frutta,
+                    selected,
+                  ),
+                },
+              }))
+            }
+          />
+          <IngredientSelector
+            label="Proteine"
+            options={dietData.colazione.proteine}
+            selected={draft.colazione?.proteine}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                colazione: { ...prev.colazione, proteine: selected },
+              }))
+            }
+          />
+        </div>
+      );
+    case "spuntinoMattutino":
+      return (
+        <div className="meal-edit-modal-fields">
+          <IngredientSelector
+            label="Seleziona"
+            options={dietData.spuntinoMattutino}
+            selected={draft.spuntinoMattutino}
+            onSelect={(selected) =>
+              setDraft((prev) => ({ ...prev, spuntinoMattutino: selected }))
+            }
+          />
+        </div>
+      );
+    case "pranzo":
+      return (
+        <div className="meal-edit-modal-fields">
+          <IngredientSelector
+            label="Carboidrati"
+            options={dietData.pranzo.carboidrati}
+            selected={draft.pranzo?.carboidrati}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                pranzo: { ...prev.pranzo, carboidrati: selected },
+              }))
+            }
+          />
+          <IngredientSelector
+            label="Proteine"
+            options={dietData.pranzo.proteine}
+            selected={draft.pranzo?.proteine}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                pranzo: { ...prev.pranzo, proteine: selected },
+              }))
+            }
+          />
+          <IngredientSelector
+            label="Verdure"
+            options={dietData.pranzo.verdure}
+            selected={firstFoodItem(draft.pranzo?.verdure)}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                pranzo: {
+                  ...prev.pranzo,
+                  verdure: updateFoodAlternativesSlot(
+                    prev.pranzo?.verdure,
+                    selected,
+                  ),
+                },
+              }))
+            }
+          />
+        </div>
+      );
+    case "merenda":
+      return (
+        <div className="meal-edit-modal-fields">
+          <IngredientSelector
+            label="Seleziona"
+            options={dietData.merenda}
+            selected={draft.merenda}
+            onSelect={(selected) =>
+              setDraft((prev) => ({ ...prev, merenda: selected }))
+            }
+          />
+        </div>
+      );
+    case "cena":
+      return (
+        <div className="meal-edit-modal-fields">
+          <IngredientSelector
+            label="Pane"
+            options={dietData.cena.pane}
+            selected={draft.cena?.pane}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                cena: { ...prev.cena, pane: selected },
+              }))
+            }
+          />
+          <IngredientSelector
+            label="Verdure"
+            options={dietData.cena.verdure}
+            selected={firstFoodItem(draft.cena?.verdure)}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                cena: {
+                  ...prev.cena,
+                  verdure: updateFoodAlternativesSlot(
+                    prev.cena?.verdure,
+                    selected,
+                  ),
+                },
+              }))
+            }
+          />
+          <IngredientSelector
+            label="Proteine"
+            options={dietData.cena.proteine}
+            selected={draft.cena?.proteine}
+            onSelect={(selected) =>
+              setDraft((prev) => ({
+                ...prev,
+                cena: { ...prev.cena, proteine: selected },
+              }))
+            }
+          />
+        </div>
+      );
+    case "duranteLaGiornata":
+      if (!dietData.olio?.length) {
+        return (
+          <p className="meal-edit-modal-fields__empty">
+            Nessuna opzione olio configurata per questa dieta.
+          </p>
+        );
+      }
+      return (
+        <div className="meal-edit-modal-fields">
+          <IngredientSelector
+            label="Olio"
+            options={dietData.olio}
+            selected={draft.olio}
+            onSelect={(selected) =>
+              setDraft((prev) => ({ ...prev, olio: selected }))
+            }
+          />
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
 export type DailyMenuHandle = { save: () => void };
 
 interface DailyMenuProps {
@@ -80,7 +299,7 @@ interface DailyMenuProps {
   /** Copia un solo pasto nel menu del giorno calendariale successivo (salvato in locale). */
   onReplicateMealToNextDay?: (slot: ReplicateMealSlot) => void;
   onCancel?: () => void;
-  /** True mentre il menu è in modalità modifica (CTA sticky → Salva). */
+  /** Il parent riceve sempre `false` (nessuna modifica “globale” in sospeso: si salva dalla modale pasto). */
   onPendingChange?: (pending: boolean) => void;
   dietData?: DietData;
   /** Anteprima del file caricato (solo se dieta da upload) */
@@ -134,9 +353,11 @@ function MenuSectionHeadActions({
   onReplicate,
   onEdit,
   mealCompletion,
+  editAriaLabel = "Modifica questo pasto",
 }: {
   onReplicate?: () => void;
   onEdit: () => void;
+  editAriaLabel?: string;
   mealCompletion?: {
     slot: ReplicateMealSlot;
     value: MealCompletionStatus | undefined;
@@ -193,7 +414,11 @@ function MenuSectionHeadActions({
             title="Copia nel giorno successivo"
             aria-label="Copia questo pasto nel giorno successivo"
           >
-            <IconCopyPlus size={24} stroke={2} aria-hidden />
+            <IconCopyPlus
+              size={MEAL_CARD_ACTION_ICON_PX}
+              stroke={2}
+              aria-hidden
+            />
           </button>
         ) : null}
         {mealCompletion ? (
@@ -206,16 +431,20 @@ function MenuSectionHeadActions({
             aria-label={MEAL_SLOT_GROUP_LABEL[mealCompletion.slot]}
             title="Stato pasto"
           >
-            <IconCheckbox size={24} stroke={2} aria-hidden />
+            <IconCheckbox
+              size={MEAL_CARD_ACTION_ICON_PX}
+              stroke={2}
+              aria-hidden
+            />
           </button>
         ) : null}
         <button
           type="button"
           className="menu-section__edit"
           onClick={onEdit}
-          aria-label="Modifica il menu del giorno"
+          aria-label={editAriaLabel}
         >
-          <EditIcon size={24} />
+          <EditIcon size={MEAL_CARD_ACTION_ICON_PX} />
         </button>
       </div>
       {panelOpen && mealCompletion ? (
@@ -231,7 +460,11 @@ function MenuSectionHeadActions({
             onClick={() => pick("completed")}
             aria-checked={mealCompletion.value === "completed"}
           >
-            <IconCheckbox size={20} stroke={2} aria-hidden />
+            <IconCheckbox
+              size={MEAL_CARD_ACTION_ICON_PX}
+              stroke={2}
+              aria-hidden
+            />
             <span>Completato</span>
           </button>
           <button
@@ -241,7 +474,11 @@ function MenuSectionHeadActions({
             onClick={() => pick("skipped")}
             aria-checked={mealCompletion.value === "skipped"}
           >
-            <IconCheckbox size={20} stroke={2} aria-hidden />
+            <IconCheckbox
+              size={MEAL_CARD_ACTION_ICON_PX}
+              stroke={2}
+              aria-hidden
+            />
             <span>Saltato</span>
           </button>
           <button
@@ -251,7 +488,11 @@ function MenuSectionHeadActions({
             onClick={() => pick("partial")}
             aria-checked={mealCompletion.value === "partial"}
           >
-            <IconCheckbox size={20} stroke={2} aria-hidden />
+            <IconCheckbox
+              size={MEAL_CARD_ACTION_ICON_PX}
+              stroke={2}
+              aria-hidden
+            />
             <span>In parte</span>
           </button>
         </div>
@@ -267,7 +508,6 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
       displayDate,
       onSave,
       onReplicateMealToNextDay,
-      onCancel,
       onPendingChange,
       dietData: dietDataProp,
       uploadedFile,
@@ -276,8 +516,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
     ref,
   ) {
     const dietData = dietDataProp ?? defaultDietData;
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu);
+    const [editModalSlot, setEditModalSlot] = useState<ReplicateMealSlot | null>(
+      null,
+    );
+    const [editModalDraft, setEditModalDraft] = useState<DailyMenu>(() =>
+      cloneMenu(menu),
+    );
     const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const mealStatusDateKey = adherenceDateKey ?? "";
     const [mealCompletionMap, setMealCompletionMap] =
@@ -369,284 +613,33 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
         );
     }, [mealStatusDateKey, menu, mealCompletionMap]);
 
+    const openMealEditModal = useCallback((slot: ReplicateMealSlot) => {
+      setEditModalDraft(cloneMenu(menu));
+      setEditModalSlot(slot);
+    }, [menu]);
+
+    const closeMealEditModal = useCallback(() => {
+      setEditModalSlot(null);
+    }, []);
+
+    const saveMealEditModal = useCallback(() => {
+      if (onSave) onSave(editModalDraft);
+      setEditModalSlot(null);
+    }, [onSave, editModalDraft]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        save: () => {
+          /* Salvataggio da modale pasto (Salva in modale); nessun flush globale. */
+        },
+      }),
+      [],
+    );
+
     useEffect(() => {
-      if (!isEditing) setEditedMenu(menu);
-    }, [menu, isEditing]);
-
-    const commitSave = useCallback(() => {
-      if (onSave) {
-        onSave(editedMenu);
-      }
-      setIsEditing(false);
-    }, [editedMenu, onSave]);
-
-    useImperativeHandle(ref, () => ({ save: commitSave }), [commitSave]);
-
-    useEffect(() => {
-      onPendingChange?.(isEditing);
-    }, [isEditing, onPendingChange]);
-
-    const handleCancel = () => {
-      setEditedMenu(menu);
-      setIsEditing(false);
-      if (onCancel) {
-        onCancel();
-      }
-    };
-
-    if (isEditing) {
-      return (
-        <div className="daily-menu-card editing">
-          <div className="menu-header">
-            <div className="menu-actions">
-              <button className="menu-action-btn cancel" onClick={handleCancel}>
-                <TimesIcon
-                  size={16}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                Annulla
-              </button>
-            </div>
-          </div>
-
-          <div className="menu-content editing">
-            <div className="menu-section">
-              <h4>
-                <SunIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                Colazione
-              </h4>
-              <IngredientSelector
-                label="Carboidrati"
-                options={dietData.colazione.carboidrati}
-                selected={editedMenu.colazione?.carboidrati}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    colazione: {
-                      ...editedMenu.colazione,
-                      carboidrati: selected,
-                    },
-                  })
-                }
-              />
-              <IngredientSelector
-                label="Frutta"
-                options={dietData.colazione.frutta}
-                selected={firstFoodItem(editedMenu.colazione?.frutta)}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    colazione: {
-                      ...editedMenu.colazione,
-                      frutta: updateFoodAlternativesSlot(
-                        editedMenu.colazione?.frutta,
-                        selected,
-                      ),
-                    },
-                  })
-                }
-              />
-              <IngredientSelector
-                label="Proteine"
-                options={dietData.colazione.proteine}
-                selected={editedMenu.colazione?.proteine}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    colazione: { ...editedMenu.colazione, proteine: selected },
-                  })
-                }
-              />
-            </div>
-
-            <div className="menu-section">
-              <h4>
-                <PeanutIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                Spuntino Mattutino
-              </h4>
-              <IngredientSelector
-                label="Seleziona"
-                options={dietData.spuntinoMattutino}
-                selected={editedMenu.spuntinoMattutino}
-                onSelect={(selected) =>
-                  setEditedMenu({ ...editedMenu, spuntinoMattutino: selected })
-                }
-              />
-            </div>
-
-            <div className="menu-section">
-              <h4>
-                <UtensilsIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                Pranzo
-              </h4>
-              <IngredientSelector
-                label="Carboidrati"
-                options={dietData.pranzo.carboidrati}
-                selected={editedMenu.pranzo?.carboidrati}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    pranzo: { ...editedMenu.pranzo, carboidrati: selected },
-                  })
-                }
-              />
-              <IngredientSelector
-                label="Proteine"
-                options={dietData.pranzo.proteine}
-                selected={editedMenu.pranzo?.proteine}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    pranzo: { ...editedMenu.pranzo, proteine: selected },
-                  })
-                }
-              />
-              <IngredientSelector
-                label="Verdure"
-                options={dietData.pranzo.verdure}
-                selected={firstFoodItem(editedMenu.pranzo?.verdure)}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    pranzo: {
-                      ...editedMenu.pranzo,
-                      verdure: updateFoodAlternativesSlot(
-                        editedMenu.pranzo?.verdure,
-                        selected,
-                      ),
-                    },
-                  })
-                }
-              />
-            </div>
-
-            <div className="menu-section">
-              <h4>
-                <PeanutIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                Merenda
-              </h4>
-              <IngredientSelector
-                label="Seleziona"
-                options={dietData.merenda}
-                selected={editedMenu.merenda}
-                onSelect={(selected) =>
-                  setEditedMenu({ ...editedMenu, merenda: selected })
-                }
-              />
-            </div>
-
-            <div className="menu-section">
-              <h4>
-                <MoonIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                Cena
-              </h4>
-              <IngredientSelector
-                label="Pane"
-                options={dietData.cena.pane}
-                selected={editedMenu.cena?.pane}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    cena: { ...editedMenu.cena, pane: selected },
-                  })
-                }
-              />
-              <IngredientSelector
-                label="Verdure"
-                options={dietData.cena.verdure}
-                selected={firstFoodItem(editedMenu.cena?.verdure)}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    cena: {
-                      ...editedMenu.cena,
-                      verdure: updateFoodAlternativesSlot(
-                        editedMenu.cena?.verdure,
-                        selected,
-                      ),
-                    },
-                  })
-                }
-              />
-              <IngredientSelector
-                label="Proteine"
-                options={dietData.cena.proteine}
-                selected={editedMenu.cena?.proteine}
-                onSelect={(selected) =>
-                  setEditedMenu({
-                    ...editedMenu,
-                    cena: { ...editedMenu.cena, proteine: selected },
-                  })
-                }
-              />
-            </div>
-
-            {dietData.olio && dietData.olio.length > 0 && (
-              <div className="menu-section">
-                <h4>
-                  <DropletIcon
-                    size={18}
-                    style={{
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                      display: "inline-block",
-                    }}
-                  />
-                  Durante la giornata
-                </h4>
-                <IngredientSelector
-                  label="Olio"
-                  options={dietData.olio}
-                  selected={editedMenu.olio}
-                  onSelect={(selected) =>
-                    setEditedMenu({ ...editedMenu, olio: selected })
-                  }
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
+      onPendingChange?.(false);
+    }, [onPendingChange]);
 
     const renderFilePreviewContent = () => {
       if (!uploadedFile) return null;
@@ -730,6 +723,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           )}
           {uploadedFile || mealStatusDateKey ? (
             <div className="menu-header-actions">
+              {mealStatusDateKey ? (
+                <MealCompletionSmile percent={mealCompletionPercent} />
+              ) : null}
               {uploadedFile ? (
                 <button
                   type="button"
@@ -737,19 +733,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   onClick={() => setPreviewModalOpen(true)}
                   aria-label="Apri file caricato"
                 >
-                  <ListIcon
-                    size={16}
-                    style={{
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                      display: "inline-block",
-                    }}
-                  />
+                  <ListIcon size={16} />
                   File caricato
                 </button>
-              ) : null}
-              {mealStatusDateKey ? (
-                <MealCompletionSmile percent={mealCompletionPercent} />
               ) : null}
             </div>
           ) : null}
@@ -770,17 +756,30 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           </Modal>
         )}
 
+        {editModalSlot ? (
+          <Modal
+            title={MEAL_EDIT_MODAL_TITLE[editModalSlot]}
+            onClose={closeMealEditModal}
+            buttonLabel="Annulla"
+            primaryLabel="Salva"
+            onPrimaryClick={saveMealEditModal}
+            wide
+          >
+            <MealEditModalFields
+              slot={editModalSlot}
+              draft={editModalDraft}
+              setDraft={setEditModalDraft}
+              dietData={dietData}
+            />
+          </Modal>
+        ) : null}
+
         <div className="menu-content">
           <div className="menu-section">
             <div className="menu-section__head">
               <h4>
                 <SunIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
+                  size={MEAL_CARD_HEADING_ICON_PX}
                 />
                 Colazione
               </h4>
@@ -807,7 +806,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   ? () => onReplicateMealToNextDay("colazione")
                   : undefined
               }
-              onEdit={() => setIsEditing(true)}
+              onEdit={() => openMealEditModal("colazione")}
+              editAriaLabel={MEAL_EDIT_MODAL_TITLE.colazione}
               mealCompletion={mealCompletionFor("colazione")}
             />
           </div>
@@ -817,12 +817,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
               <div className="menu-section__head">
                 <h4>
                   <PeanutIcon
-                    size={18}
-                    style={{
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                      display: "inline-block",
-                    }}
+                    size={MEAL_CARD_HEADING_ICON_PX}
                   />
                   Spuntino Mattutino
                 </h4>
@@ -834,7 +829,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                     ? () => onReplicateMealToNextDay("spuntinoMattutino")
                     : undefined
                 }
-                onEdit={() => setIsEditing(true)}
+                onEdit={() => openMealEditModal("spuntinoMattutino")}
+                editAriaLabel={MEAL_EDIT_MODAL_TITLE.spuntinoMattutino}
                 mealCompletion={mealCompletionFor("spuntinoMattutino")}
               />
             </div>
@@ -844,12 +840,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             <div className="menu-section__head">
               <h4>
                 <UtensilsIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
+                  size={MEAL_CARD_HEADING_ICON_PX}
                 />
                 Pranzo
               </h4>
@@ -876,7 +867,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   ? () => onReplicateMealToNextDay("pranzo")
                   : undefined
               }
-              onEdit={() => setIsEditing(true)}
+              onEdit={() => openMealEditModal("pranzo")}
+              editAriaLabel={MEAL_EDIT_MODAL_TITLE.pranzo}
               mealCompletion={mealCompletionFor("pranzo")}
             />
           </div>
@@ -886,12 +878,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
               <div className="menu-section__head">
                 <h4>
                   <PeanutIcon
-                    size={18}
-                    style={{
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                      display: "inline-block",
-                    }}
+                    size={MEAL_CARD_HEADING_ICON_PX}
                   />
                   Merenda
                 </h4>
@@ -903,7 +890,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                     ? () => onReplicateMealToNextDay("merenda")
                     : undefined
                 }
-                onEdit={() => setIsEditing(true)}
+                onEdit={() => openMealEditModal("merenda")}
+                editAriaLabel={MEAL_EDIT_MODAL_TITLE.merenda}
                 mealCompletion={mealCompletionFor("merenda")}
               />
             </div>
@@ -913,12 +901,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             <div className="menu-section__head">
               <h4>
                 <MoonIcon
-                  size={18}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
+                  size={MEAL_CARD_HEADING_ICON_PX}
                 />
                 Cena
               </h4>
@@ -944,7 +927,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   ? () => onReplicateMealToNextDay("cena")
                   : undefined
               }
-              onEdit={() => setIsEditing(true)}
+              onEdit={() => openMealEditModal("cena")}
+              editAriaLabel={MEAL_EDIT_MODAL_TITLE.cena}
               mealCompletion={mealCompletionFor("cena")}
             />
           </div>
@@ -954,12 +938,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
               <div className="menu-section__head">
                 <h4>
                   <DropletIcon
-                    size={18}
-                    style={{
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                      display: "inline-block",
-                    }}
+                    size={MEAL_CARD_HEADING_ICON_PX}
                   />
                   Durante la giornata
                 </h4>
@@ -974,7 +953,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                     ? () => onReplicateMealToNextDay("duranteLaGiornata")
                     : undefined
                 }
-                onEdit={() => setIsEditing(true)}
+                onEdit={() => openMealEditModal("duranteLaGiornata")}
+                editAriaLabel={MEAL_EDIT_MODAL_TITLE.duranteLaGiornata}
                 mealCompletion={mealCompletionFor("duranteLaGiornata")}
               />
             </div>

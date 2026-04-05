@@ -207,7 +207,7 @@ button {
   user-select: none;
 }
 
-/* App layout: altezza fissa viewport così lo scroll è solo in .app-main (sticky barra giorni). */
+/* App layout: altezza fissa viewport; scroll in .app-main; header sticky; dock fisso (tab/Salva + install). */
 .app {
   display: flex;
   flex-direction: column;
@@ -222,38 +222,8 @@ button {
   color: #1a1a1a;
 }
 
-/* Barra fissa in basso (tab / Salva + Install): solo il footer dell’app aggiunge il padding sotto */
+/* Dock fisso: tab / Salva sopra, fascia «Aggiungi alla Home» sotto; footer scorre in .app-main */
 
-.app > .site-footer {
-  flex-shrink: 0;
-  padding-bottom: calc(
-    2rem + max(4.35rem, calc(3.85rem + env(safe-area-inset-bottom, 0px))) +
-      2.4rem
-  );
-}
-
-.app.app--standalone > .site-footer {
-  padding-bottom: calc(
-    2rem + max(4.35rem, calc(3.85rem + env(safe-area-inset-bottom, 0px)))
-  );
-}
-
-@media (min-width: 768px) {
-  .app > .site-footer {
-    padding-bottom: calc(
-      2rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px))) +
-        2.25rem
-    );
-  }
-
-  .app.app--standalone > .site-footer {
-    padding-bottom: calc(
-      2rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px)))
-    );
-  }
-}
-
-/* Dock: CTA principale sopra, install sotto (verso il bordo schermo) */
 .app-bottom-dock {
   position: fixed;
   left: 0;
@@ -262,6 +232,7 @@ button {
   z-index: 90;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   pointer-events: none;
 }
 
@@ -799,8 +770,23 @@ button {
   min-height: 0;
   width: 100%;
   padding: 1rem 1.25rem;
+  padding-bottom: calc(
+    1rem + max(4.35rem, calc(3.85rem + env(safe-area-inset-bottom, 0px)))
+  );
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Spazio per fascia install sotto la tab bar (solo browser, non in PWA standalone) */
+.app:not(.app--standalone) .app-main {
+  padding-bottom: calc(
+    1rem + max(4.35rem, calc(3.85rem + env(safe-area-inset-bottom, 0px))) +
+      2.4rem
+  );
+}
+
+.app-main .site-footer {
+  margin-top: 1.5rem;
 }
 
 @media (min-width: 768px) {
@@ -808,6 +794,16 @@ button {
     max-width: 720px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
+    padding-bottom: calc(
+      2rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px)))
+    );
+  }
+
+  .app:not(.app--standalone) .app-main {
+    padding-bottom: calc(
+      2rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px))) +
+        2.25rem
+    );
   }
 }
 
@@ -815,5 +811,15 @@ button {
   .app-main {
     max-width: 960px;
     padding: 2.5rem 2rem;
+    padding-bottom: calc(
+      2.5rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px)))
+    );
+  }
+
+  .app:not(.app--standalone) .app-main {
+    padding-bottom: calc(
+      2.5rem + max(4rem, calc(3.55rem + env(safe-area-inset-bottom, 0px))) +
+        2.25rem
+    );
   }
 }

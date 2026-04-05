@@ -336,6 +336,7 @@ export default function App() {
             menuSaveRevision={shoppingMenuRev}
           />
         )}
+        <Footer showInstallCTA={false} />
       </main>
 
       <div className="app-bottom-dock">
@@ -362,7 +363,7 @@ export default function App() {
             />
           )}
         </div>
-        {!appStandalone && <InstallAppCTA variant="stickyBar" />}
+        {!appStandalone ? <InstallAppCTA variant="stickyBar" /> : null}
       </div>
 
       <DietReportModal
@@ -371,8 +372,6 @@ export default function App() {
       />
 
       <AppToast message={replicateToast} onDismiss={dismissReplicateToast} />
-
-      <Footer showInstallCTA={false} />
     </div>
   );
 }

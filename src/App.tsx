@@ -245,7 +245,14 @@ export default function App() {
 
   return (
     <div className={appClassName}>
-      <header className="app-header">
+      <header
+        className={[
+          "app-header",
+          view === "menu" && currentMenu ? "app-header--with-day-nav" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         <div className="app-header__inner">
           <h1 className="app-header__logo">
             <span className="app-header__title">PocketDiet</span>
@@ -262,49 +269,52 @@ export default function App() {
         </div>
       </header>
 
+      {view === "menu" && currentMenu && (
+        <nav className="menu-day-nav" aria-label="Giorno del menu">
+          <div className="menu-day-nav__inner">
+            <button
+              type="button"
+              className="menu-day-nav__btn"
+              onClick={() => changeMenuDayOffset(-1)}
+              aria-label="Giorno precedente"
+            >
+              <IconChevronLeft size={22} stroke={2} aria-hidden />
+            </button>
+            <div className="menu-day-nav__center">
+              {menuDayOffset === 0 ? (
+                <span className="menu-day-nav__badge">Oggi</span>
+              ) : null}
+              <span className="menu-day-nav__date">
+                {formatDate(viewedDate)}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="menu-day-nav__btn"
+              onClick={() => changeMenuDayOffset(1)}
+              aria-label="Giorno successivo"
+            >
+              <IconChevronRight size={22} stroke={2} aria-hidden />
+            </button>
+          </div>
+        </nav>
+      )}
+
       <main className="app-main">
         {view === "menu" && currentMenu && (
-          <>
-            <nav className="menu-day-nav" aria-label="Giorno del menu">
-              <button
-                type="button"
-                className="menu-day-nav__btn"
-                onClick={() => changeMenuDayOffset(-1)}
-                aria-label="Giorno precedente"
-              >
-                <IconChevronLeft size={22} stroke={2} aria-hidden />
-              </button>
-              <div className="menu-day-nav__center">
-                {menuDayOffset === 0 ? (
-                  <span className="menu-day-nav__badge">Oggi</span>
-                ) : null}
-                <span className="menu-day-nav__date">
-                  {formatDate(viewedDate)}
-                </span>
-              </div>
-              <button
-                type="button"
-                className="menu-day-nav__btn"
-                onClick={() => changeMenuDayOffset(1)}
-                aria-label="Giorno successivo"
-              >
-                <IconChevronRight size={22} stroke={2} aria-hidden />
-              </button>
-            </nav>
-            <DailyMenu
-              ref={menuRef}
-              menu={currentMenu}
-              onSave={handleSaveMenu}
-              onPendingChange={setMenuPendingSave}
-              dietData={
-                userDiet.dietData ??
-                buildDietDataFromMenus(userDiet.dailyMenus) ??
-                defaultDietData
-              }
-              uploadedFile={userDiet.uploadedFile}
-              adherenceDateKey={currentMenu?.date ?? viewedDateKey}
-            />
-          </>
+          <DailyMenu
+            ref={menuRef}
+            menu={currentMenu}
+            onSave={handleSaveMenu}
+            onPendingChange={setMenuPendingSave}
+            dietData={
+              userDiet.dietData ??
+              buildDietDataFromMenus(userDiet.dailyMenus) ??
+              defaultDietData
+            }
+            uploadedFile={userDiet.uploadedFile}
+            adherenceDateKey={currentMenu?.date ?? viewedDateKey}
+          />
         )}
         {view === "shopping" && (
           <ShoppingList

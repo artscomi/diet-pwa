@@ -310,6 +310,160 @@ export const dailyMenus: DailyMenu[] = [
       proteine: dietData.cena.proteine[12] // Pesce persico 230g
     },
     olio: dietData.olio?.[0] // Olio di oliva extra vergine 20g
+  },
+  {
+    id: 'menu-15',
+    name: 'Menu Giorno 15',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[10], // Farro 30g
+      frutta: dietData.colazione.frutta[7], // Mandarini 100g
+      proteine: dietData.colazione.proteine[2] // Albume 170g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[0],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[9], // Farro 70g
+      proteine: dietData.pranzo.proteine[22], // Sarda 100g
+      verdure: dietData.pranzo.verdure[10] // Cicoria da taglio 300g
+    },
+    merenda: dietData.merenda[1],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[10], // Cicoria 300g
+      proteine: dietData.cena.proteine[22] // Salmone fresco 90g
+    },
+    olio: dietData.olio?.[0]
+  },
+  {
+    id: 'menu-16',
+    name: 'Menu Giorno 16',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[6], // Amaranto 40g
+      frutta: dietData.colazione.frutta[0], // Frutta fresca media 150g
+      proteine: dietData.colazione.proteine[5] // Greek Yogurt 150g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[1],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[4], // Amaranto 60g
+      proteine: dietData.pranzo.proteine[23], // Sgombro 80g
+      verdure: dietData.pranzo.verdure[18] // Carciofi 200g
+    },
+    merenda: dietData.merenda[0],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[5], // Spinaci surgelati 200g
+      proteine: dietData.cena.proteine[23] // Sarda 130g
+    },
+    olio: dietData.olio?.[0]
+  },
+  {
+    id: 'menu-17',
+    name: 'Menu Giorno 17',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[2], // Gallette riso 30g
+      frutta: dietData.colazione.frutta[14], // Prugne 150g
+      proteine: dietData.colazione.proteine[6] // Uova intero 60g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[0],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[6], // Miglio 60g
+      proteine: dietData.pranzo.proteine[24], // Spigola 160g
+      verdure: dietData.pranzo.verdure[9] // Cavolfiore 200g
+    },
+    merenda: dietData.merenda[1],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[15], // Vegetali misti surgelati 100g
+      proteine: dietData.cena.proteine[24] // Spigola 210g
+    },
+    olio: dietData.olio?.[0]
+  },
+  {
+    id: 'menu-18',
+    name: 'Menu Giorno 18',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[4], // Cereali colazione 30g
+      frutta: dietData.colazione.frutta[11], // Pera 150g
+      proteine: dietData.colazione.proteine[1] // Proteine polvere 15g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[1],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[2], // Pane pranzo 100g
+      proteine: dietData.pranzo.proteine[25], // Tonno 80g
+      verdure: dietData.pranzo.verdure[6] // Melanzane 200g
+    },
+    merenda: dietData.merenda[0],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[0], // Verdure fresche media 200g
+      proteine: dietData.cena.proteine[25] // Tonno 110g
+    },
+    olio: dietData.olio?.[0]
+  },
+  {
+    id: 'menu-19',
+    name: 'Menu Giorno 19',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[8], // Miglio 30g
+      frutta: dietData.colazione.frutta[4], // Ciliegie 150g
+      proteine: dietData.colazione.proteine[4] // Bresaola 40g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[0],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[3], // Avena 70g
+      proteine: dietData.pranzo.proteine[26], // Triglia 110g
+      verdure: dietData.pranzo.verdure[7] // Carote 100g
+    },
+    merenda: dietData.merenda[1],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[11], // Bieta 200g
+      proteine: dietData.cena.proteine[26] // Triglia 140g
+    },
+    olio: dietData.olio?.[0]
+  },
+  {
+    id: 'menu-20',
+    name: 'Menu Giorno 20',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[3], // Crackers 30g
+      frutta: dietData.colazione.frutta[9], // Mela 100g
+      proteine: dietData.colazione.proteine[3] // Tonno colazione 50g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[1],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[8], // Farro 70g
+      proteine: dietData.pranzo.proteine[27], // Bresaola pranzo 90g
+      verdure: dietData.pranzo.verdure[2] // Pomodori 300g
+    },
+    merenda: dietData.merenda[0],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[8], // Zucchini 300g
+      proteine: dietData.cena.proteine[27] // Bresaola 100g
+    },
+    olio: dietData.olio?.[0]
+  },
+  {
+    id: 'menu-21',
+    name: 'Menu Giorno 21',
+    colazione: {
+      carboidrati: dietData.colazione.carboidrati[7], // Kamut 30g
+      frutta: dietData.colazione.frutta[1], // Ananas 150g
+      proteine: dietData.colazione.proteine[7] // Salmone 50g
+    },
+    spuntinoMattutino: dietData.spuntinoMattutino[0],
+    pranzo: {
+      carboidrati: dietData.pranzo.carboidrati[0], // Pasta integrale 70g
+      proteine: dietData.pranzo.proteine[28], // Uova pranzo 120g
+      verdure: dietData.pranzo.verdure[1] // Lattuga 300g
+    },
+    merenda: dietData.merenda[1],
+    cena: {
+      pane: dietData.cena.pane[0],
+      verdure: dietData.cena.verdure[14], // Sedano 200g
+      proteine: dietData.cena.proteine[28] // Uova cena 120g
+    },
+    olio: dietData.olio?.[0]
   }
 ]
 

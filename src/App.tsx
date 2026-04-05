@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { dailyMenus } from "@/data/dailyMenus";
 import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
+import { expandDailyMenusForRotation } from "@/utils/expandDailyMenusForRotation";
 import DailyMenu, { type DailyMenuHandle } from "@/components/DailyMenu";
 import ShoppingList from "@/components/ShoppingList";
 import Landing, {
@@ -15,23 +16,58 @@ import Footer from "@/components/Footer";
 import InstallAppCTA, { isStandalone } from "@/components/InstallAppCTA";
 import DietReportModal from "@/components/DietReportModal";
 import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
-import { IconDeviceFloppy, IconRefresh } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconDeviceFloppy,
+  IconRefresh,
+} from "@tabler/icons-react";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 import { clearAdherenceScores } from "@/utils/dietAdherenceScores";
 
 type AppView = AppContentView;
 
+function addDaysToDateKey(dateKey: string, deltaDays: number): string {
+  const d = new Date(dateKey);
+  d.setDate(d.getDate() + deltaDays);
+  return d.toDateString();
+}
+
 export default function App() {
   const [userDiet, setUserDiet] = useState<UserDiet | null>(loadUserDiet);
   const [currentMenu, setCurrentMenu] = useState<DailyMenuType | null>(null);
   const [todayDate, setTodayDate] = useState(new Date().toDateString());
+  /** 0 = oggi (calendario), −1 = ieri, +1 = domani, … */
+  const [menuDayOffset, setMenuDayOffset] = useState(0);
   const [view, setView] = useState<AppView>("menu");
   const [menuPendingSave, setMenuPendingSave] = useState(false);
   const menuRef = useRef<DailyMenuHandle>(null);
   const [appStandalone, setAppStandalone] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  /** Invalida il menu “oggi” per la lista spesa dopo un salvataggio su quella data. */
+  const [shoppingMenuRev, setShoppingMenuRev] = useState(0);
+  const todayDateRef = useRef(todayDate);
+  todayDateRef.current = todayDate;
 
-  const dailyMenusSource = userDiet?.dailyMenus ?? dailyMenus;
+  const dailyMenusSource = useMemo(() => {
+    const raw = userDiet?.dailyMenus ?? dailyMenus;
+    const inferredDietData =
+      userDiet?.dietData ??
+      (userDiet?.dailyMenus
+        ? buildDietDataFromMenus(userDiet.dailyMenus)
+        : undefined);
+    return expandDailyMenusForRotation(raw, inferredDietData);
+  }, [userDiet]);
+
+  const viewedDateKey = useMemo(
+    () => addDaysToDateKey(todayDate, menuDayOffset),
+    [todayDate, menuDayOffset],
+  );
+
+  const viewedDate = useMemo(
+    () => new Date(viewedDateKey),
+    [viewedDateKey],
+  );
 
   useEffect(() => {
     setAppStandalone(isStandalone());
@@ -43,16 +79,42 @@ export default function App() {
     }
   }, [view]);
 
-  const getTodayMenu = useCallback((): DailyMenuType => {
-    const today = new Date();
-    const startOfYear = new Date(today.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor(
-      (today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
-    );
-    const menuIndex = dayOfYear % dailyMenusSource.length;
-    const menu = { ...dailyMenusSource[menuIndex], date: today.toDateString() };
-    return menu;
-  }, [dailyMenusSource]);
+  const getMenuForDateKey = useCallback(
+    (dateKey: string): DailyMenuType => {
+      const d = new Date(dateKey);
+      const startOfYear = new Date(d.getFullYear(), 0, 0);
+      const diff = d.getTime() - startOfYear.getTime();
+      const len = dailyMenusSource.length;
+      const dayMs = 1000 * 60 * 60 * 24;
+      let menuIndex = 0;
+      if (Number.isFinite(diff) && len > 0) {
+        const dayOfYear = Math.floor(diff / dayMs);
+        menuIndex = ((dayOfYear % len) + len) % len;
+      }
+      const template = dailyMenusSource[menuIndex] ?? dailyMenusSource[0];
+      return {
+        ...template,
+        date: dateKey,
+      };
+    },
+    [dailyMenusSource],
+  );
+
+  const shoppingTodayMenu = useMemo((): DailyMenuType => {
+    if (typeof window === "undefined") {
+      return getMenuForDateKey(todayDate);
+    }
+    const saved = localStorage.getItem(`dietMenu_${todayDate}`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as DailyMenuType & { date?: string };
+        if (parsed.date === todayDate) return parsed;
+      } catch {
+        /* ignore */
+      }
+    }
+    return getMenuForDateKey(todayDate);
+  }, [todayDate, getMenuForDateKey, shoppingMenuRev]); // eslint-disable-line react-hooks/exhaustive-deps -- shoppingMenuRev forza rilettura LS dopo salvataggio su oggi
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("it-IT", {
@@ -98,97 +160,80 @@ export default function App() {
 
   useEffect(() => {
     if (!userDiet) return;
-    const today = new Date();
-    const todayKey = today.toDateString();
+    setTodayDate(new Date().toDateString());
+    setMenuDayOffset(0);
+  }, [userDiet]);
 
-    if (todayKey !== todayDate) {
-      setTodayDate(todayKey);
-    }
+  useEffect(() => {
+    if (!userDiet) return;
 
-    const todayMenu = getTodayMenu();
-    const savedMenu = localStorage.getItem(`dietMenu_${todayKey}`);
+    const syncCalendarDay = () => {
+      const currentDate = new Date().toDateString();
+      if (currentDate !== todayDateRef.current) {
+        setMenuDayOffset(0);
+        setTodayDate(currentDate);
+      }
+    };
+
+    const id = setInterval(syncCalendarDay, 60_000);
+    const onVisibility = () => {
+      if (!document.hidden) syncCalendarDay();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [userDiet]);
+
+  useEffect(() => {
+    if (!userDiet) return;
+
+    const savedMenu = localStorage.getItem(`dietMenu_${viewedDateKey}`);
     if (savedMenu) {
       try {
         const parsed = JSON.parse(savedMenu) as DailyMenuType & {
           date?: string;
         };
-        if (parsed.date === todayKey) {
+        if (parsed.date === viewedDateKey) {
           setCurrentMenu(parsed);
-        } else {
-          setCurrentMenu(todayMenu);
+          return;
         }
       } catch {
-        setCurrentMenu(todayMenu);
+        /* fall through */
       }
-    } else {
-      setCurrentMenu(todayMenu);
     }
+    setCurrentMenu(getMenuForDateKey(viewedDateKey));
+  }, [userDiet, viewedDateKey, getMenuForDateKey]);
 
-    const checkDayChange = setInterval(() => {
-      const now = new Date();
-      const currentDate = now.toDateString();
-
-      if (currentDate !== todayDate) {
-        const newTodayMenu = getTodayMenu();
-        const saved = localStorage.getItem(`dietMenu_${currentDate}`);
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved) as DailyMenuType & {
-              date?: string;
-            };
-            setCurrentMenu(parsed.date === currentDate ? parsed : newTodayMenu);
-          } catch {
-            setCurrentMenu(newTodayMenu);
-          }
-        } else {
-          setCurrentMenu(newTodayMenu);
-        }
-        setTodayDate(currentDate);
-      }
-    }, 60000);
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        const now = new Date();
-        const currentDate = now.toDateString();
-        if (currentDate !== todayDate) {
-          const newTodayMenu = getTodayMenu();
-          const saved = localStorage.getItem(`dietMenu_${currentDate}`);
-          if (saved) {
-            try {
-              const parsed = JSON.parse(saved) as DailyMenuType & {
-                date?: string;
-              };
-              setCurrentMenu(
-                parsed.date === currentDate ? parsed : newTodayMenu,
-              );
-            } catch {
-              setCurrentMenu(newTodayMenu);
-            }
-          } else {
-            setCurrentMenu(newTodayMenu);
-          }
-          setTodayDate(currentDate);
+  const changeMenuDayOffset = useCallback(
+    (delta: number) => {
+      if (delta === 0) return;
+      if (menuPendingSave && view === "menu") {
+        if (
+          !window.confirm(
+            "Hai modifiche non salvate al menu. Cambiare giorno senza salvare?",
+          )
+        ) {
+          return;
         }
       }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      clearInterval(checkDayChange);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [todayDate, userDiet, getTodayMenu]);
+      setMenuDayOffset((o) => o + delta);
+    },
+    [menuPendingSave, view],
+  );
 
   const handleSaveMenu = (updatedMenu: DailyMenuType) => {
-    const today = new Date();
-    const todayKey = today.toDateString();
-    const menuToSave = { ...updatedMenu, date: todayKey };
-    localStorage.setItem(`dietMenu_${todayKey}`, JSON.stringify(menuToSave));
+    const menuToSave = { ...updatedMenu, date: viewedDateKey };
+    localStorage.setItem(
+      `dietMenu_${viewedDateKey}`,
+      JSON.stringify(menuToSave),
+    );
     setCurrentMenu(menuToSave);
+    if (viewedDateKey === todayDate) {
+      setShoppingMenuRev((r) => r + 1);
+    }
   };
-
-  const today = new Date();
 
   if (!userDiet) {
     return <Landing onDietLoaded={setUserDiet} />;
@@ -218,12 +263,37 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        {view === "menu" &&
-          currentMenu && (
+        {view === "menu" && currentMenu && (
+          <>
+            <nav className="menu-day-nav" aria-label="Giorno del menu">
+              <button
+                type="button"
+                className="menu-day-nav__btn"
+                onClick={() => changeMenuDayOffset(-1)}
+                aria-label="Giorno precedente"
+              >
+                <IconChevronLeft size={22} stroke={2} aria-hidden />
+              </button>
+              <div className="menu-day-nav__center">
+                {menuDayOffset === 0 ? (
+                  <span className="menu-day-nav__badge">Oggi</span>
+                ) : null}
+                <span className="menu-day-nav__date">
+                  {formatDate(viewedDate)}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="menu-day-nav__btn"
+                onClick={() => changeMenuDayOffset(1)}
+                aria-label="Giorno successivo"
+              >
+                <IconChevronRight size={22} stroke={2} aria-hidden />
+              </button>
+            </nav>
             <DailyMenu
               ref={menuRef}
               menu={currentMenu}
-              displayDate={formatDate(today)}
               onSave={handleSaveMenu}
               onPendingChange={setMenuPendingSave}
               dietData={
@@ -232,13 +302,14 @@ export default function App() {
                 defaultDietData
               }
               uploadedFile={userDiet.uploadedFile}
-              adherenceDateKey={currentMenu?.date ?? todayDate}
+              adherenceDateKey={currentMenu?.date ?? viewedDateKey}
             />
-          )}
+          </>
+        )}
         {view === "shopping" && (
           <ShoppingList
             dailyMenus={dailyMenusSource}
-            todayMenu={currentMenu}
+            todayMenu={shoppingTodayMenu}
             todayKey={todayDate}
           />
         )}

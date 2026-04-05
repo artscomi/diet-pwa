@@ -50,14 +50,13 @@ interface DailyMenuProps {
   adherenceDateKey?: string;
 }
 
+/** Vista lettura: una sola riga (prima alternativa); le altre restano nel menu a tendina in modifica. */
 function formatFood(
   food: FoodItemOrAlternatives | null | undefined,
 ): string | null {
-  if (!food) return null;
-  if (Array.isArray(food)) {
-    return food.map((f) => `${f.name} (${f.quantity} ${f.unit})`).join(", ");
-  }
-  return `${food.name} (${food.quantity} ${food.unit})`;
+  const item = firstFoodItem(food);
+  if (!item) return null;
+  return `${item.name} (${item.quantity} ${item.unit})`;
 }
 
 const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(

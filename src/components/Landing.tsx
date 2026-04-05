@@ -13,6 +13,7 @@ import {
   MAX_UPLOAD_BYTES,
   ACCEPT_UPLOAD,
 } from "@/constants/upload";
+import { clearAllMealCompletions } from "@/utils/mealCompletionStatus";
 import "./Landing.css";
 
 /** Fallback desktop se Pexels non risponde */
@@ -82,6 +83,7 @@ export function clearSavedDailyMenus(): void {
     if (key?.startsWith(DIET_MENU_PREFIX)) keysToRemove.push(key);
   }
   keysToRemove.forEach((k) => localStorage.removeItem(k));
+  clearAllMealCompletions();
 }
 
 export function getDefaultUserDiet(): UserDiet {

@@ -4,8 +4,10 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   useImperativeHandle,
   forwardRef,
+  useRef,
 } from "react";
 import Image from "next/image";
 import { dietData as defaultDietData } from "@/data/dietData";
@@ -31,10 +33,43 @@ import {
   firstFoodItem,
   updateFoodAlternativesSlot,
 } from "@/utils/foodAlternatives";
-import MenuAdherenceBlock from "./MenuAdherenceBlock";
 import type { ReplicateMealSlot } from "@/utils/replicateMeal";
-import { IconCalendarRepeat } from "@tabler/icons-react";
+import type {
+  MealCompletionMap,
+  MealCompletionStatus,
+} from "@/utils/mealCompletionStatus";
+import {
+  loadMealCompletionMap,
+  saveMealCompletionMap,
+} from "@/utils/mealCompletionStatus";
+import {
+  computeDailyMealCompletionPercent,
+  hasAnyMealCompletionForDay,
+} from "@/utils/mealCompletionScore";
+import {
+  ADHERENCE_SCORES_CLEARED_EVENT,
+  removeAdherenceScore,
+  setAdherenceScore,
+} from "@/utils/dietAdherenceScores";
+import {
+  IconCheckbox,
+  IconCopyPlus,
+  IconMoodCry,
+  IconMoodHappy,
+  IconMoodNeutral,
+  IconMoodSad2,
+  IconMoodSmile,
+} from "@tabler/icons-react";
 import "./DailyMenu.css";
+
+const MEAL_SLOT_GROUP_LABEL: Record<ReplicateMealSlot, string> = {
+  colazione: "Stato colazione",
+  spuntinoMattutino: "Stato spuntino mattutino",
+  pranzo: "Stato pranzo",
+  merenda: "Stato merenda",
+  cena: "Stato cena",
+  duranteLaGiornata: "Stato durante la giornata",
+};
 
 export type DailyMenuHandle = { save: () => void };
 
@@ -50,7 +85,7 @@ interface DailyMenuProps {
   dietData?: DietData;
   /** Anteprima del file caricato (solo se dieta da upload) */
   uploadedFile?: UploadedFileInfo | null;
-  /** Chiave giorno (`Date.toDateString()`) per salvare il punteggio di rispetto dieta */
+  /** Chiave giorno (`Date.toDateString()`) per stati pasti e report (completamento %) */
   adherenceDateKey?: string;
 }
 
@@ -63,34 +98,164 @@ function formatFood(
   return `${item.name} (${item.quantity} ${item.unit})`;
 }
 
-function SectionHeadActions({
+function MealCompletionSmile({ percent }: { percent: number }) {
+  const tier =
+    percent >= 80
+      ? "high"
+      : percent >= 60
+        ? "good"
+        : percent >= 40
+          ? "mid"
+          : percent >= 20
+            ? "low"
+            : "verylow";
+  const Icon =
+    percent >= 80
+      ? IconMoodHappy
+      : percent >= 60
+        ? IconMoodSmile
+        : percent >= 40
+          ? IconMoodNeutral
+          : percent >= 20
+            ? IconMoodSad2
+            : IconMoodCry;
+  return (
+    <span
+      className={`menu-completion-smile menu-completion-smile--${tier}`}
+      title={`Completamento pasti: ${percent}%`}
+      aria-label={`Completamento pasti: ${percent} per cento`}
+    >
+      <Icon size={26} stroke={1.75} aria-hidden />
+    </span>
+  );
+}
+
+function MenuSectionHeadActions({
   onReplicate,
   onEdit,
+  mealCompletion,
 }: {
   onReplicate?: () => void;
   onEdit: () => void;
+  mealCompletion?: {
+    slot: ReplicateMealSlot;
+    value: MealCompletionStatus | undefined;
+    onChange: (next: MealCompletionStatus | null) => void;
+  };
 }) {
+  const [panelOpen, setPanelOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!panelOpen) return;
+    const close = (e: MouseEvent | TouchEvent) => {
+      const node = e.target as Node;
+      if (wrapRef.current && !wrapRef.current.contains(node)) {
+        setPanelOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPanelOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("touchstart", close);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("touchstart", close);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [panelOpen]);
+
+  const pick = (s: MealCompletionStatus) => {
+    if (!mealCompletion) return;
+    mealCompletion.onChange(mealCompletion.value === s ? null : s);
+    setPanelOpen(false);
+  };
+
+  const triggerStatusClass =
+    mealCompletion?.value === "completed"
+      ? " menu-section__completion-trigger--completed"
+      : mealCompletion?.value === "skipped"
+        ? " menu-section__completion-trigger--skipped"
+        : mealCompletion?.value === "partial"
+          ? " menu-section__completion-trigger--partial"
+          : "";
+
   return (
-    <div className="menu-section__actions">
-      {onReplicate ? (
+    <div className="menu-section__actions-wrap" ref={wrapRef}>
+      <div className="menu-section__actions">
+        {onReplicate ? (
+          <button
+            type="button"
+            className="menu-section__replicate"
+            onClick={onReplicate}
+            title="Copia nel giorno successivo"
+            aria-label="Copia questo pasto nel giorno successivo"
+          >
+            <IconCopyPlus size={24} stroke={2} aria-hidden />
+          </button>
+        ) : null}
+        {mealCompletion ? (
+          <button
+            type="button"
+            className={`menu-section__completion-trigger${triggerStatusClass}${panelOpen ? " menu-section__completion-trigger--open" : ""}`}
+            onClick={() => setPanelOpen((o) => !o)}
+            aria-expanded={panelOpen}
+            aria-haspopup="true"
+            aria-label={MEAL_SLOT_GROUP_LABEL[mealCompletion.slot]}
+            title="Stato pasto"
+          >
+            <IconCheckbox size={24} stroke={2} aria-hidden />
+          </button>
+        ) : null}
         <button
           type="button"
-          className="menu-section__replicate"
-          onClick={onReplicate}
-          title="Copia nel giorno successivo"
-          aria-label="Copia questo pasto nel giorno successivo"
+          className="menu-section__edit"
+          onClick={onEdit}
+          aria-label="Modifica il menu del giorno"
         >
-          <IconCalendarRepeat size={18} stroke={2} aria-hidden />
+          <EditIcon size={24} />
         </button>
+      </div>
+      {panelOpen && mealCompletion ? (
+        <div
+          className="menu-section__completion-panel"
+          role="radiogroup"
+          aria-label={MEAL_SLOT_GROUP_LABEL[mealCompletion.slot]}
+        >
+          <button
+            type="button"
+            role="radio"
+            className={`menu-section__completion-option menu-section__completion-option--completed${mealCompletion.value === "completed" ? " menu-section__completion-option--active" : ""}`}
+            onClick={() => pick("completed")}
+            aria-checked={mealCompletion.value === "completed"}
+          >
+            <IconCheckbox size={20} stroke={2} aria-hidden />
+            <span>Completato</span>
+          </button>
+          <button
+            type="button"
+            role="radio"
+            className={`menu-section__completion-option menu-section__completion-option--skipped${mealCompletion.value === "skipped" ? " menu-section__completion-option--active" : ""}`}
+            onClick={() => pick("skipped")}
+            aria-checked={mealCompletion.value === "skipped"}
+          >
+            <IconCheckbox size={20} stroke={2} aria-hidden />
+            <span>Saltato</span>
+          </button>
+          <button
+            type="button"
+            role="radio"
+            className={`menu-section__completion-option menu-section__completion-option--partial${mealCompletion.value === "partial" ? " menu-section__completion-option--active" : ""}`}
+            onClick={() => pick("partial")}
+            aria-checked={mealCompletion.value === "partial"}
+          >
+            <IconCheckbox size={20} stroke={2} aria-hidden />
+            <span>In parte</span>
+          </button>
+        </div>
       ) : null}
-      <button
-        type="button"
-        className="menu-section__edit"
-        onClick={onEdit}
-        aria-label="Modifica il menu del giorno"
-      >
-        <EditIcon size={18} />
-      </button>
     </div>
   );
 }
@@ -114,6 +279,95 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
     const [isEditing, setIsEditing] = useState(false);
     const [editedMenu, setEditedMenu] = useState<DailyMenu>(menu);
     const [previewModalOpen, setPreviewModalOpen] = useState(false);
+    const mealStatusDateKey = adherenceDateKey ?? "";
+    const [mealCompletionMap, setMealCompletionMap] =
+      useState<MealCompletionMap>({});
+
+    useEffect(() => {
+      if (!mealStatusDateKey) {
+        setMealCompletionMap({});
+        return;
+      }
+      setMealCompletionMap(loadMealCompletionMap(mealStatusDateKey));
+    }, [mealStatusDateKey]);
+
+    const updateMealStatus = useCallback(
+      (slot: ReplicateMealSlot, next: MealCompletionStatus | null) => {
+        if (!mealStatusDateKey) return;
+        setMealCompletionMap((prev) => {
+          const draft: MealCompletionMap = { ...prev };
+          if (next === null) {
+            delete draft[slot];
+          } else {
+            draft[slot] = next;
+          }
+          saveMealCompletionMap(mealStatusDateKey, draft);
+          return draft;
+        });
+      },
+      [mealStatusDateKey],
+    );
+
+    const mealCompletionFor = useCallback(
+      (slot: ReplicateMealSlot) =>
+        mealStatusDateKey
+          ? {
+              slot,
+              value: mealCompletionMap[slot],
+              onChange: (n: MealCompletionStatus | null) =>
+                updateMealStatus(slot, n),
+            }
+          : undefined,
+      [mealStatusDateKey, mealCompletionMap, updateMealStatus],
+    );
+
+    const mealCompletionPercent = useMemo(
+      () =>
+        mealStatusDateKey
+          ? computeDailyMealCompletionPercent(menu, mealCompletionMap)
+          : 0,
+      [mealStatusDateKey, menu, mealCompletionMap],
+    );
+
+    const shouldPersistAdherence = useMemo(
+      () =>
+        Boolean(mealStatusDateKey) &&
+        hasAnyMealCompletionForDay(menu, mealCompletionMap),
+      [mealStatusDateKey, menu, mealCompletionMap],
+    );
+
+    useEffect(() => {
+      if (!mealStatusDateKey) return;
+      if (!shouldPersistAdherence) {
+        removeAdherenceScore(mealStatusDateKey);
+        return;
+      }
+      setAdherenceScore(mealStatusDateKey, mealCompletionPercent);
+    }, [
+      mealStatusDateKey,
+      shouldPersistAdherence,
+      mealCompletionPercent,
+    ]);
+
+    useEffect(() => {
+      if (!mealStatusDateKey) return;
+      const onScoresCleared = () => {
+        if (!hasAnyMealCompletionForDay(menu, mealCompletionMap)) {
+          removeAdherenceScore(mealStatusDateKey);
+          return;
+        }
+        setAdherenceScore(
+          mealStatusDateKey,
+          computeDailyMealCompletionPercent(menu, mealCompletionMap),
+        );
+      };
+      window.addEventListener(ADHERENCE_SCORES_CLEARED_EVENT, onScoresCleared);
+      return () =>
+        window.removeEventListener(
+          ADHERENCE_SCORES_CLEARED_EVENT,
+          onScoresCleared,
+        );
+    }, [mealStatusDateKey, menu, mealCompletionMap]);
 
     useEffect(() => {
       if (!isEditing) setEditedMenu(menu);
@@ -474,24 +728,29 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           {displayDate && (
             <span className="menu-header__date">{displayDate}</span>
           )}
-          {uploadedFile ? (
+          {uploadedFile || mealStatusDateKey ? (
             <div className="menu-header-actions">
-              <button
-                type="button"
-                className="menu-action-btn preview"
-                onClick={() => setPreviewModalOpen(true)}
-                aria-label="Apri file caricato"
-              >
-                <ListIcon
-                  size={16}
-                  style={{
-                    marginRight: "0.5rem",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                  }}
-                />
-                File caricato
-              </button>
+              {uploadedFile ? (
+                <button
+                  type="button"
+                  className="menu-action-btn preview"
+                  onClick={() => setPreviewModalOpen(true)}
+                  aria-label="Apri file caricato"
+                >
+                  <ListIcon
+                    size={16}
+                    style={{
+                      marginRight: "0.5rem",
+                      verticalAlign: "middle",
+                      display: "inline-block",
+                    }}
+                  />
+                  File caricato
+                </button>
+              ) : null}
+              {mealStatusDateKey ? (
+                <MealCompletionSmile percent={mealCompletionPercent} />
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -511,10 +770,6 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           </Modal>
         )}
 
-        {adherenceDateKey ? (
-          <MenuAdherenceBlock dateKey={adherenceDateKey} />
-        ) : null}
-
         <div className="menu-content">
           <div className="menu-section">
             <div className="menu-section__head">
@@ -529,14 +784,6 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Colazione
               </h4>
-              <SectionHeadActions
-                onReplicate={
-                  onReplicateMealToNextDay
-                    ? () => onReplicateMealToNextDay("colazione")
-                    : undefined
-                }
-                onEdit={() => setIsEditing(true)}
-              />
             </div>
             {menu.colazione?.carboidrati && (
               <p>
@@ -554,6 +801,15 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 <strong>Proteine:</strong> {formatFood(menu.colazione.proteine)}
               </p>
             )}
+            <MenuSectionHeadActions
+              onReplicate={
+                onReplicateMealToNextDay
+                  ? () => onReplicateMealToNextDay("colazione")
+                  : undefined
+              }
+              onEdit={() => setIsEditing(true)}
+              mealCompletion={mealCompletionFor("colazione")}
+            />
           </div>
 
           {menu.spuntinoMattutino && (
@@ -570,16 +826,17 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Spuntino Mattutino
                 </h4>
-                <SectionHeadActions
-                  onReplicate={
-                    onReplicateMealToNextDay
-                      ? () => onReplicateMealToNextDay("spuntinoMattutino")
-                      : undefined
-                  }
-                  onEdit={() => setIsEditing(true)}
-                />
               </div>
               <p>{formatFood(menu.spuntinoMattutino)}</p>
+              <MenuSectionHeadActions
+                onReplicate={
+                  onReplicateMealToNextDay
+                    ? () => onReplicateMealToNextDay("spuntinoMattutino")
+                    : undefined
+                }
+                onEdit={() => setIsEditing(true)}
+                mealCompletion={mealCompletionFor("spuntinoMattutino")}
+              />
             </div>
           )}
 
@@ -596,14 +853,6 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Pranzo
               </h4>
-              <SectionHeadActions
-                onReplicate={
-                  onReplicateMealToNextDay
-                    ? () => onReplicateMealToNextDay("pranzo")
-                    : undefined
-                }
-                onEdit={() => setIsEditing(true)}
-              />
             </div>
             {menu.pranzo?.carboidrati && (
               <p>
@@ -621,6 +870,15 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 <strong>Verdure:</strong> {formatFood(menu.pranzo.verdure)}
               </p>
             )}
+            <MenuSectionHeadActions
+              onReplicate={
+                onReplicateMealToNextDay
+                  ? () => onReplicateMealToNextDay("pranzo")
+                  : undefined
+              }
+              onEdit={() => setIsEditing(true)}
+              mealCompletion={mealCompletionFor("pranzo")}
+            />
           </div>
 
           {menu.merenda && (
@@ -637,16 +895,17 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Merenda
                 </h4>
-                <SectionHeadActions
-                  onReplicate={
-                    onReplicateMealToNextDay
-                      ? () => onReplicateMealToNextDay("merenda")
-                      : undefined
-                  }
-                  onEdit={() => setIsEditing(true)}
-                />
               </div>
               <p>{formatFood(menu.merenda)}</p>
+              <MenuSectionHeadActions
+                onReplicate={
+                  onReplicateMealToNextDay
+                    ? () => onReplicateMealToNextDay("merenda")
+                    : undefined
+                }
+                onEdit={() => setIsEditing(true)}
+                mealCompletion={mealCompletionFor("merenda")}
+              />
             </div>
           )}
 
@@ -663,14 +922,6 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 />
                 Cena
               </h4>
-              <SectionHeadActions
-                onReplicate={
-                  onReplicateMealToNextDay
-                    ? () => onReplicateMealToNextDay("cena")
-                    : undefined
-                }
-                onEdit={() => setIsEditing(true)}
-              />
             </div>
             {menu.cena?.pane && (
               <p>
@@ -687,6 +938,15 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 <strong>Proteine:</strong> {formatFood(menu.cena.proteine)}
               </p>
             )}
+            <MenuSectionHeadActions
+              onReplicate={
+                onReplicateMealToNextDay
+                  ? () => onReplicateMealToNextDay("cena")
+                  : undefined
+              }
+              onEdit={() => setIsEditing(true)}
+              mealCompletion={mealCompletionFor("cena")}
+            />
           </div>
 
           {(menu.duranteLaGiornata || menu.olio) && (
@@ -703,19 +963,20 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   />
                   Durante la giornata
                 </h4>
-                <SectionHeadActions
-                  onReplicate={
-                    onReplicateMealToNextDay
-                      ? () => onReplicateMealToNextDay("duranteLaGiornata")
-                      : undefined
-                  }
-                  onEdit={() => setIsEditing(true)}
-                />
               </div>
               {menu.duranteLaGiornata && (
                 <p className="menu-notes">{menu.duranteLaGiornata}</p>
               )}
               {menu.olio && <p>{formatFood(menu.olio)}</p>}
+              <MenuSectionHeadActions
+                onReplicate={
+                  onReplicateMealToNextDay
+                    ? () => onReplicateMealToNextDay("duranteLaGiornata")
+                    : undefined
+                }
+                onEdit={() => setIsEditing(true)}
+                mealCompletion={mealCompletionFor("duranteLaGiornata")}
+              />
             </div>
           )}
         </div>

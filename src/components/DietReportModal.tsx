@@ -63,9 +63,10 @@ export default function DietReportModal({ open, onClose }: DietReportModalProps)
             aria-hidden
           />
           <p className="diet-report__empty">
-            Qui ancora non c&apos;è nessun voto. Nella schermata dei pasti apri
-            &quot;Pagella di oggi&quot;, segna quanto hai rispettato la dieta, poi
-            torna qui per la media.
+            Qui ancora non c&apos;è nessun dato. Nella schermata dei pasti segna
+            ogni pasto (completato, in parte o saltato): lo smile in alto nel menu
+            (accanto a &quot;File caricato&quot; se presente) riflette il
+            completamento e alimenta questo report.
           </p>
         </div>
       ) : (
@@ -81,8 +82,8 @@ export default function DietReportModal({ open, onClose }: DietReportModalProps)
             <span className="diet-report__average-value">{r.averagePercent}%</span>
           </p>
           <p className="diet-report__note">
-            La percentuale è la media dei punteggi (0–100%) che hai assegnato ai
-            singoli giorni.
+            La percentuale per giorno deriva dai pasti segnati; la media è sui
+            giorni in cui hai indicato almeno uno stato.
           </p>
           <ul className="diet-report__list">
             {r.sortedEntries.map((e) => (

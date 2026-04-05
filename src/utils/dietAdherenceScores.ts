@@ -26,6 +26,14 @@ export function setAdherenceScore(dateKey: string, score: number): void {
   localStorage.setItem(LS_KEY, JSON.stringify(all));
 }
 
+/** Rimuove il voto del giorno dal report (es. nessun pasto ancora segnato). */
+export function removeAdherenceScore(dateKey: string): void {
+  const all = loadAdherenceScores();
+  if (!(dateKey in all)) return;
+  delete all[dateKey];
+  localStorage.setItem(LS_KEY, JSON.stringify(all));
+}
+
 export function getAdherenceScore(dateKey: string): number | undefined {
   const v = loadAdherenceScores()[dateKey];
   return typeof v === "number" ? v : undefined;
@@ -93,7 +101,7 @@ export function formatAdherenceReportAsText(r: AdherenceReport): string {
     "Dettaglio per giorno:",
     ...r.sortedEntries.map((e) => `• ${e.dateLabel}: ${e.score}%`),
     "",
-    "La percentuale è la media dei punteggi (0–100%) che hai assegnato a ciascuna giornata.",
+    "La percentuale per giorno deriva dal completamento pasti (completato, in parte, saltato).",
   ];
   return lines.join("\n");
 }

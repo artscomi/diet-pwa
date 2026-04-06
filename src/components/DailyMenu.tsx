@@ -13,13 +13,7 @@ import {
 } from "react";
 import { dietData as defaultDietData } from "@/data/dietData";
 import IngredientSelector from "./IngredientSelector";
-import {
-  SunIcon,
-  UtensilsIcon,
-  MoonIcon,
-  PeanutIcon,
-  EditIcon,
-} from "./Icons";
+import { SunIcon, UtensilsIcon, MoonIcon, PeanutIcon, EditIcon } from "./Icons";
 import Modal from "./Modal";
 import type {
   DailyMenu,
@@ -265,8 +259,8 @@ function MealEditModalFields({
     case "duranteLaGiornata":
       return (
         <p className="meal-edit-modal-fields__empty">
-          Modifica note e olio direttamente nella sezione &quot;Durante la giornata&quot;
-          sotto i pasti.
+          Modifica note e olio direttamente nella sezione &quot;Durante la
+          giornata&quot; sotto i pasti.
         </p>
       );
     default:
@@ -278,7 +272,6 @@ export type DailyMenuHandle = { save: () => void };
 
 interface DailyMenuProps {
   menu: DailyMenu;
-  displayDate?: string;
   onSave?: (menu: DailyMenu) => void;
   /** Copia un solo pasto nel menu del giorno calendariale successivo (salvato in locale). */
   onReplicateMealToNextDay?: (slot: ReplicateMealSlot) => void;
@@ -348,7 +341,11 @@ function parseDuranteCombinedSave(
   return { duranteLaGiornata: t, olio: undefined };
 }
 
+const ADHERENCE_TITLE_STATIC = "Quanto hai rispettato la dieta oggi?";
+
 function MealCompletionDaySummary({ percent }: { percent: number }) {
+  const ariaLabel = `${ADHERENCE_TITLE_STATIC}: ${percent} per cento`;
+  const title = `${ADHERENCE_TITLE_STATIC}: ${percent}%`;
   const tier =
     percent >= 80
       ? "high"
@@ -374,8 +371,8 @@ function MealCompletionDaySummary({ percent }: { percent: number }) {
       className={`menu-completion-summary menu-completion-summary--${tier}`}
       role="status"
       aria-live="polite"
-      aria-label={`Completamento pasti del giorno: ${percent} per cento`}
-      title={`Completamento pasti: ${percent}%`}
+      aria-label={ariaLabel}
+      title={title}
     >
       <span className="menu-completion-summary__icon" aria-hidden>
         <Icon size={28} stroke={1.75} />
@@ -541,7 +538,6 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
   function DailyMenuComponent(
     {
       menu,
-      displayDate,
       onSave,
       onReplicateMealToNextDay,
       onPendingChange,
@@ -553,9 +549,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
     const dietData = dietDataProp ?? defaultDietData;
     const [duranteEditing, setDuranteEditing] = useState(false);
     const [duranteDraftNotes, setDuranteDraftNotes] = useState("");
-    const [editModalSlot, setEditModalSlot] = useState<ReplicateMealSlot | null>(
-      null,
-    );
+    const [editModalSlot, setEditModalSlot] =
+      useState<ReplicateMealSlot | null>(null);
     const [editModalDraft, setEditModalDraft] = useState<DailyMenu>(() =>
       cloneMenu(menu),
     );
@@ -623,11 +618,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
         return;
       }
       setAdherenceScore(mealStatusDateKey, mealCompletionPercent);
-    }, [
-      mealStatusDateKey,
-      shouldPersistAdherence,
-      mealCompletionPercent,
-    ]);
+    }, [mealStatusDateKey, shouldPersistAdherence, mealCompletionPercent]);
 
     useEffect(() => {
       if (!mealStatusDateKey) return;
@@ -649,10 +640,13 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
         );
     }, [mealStatusDateKey, menu, mealCompletionMap]);
 
-    const openMealEditModal = useCallback((slot: ReplicateMealSlot) => {
-      setEditModalDraft(cloneMenu(menu));
-      setEditModalSlot(slot);
-    }, [menu]);
+    const openMealEditModal = useCallback(
+      (slot: ReplicateMealSlot) => {
+        setEditModalDraft(cloneMenu(menu));
+        setEditModalSlot(slot);
+      },
+      [menu],
+    );
 
     useEffect(() => {
       setDuranteEditing(false);
@@ -713,23 +707,16 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
 
     return (
       <div className="daily-menu-card">
-        <div className="menu-header">
-          <div
-            className={[
-              "menu-header__top",
-              !displayDate ? "menu-header__top--solo-summary" : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            {displayDate ? (
-              <span className="menu-header__date">{displayDate}</span>
-            ) : null}
-            {mealStatusDateKey ? (
+        {mealStatusDateKey ? (
+          <div className="menu-header">
+            <div className="menu-header__completion-stack">
+              <span className="menu-header__completion-label">
+                {ADHERENCE_TITLE_STATIC}
+              </span>
               <MealCompletionDaySummary percent={mealCompletionPercent} />
-            ) : null}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {editModalSlot ? (
           <Modal
@@ -753,9 +740,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           <div className="menu-section">
             <div className="menu-section__head">
               <h4>
-                <SunIcon
-                  size={MEAL_CARD_HEADING_ICON_PX}
-                />
+                <SunIcon size={MEAL_CARD_HEADING_ICON_PX} />
                 Colazione
               </h4>
             </div>
@@ -791,9 +776,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             <div className="menu-section">
               <div className="menu-section__head">
                 <h4>
-                  <PeanutIcon
-                    size={MEAL_CARD_HEADING_ICON_PX}
-                  />
+                  <PeanutIcon size={MEAL_CARD_HEADING_ICON_PX} />
                   Spuntino Mattutino
                 </h4>
               </div>
@@ -814,9 +797,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           <div className="menu-section">
             <div className="menu-section__head">
               <h4>
-                <UtensilsIcon
-                  size={MEAL_CARD_HEADING_ICON_PX}
-                />
+                <UtensilsIcon size={MEAL_CARD_HEADING_ICON_PX} />
                 Pranzo
               </h4>
             </div>
@@ -852,9 +833,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             <div className="menu-section">
               <div className="menu-section__head">
                 <h4>
-                  <PeanutIcon
-                    size={MEAL_CARD_HEADING_ICON_PX}
-                  />
+                  <PeanutIcon size={MEAL_CARD_HEADING_ICON_PX} />
                   Merenda
                 </h4>
               </div>
@@ -875,9 +854,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           <div className="menu-section">
             <div className="menu-section__head">
               <h4>
-                <MoonIcon
-                  size={MEAL_CARD_HEADING_ICON_PX}
-                />
+                <MoonIcon size={MEAL_CARD_HEADING_ICON_PX} />
                 Cena
               </h4>
             </div>
@@ -961,7 +938,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
               ) : (
                 <div className="menu-durante-giornata__content">
                   {duranteReadText ? (
-                    <p className="menu-durante-giornata__text">{duranteReadText}</p>
+                    <p className="menu-durante-giornata__text">
+                      {duranteReadText}
+                    </p>
                   ) : null}
                 </div>
               )}

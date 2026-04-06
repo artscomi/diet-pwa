@@ -15,14 +15,22 @@ import Landing, {
 import Footer from "@/components/Footer";
 import InstallAppCTA, { isStandalone } from "@/components/InstallAppCTA";
 import DietReportModal from "@/components/DietReportModal";
+import AppSettingsModal from "@/components/AppSettingsModal";
 import AppToast from "@/components/AppToast";
+import CompletionReminderEffects from "@/components/CompletionReminderEffects";
 import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
 import {
   IconChevronLeft,
   IconChevronRight,
   IconDeviceFloppy,
   IconRefresh,
+  IconSettings,
 } from "@tabler/icons-react";
+import {
+  readCompletionReminderPreferences,
+  writeCompletionReminderPreferences,
+  type CompletionReminderPreferences,
+} from "@/utils/completionReminderStorage";
 import type { DailyMenu as DailyMenuType, UserDiet } from "@/types/diet";
 import { clearAdherenceScores } from "@/utils/dietAdherenceScores";
 import {
@@ -50,10 +58,21 @@ export default function App() {
   const appMainRef = useRef<HTMLElement>(null);
   const [appStandalone, setAppStandalone] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [completionPrefs, setCompletionPrefs] =
+    useState<CompletionReminderPreferences>(readCompletionReminderPreferences);
   /** Incrementato a ogni salvataggio menu: la lista spesa rilegge i `dietMenu_*` in locale. */
   const [shoppingMenuRev, setShoppingMenuRev] = useState(0);
   const [replicateToast, setReplicateToast] = useState<string | null>(null);
   const dismissReplicateToast = useCallback(() => setReplicateToast(null), []);
+
+  const persistCompletionPrefs = useCallback(
+    (next: CompletionReminderPreferences) => {
+      setCompletionPrefs(next);
+      writeCompletionReminderPreferences(next);
+    },
+    [],
+  );
   const todayDateRef = useRef(todayDate);
   todayDateRef.current = todayDate;
 
@@ -277,15 +296,25 @@ export default function App() {
           <h1 className="app-header__logo">
             <span className="app-header__title">PocketDiet</span>
           </h1>
-          <button
-            type="button"
-            className="app-header__change-diet"
-            onClick={handleChangeDietClick}
-            aria-label="Cambia dieta e ricomincia da capo"
-          >
-            <IconRefresh size={18} stroke={2} aria-hidden />
-            Cambia dieta
-          </button>
+          <div className="app-header__actions">
+            <button
+              type="button"
+              className="app-header__icon-btn"
+              onClick={() => setSettingsModalOpen(true)}
+              aria-label="Apri impostazioni"
+            >
+              <IconSettings size={20} stroke={2} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="app-header__change-diet"
+              onClick={handleChangeDietClick}
+              aria-label="Cambia dieta e ricomincia da capo"
+            >
+              <IconRefresh size={18} stroke={2} aria-hidden />
+              Cambia dieta
+            </button>
+          </div>
         </div>
       </header>
 
@@ -373,9 +402,18 @@ export default function App() {
         {!appStandalone ? <InstallAppCTA variant="stickyBar" /> : null}
       </div>
 
+      <CompletionReminderEffects prefs={completionPrefs} />
+
       <DietReportModal
         open={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
+      />
+
+      <AppSettingsModal
+        open={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
+        completionPrefs={completionPrefs}
+        onCompletionPrefsChange={persistCompletionPrefs}
       />
 
       <AppToast message={replicateToast} onDismiss={dismissReplicateToast} />

@@ -47,6 +47,7 @@ export default function App() {
   const [view, setView] = useState<AppView>("menu");
   const [menuPendingSave, setMenuPendingSave] = useState(false);
   const menuRef = useRef<DailyMenuHandle>(null);
+  const appMainRef = useRef<HTMLElement>(null);
   const [appStandalone, setAppStandalone] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   /** Incrementato a ogni salvataggio menu: la lista spesa rilegge i `dietMenu_*` in locale. */
@@ -84,6 +85,13 @@ export default function App() {
     if (view !== "menu") {
       setMenuPendingSave(false);
     }
+  }, [view]);
+
+  useEffect(() => {
+    if (view !== "shopping") return;
+    const el = appMainRef.current;
+    if (!el) return;
+    el.scrollTop = 0;
   }, [view]);
 
   const getMenuForDateKey = useCallback(
@@ -312,7 +320,7 @@ export default function App() {
         </nav>
       )}
 
-      <main className="app-main">
+      <main ref={appMainRef} className="app-main">
         {view === "menu" && currentMenu && (
           <DailyMenu
             ref={menuRef}

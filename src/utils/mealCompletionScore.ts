@@ -2,36 +2,66 @@ import type { DailyMenu } from "@/types/diet";
 import type { ReplicateMealSlot } from "@/utils/replicateMeal";
 import type { MealCompletionMap } from "@/utils/mealCompletionStatus";
 
-/** Pasti mostrati in lettura per quel giorno (allineato a `DailyMenu.tsx`). */
+/** I 5 pasti della giornata (stesso ordine della UI). */
+const FIVE_MEAL_SLOTS: ReplicateMealSlot[] = [
+  "colazione",
+  "spuntinoMattutino",
+  "pranzo",
+  "merenda",
+  "cena",
+];
+
+/** Allineato a `DailyMenu.tsx`: pasto conteggiato solo se la sezione è mostrata. */
+export function isMealSlotActive(
+  menu: DailyMenu,
+  slot: ReplicateMealSlot,
+): boolean {
+  switch (slot) {
+    case "colazione":
+    case "pranzo":
+    case "cena":
+      return true;
+    case "spuntinoMattutino":
+      return Boolean(menu.spuntinoMattutino);
+    case "merenda":
+      return Boolean(menu.merenda);
+    default:
+      return false;
+  }
+}
+
+/** Pasti attivi quel giorno (sottoinsieme dei 5). */
 export function getVisibleMealSlots(menu: DailyMenu): ReplicateMealSlot[] {
-  const slots: ReplicateMealSlot[] = ["colazione"];
-  if (menu.spuntinoMattutino) slots.push("spuntinoMattutino");
-  slots.push("pranzo");
-  if (menu.merenda) slots.push("merenda");
-  slots.push("cena");
-  if (menu.duranteLaGiornata || menu.olio) slots.push("duranteLaGiornata");
-  return slots;
+  return FIVE_MEAL_SLOTS.filter((s) => isMealSlotActive(menu, s));
 }
 
 export function hasAnyMealCompletionForDay(
   menu: DailyMenu,
   map: MealCompletionMap,
 ): boolean {
-  return getVisibleMealSlots(menu).some((s) => map[s] !== undefined);
+  return FIVE_MEAL_SLOTS.filter((s) => isMealSlotActive(menu, s)).some(
+    (s) => map[s] !== undefined,
+  );
 }
 
-/** 0–100: completato 100%, in parte 50%, saltato o non segnato 0%. */
+/**
+ * 0–100: media su **sempre 5** pasti.
+ * Completato 100%, in parte 50%, non segnato 0%.
+ * Pasto non previsto nel menu (spuntino/merenda assenti) conta 100% così non abbassa la media.
+ */
 export function computeDailyMealCompletionPercent(
   menu: DailyMenu,
   map: MealCompletionMap,
 ): number {
-  const slots = getVisibleMealSlots(menu);
-  if (slots.length === 0) return 0;
   let sum = 0;
-  for (const s of slots) {
+  for (const s of FIVE_MEAL_SLOTS) {
+    if (!isMealSlotActive(menu, s)) {
+      sum += 100;
+      continue;
+    }
     const st = map[s];
     if (st === "completed") sum += 100;
     else if (st === "partial") sum += 50;
   }
-  return Math.round(sum / slots.length);
+  return Math.round(sum / 5);
 }

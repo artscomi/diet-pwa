@@ -11,7 +11,6 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import Image from "next/image";
 import { dietData as defaultDietData } from "@/data/dietData";
 import IngredientSelector from "./IngredientSelector";
 import {
@@ -19,16 +18,14 @@ import {
   UtensilsIcon,
   MoonIcon,
   PeanutIcon,
-  DropletIcon,
   EditIcon,
-  ListIcon,
 } from "./Icons";
 import Modal from "./Modal";
 import type {
   DailyMenu,
   DietData,
+  FoodItem,
   FoodItemOrAlternatives,
-  UploadedFileInfo,
 } from "@/types/diet";
 import {
   firstFoodItem,
@@ -69,7 +66,7 @@ const MEAL_SLOT_GROUP_LABEL: Record<ReplicateMealSlot, string> = {
   pranzo: "Stato pranzo",
   merenda: "Stato merenda",
   cena: "Stato cena",
-  duranteLaGiornata: "Stato durante la giornata",
+  duranteLaGiornata: "Durante la giornata",
 };
 
 /** Titoli pasto (icone custom in `h4`): stessa dimensione in lettura e modifica. */
@@ -266,24 +263,11 @@ function MealEditModalFields({
         </div>
       );
     case "duranteLaGiornata":
-      if (!dietData.olio?.length) {
-        return (
-          <p className="meal-edit-modal-fields__empty">
-            Nessuna opzione olio configurata per questa dieta.
-          </p>
-        );
-      }
       return (
-        <div className="meal-edit-modal-fields">
-          <IngredientSelector
-            label="Olio"
-            options={dietData.olio}
-            selected={draft.olio}
-            onSelect={(selected) =>
-              setDraft((prev) => ({ ...prev, olio: selected }))
-            }
-          />
-        </div>
+        <p className="meal-edit-modal-fields__empty">
+          Modifica note e olio direttamente nella sezione &quot;Durante la giornata&quot;
+          sotto i pasti.
+        </p>
       );
     default:
       return null;
@@ -302,8 +286,6 @@ interface DailyMenuProps {
   /** Il parent riceve sempre `false` (nessuna modifica “globale” in sospeso: si salva dalla modale pasto). */
   onPendingChange?: (pending: boolean) => void;
   dietData?: DietData;
-  /** Anteprima del file caricato (solo se dieta da upload) */
-  uploadedFile?: UploadedFileInfo | null;
   /** Chiave giorno (`Date.toDateString()`) per stati pasti e report (completamento %) */
   adherenceDateKey?: string;
 }
@@ -317,7 +299,56 @@ function formatFood(
   return `${item.name} (${item.quantity} ${item.unit})`;
 }
 
-function MealCompletionSmile({ percent }: { percent: number }) {
+/** Testo unico note + olio (olio in cima se presente nel menu). */
+function buildDuranteCombinedDraft(menu: DailyMenu): string {
+  const parts: string[] = [];
+  if (menu.olio) {
+    const line = formatFood(menu.olio);
+    if (line) parts.push(line);
+  }
+  if (menu.duranteLaGiornata?.trim()) parts.push(menu.duranteLaGiornata.trim());
+  return parts.join("\n\n");
+}
+
+/**
+ * Se la dieta ha opzioni olio, la prima riga o il primo blocco (separato da riga vuota)
+ * che coincide con `formatFood(opzione)` diventa `menu.olio`; il resto sono le note.
+ */
+function parseDuranteCombinedSave(
+  raw: string,
+  olioOptions: FoodItem[],
+): { duranteLaGiornata: string | undefined; olio: FoodItem | undefined } {
+  const t = raw.trim();
+  if (!t) return { duranteLaGiornata: undefined, olio: undefined };
+
+  const segments = t
+    .split(/\n\n+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const firstSeg = segments[0];
+  const matchedSeg = olioOptions.find((o) => formatFood(o) === firstSeg);
+  if (matchedSeg) {
+    const rest = segments.slice(1).join("\n\n").trim();
+    return {
+      olio: matchedSeg,
+      duranteLaGiornata: rest || undefined,
+    };
+  }
+
+  const firstLine = t.split("\n")[0]?.trim() ?? "";
+  const matchedLine = olioOptions.find((o) => formatFood(o) === firstLine);
+  if (matchedLine) {
+    const rest = t.slice(t.indexOf("\n") + 1).trim();
+    return {
+      olio: matchedLine,
+      duranteLaGiornata: rest || undefined,
+    };
+  }
+
+  return { duranteLaGiornata: t, olio: undefined };
+}
+
+function MealCompletionDaySummary({ percent }: { percent: number }) {
   const tier =
     percent >= 80
       ? "high"
@@ -339,13 +370,18 @@ function MealCompletionSmile({ percent }: { percent: number }) {
             ? IconMoodSad2
             : IconMoodCry;
   return (
-    <span
-      className={`menu-completion-smile menu-completion-smile--${tier}`}
+    <div
+      className={`menu-completion-summary menu-completion-summary--${tier}`}
+      role="status"
+      aria-live="polite"
+      aria-label={`Completamento pasti del giorno: ${percent} per cento`}
       title={`Completamento pasti: ${percent}%`}
-      aria-label={`Completamento pasti: ${percent} per cento`}
     >
-      <Icon size={26} stroke={1.75} aria-hidden />
-    </span>
+      <span className="menu-completion-summary__icon" aria-hidden>
+        <Icon size={28} stroke={1.75} />
+      </span>
+      <span className="menu-completion-summary__percent">{percent}%</span>
+    </div>
   );
 }
 
@@ -510,19 +546,19 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
       onReplicateMealToNextDay,
       onPendingChange,
       dietData: dietDataProp,
-      uploadedFile,
       adherenceDateKey,
     },
     ref,
   ) {
     const dietData = dietDataProp ?? defaultDietData;
+    const [duranteEditing, setDuranteEditing] = useState(false);
+    const [duranteDraftNotes, setDuranteDraftNotes] = useState("");
     const [editModalSlot, setEditModalSlot] = useState<ReplicateMealSlot | null>(
       null,
     );
     const [editModalDraft, setEditModalDraft] = useState<DailyMenu>(() =>
       cloneMenu(menu),
     );
-    const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const mealStatusDateKey = adherenceDateKey ?? "";
     const [mealCompletionMap, setMealCompletionMap] =
       useState<MealCompletionMap>({});
@@ -618,6 +654,38 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
       setEditModalSlot(slot);
     }, [menu]);
 
+    useEffect(() => {
+      setDuranteEditing(false);
+    }, [menu.id, menu.date]);
+
+    const openDuranteEdit = useCallback(() => {
+      setDuranteDraftNotes(buildDuranteCombinedDraft(menu));
+      setDuranteEditing(true);
+    }, [menu]);
+
+    const cancelDuranteEdit = useCallback(() => {
+      setDuranteEditing(false);
+    }, []);
+
+    const saveDuranteEdit = useCallback(() => {
+      if (!onSave) return;
+      const trimmed = duranteDraftNotes.trim();
+      if (trimmed === "") {
+        onSave({ ...menu, duranteLaGiornata: undefined, olio: undefined });
+        setDuranteEditing(false);
+        return;
+      }
+      const olioOpts = dietData.olio ?? [];
+      if (olioOpts.length === 0) {
+        onSave({ ...menu, duranteLaGiornata: trimmed });
+        setDuranteEditing(false);
+        return;
+      }
+      const parsed = parseDuranteCombinedSave(duranteDraftNotes, olioOpts);
+      onSave({ ...menu, ...parsed });
+      setDuranteEditing(false);
+    }, [onSave, menu, dietData.olio, duranteDraftNotes]);
+
     const closeMealEditModal = useCallback(() => {
       setEditModalSlot(null);
     }, []);
@@ -641,120 +709,27 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
       onPendingChange?.(false);
     }, [onPendingChange]);
 
-    const renderFilePreviewContent = () => {
-      if (!uploadedFile) return null;
-      const { name, mimeType, previewDataUrl } = uploadedFile;
-      return (
-        <div
-          className="menu-file-preview menu-file-preview--modal"
-          role="region"
-          aria-label="File caricato"
-        >
-          <p className="menu-file-preview-title">{name}</p>
-          {previewDataUrl ? (
-            <>
-              {mimeType.startsWith("image/") && (
-                <div className="menu-file-preview-media">
-                  <Image
-                    src={previewDataUrl}
-                    alt={`Anteprima ${name}`}
-                    className="menu-file-preview-img"
-                    width={600}
-                    height={400}
-                    unoptimized
-                    style={{
-                      width: "auto",
-                      height: "auto",
-                      objectFit: "contain",
-                    }}
-                  />
-                </div>
-              )}
-              {mimeType === "application/pdf" && (
-                <div className="menu-file-preview-media">
-                  <iframe
-                    src={previewDataUrl}
-                    title={`Anteprima ${name}`}
-                    className="menu-file-preview-iframe"
-                  />
-                </div>
-              )}
-              {mimeType === "text/plain" &&
-                (() => {
-                  try {
-                    const base64 = previewDataUrl.split(",")[1];
-                    const text = base64 ? atob(base64) : "";
-                    return <pre className="menu-file-preview-text">{text}</pre>;
-                  } catch {
-                    return (
-                      <p className="menu-file-preview-fallback">
-                        Anteprima testo non disponibile.
-                      </p>
-                    );
-                  }
-                })()}
-              {!mimeType.startsWith("image/") &&
-                mimeType !== "application/pdf" &&
-                mimeType !== "text/plain" &&
-                previewDataUrl && (
-                  <div className="menu-file-preview-media">
-                    <iframe
-                      src={previewDataUrl}
-                      title={`Anteprima ${name}`}
-                      className="menu-file-preview-iframe"
-                    />
-                  </div>
-                )}
-            </>
-          ) : (
-            <p className="menu-file-preview-fallback">
-              Anteprima non disponibile per file grandi.
-            </p>
-          )}
-        </div>
-      );
-    };
+    const duranteReadText = buildDuranteCombinedDraft(menu);
 
     return (
       <div className="daily-menu-card">
         <div className="menu-header">
-          {displayDate && (
-            <span className="menu-header__date">{displayDate}</span>
-          )}
-          {uploadedFile || mealStatusDateKey ? (
-            <div className="menu-header-actions">
-              {mealStatusDateKey ? (
-                <MealCompletionSmile percent={mealCompletionPercent} />
-              ) : null}
-              {uploadedFile ? (
-                <button
-                  type="button"
-                  className="menu-action-btn preview"
-                  onClick={() => setPreviewModalOpen(true)}
-                  aria-label="Apri file caricato"
-                >
-                  <ListIcon size={16} />
-                  File caricato
-                </button>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-
-        {previewModalOpen && uploadedFile && (
-          <Modal
-            title="File caricato"
-            onClose={() => setPreviewModalOpen(false)}
-            buttonLabel="Chiudi"
-            wide
-            documentWide={
-              uploadedFile.mimeType === "application/pdf" ||
-              uploadedFile.mimeType === "text/plain"
-            }
+          <div
+            className={[
+              "menu-header__top",
+              !displayDate ? "menu-header__top--solo-summary" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
-            {renderFilePreviewContent()}
-          </Modal>
-        )}
+            {displayDate ? (
+              <span className="menu-header__date">{displayDate}</span>
+            ) : null}
+            {mealStatusDateKey ? (
+              <MealCompletionDaySummary percent={mealCompletionPercent} />
+            ) : null}
+          </div>
+        </div>
 
         {editModalSlot ? (
           <Modal
@@ -933,30 +908,63 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             />
           </div>
 
-          {(menu.duranteLaGiornata || menu.olio) && (
-            <div className="menu-section">
-              <div className="menu-section__head">
-                <h4>
-                  <DropletIcon
-                    size={MEAL_CARD_HEADING_ICON_PX}
-                  />
+          {(Boolean(dietData.olio?.length) ||
+            menu.duranteLaGiornata ||
+            menu.olio) && (
+            <div className="menu-durante-giornata">
+              <div className="menu-durante-giornata__head">
+                <span className="menu-durante-giornata__label">
                   Durante la giornata
-                </h4>
+                </span>
+                {!duranteEditing && onSave ? (
+                  <button
+                    type="button"
+                    className="menu-section__edit menu-durante-giornata__edit"
+                    onClick={openDuranteEdit}
+                    aria-label={MEAL_EDIT_MODAL_TITLE.duranteLaGiornata}
+                  >
+                    <EditIcon size={MEAL_CARD_ACTION_ICON_PX} />
+                  </button>
+                ) : null}
               </div>
-              {menu.duranteLaGiornata && (
-                <p className="menu-notes">{menu.duranteLaGiornata}</p>
+              {duranteEditing ? (
+                <>
+                  <textarea
+                    className="menu-durante-giornata__textarea"
+                    rows={4}
+                    value={duranteDraftNotes}
+                    onChange={(e) => setDuranteDraftNotes(e.target.value)}
+                    placeholder={
+                      dietData.olio?.length
+                        ? "Prima riga: olio dalla dieta (es. come suggerito), poi note sulla giornata…"
+                        : "Note, integrazioni o indicazioni per la giornata…"
+                    }
+                    aria-label="Note durante la giornata"
+                  />
+                  <div className="menu-durante-giornata__actions">
+                    <button
+                      type="button"
+                      className="menu-action-btn save"
+                      onClick={saveDuranteEdit}
+                    >
+                      Salva
+                    </button>
+                    <button
+                      type="button"
+                      className="menu-action-btn cancel"
+                      onClick={cancelDuranteEdit}
+                    >
+                      Annulla
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="menu-durante-giornata__content">
+                  {duranteReadText ? (
+                    <p className="menu-durante-giornata__text">{duranteReadText}</p>
+                  ) : null}
+                </div>
               )}
-              {menu.olio && <p>{formatFood(menu.olio)}</p>}
-              <MenuSectionHeadActions
-                onReplicate={
-                  onReplicateMealToNextDay
-                    ? () => onReplicateMealToNextDay("duranteLaGiornata")
-                    : undefined
-                }
-                onEdit={() => openMealEditModal("duranteLaGiornata")}
-                editAriaLabel={MEAL_EDIT_MODAL_TITLE.duranteLaGiornata}
-                mealCompletion={mealCompletionFor("duranteLaGiornata")}
-              />
             </div>
           )}
         </div>

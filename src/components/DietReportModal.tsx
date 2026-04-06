@@ -63,10 +63,9 @@ export default function DietReportModal({ open, onClose }: DietReportModalProps)
             aria-hidden
           />
           <p className="diet-report__empty">
-            Qui ancora non c&apos;è nessun dato. Nella schermata dei pasti segna
+            Qui ancora non c&apos;è nessun dato.             Nella schermata dei pasti segna
             ogni pasto (completato, in parte o saltato): lo smile in alto nel menu
-            (accanto a &quot;File caricato&quot; se presente) riflette il
-            completamento e alimenta questo report.
+            riflette il completamento e alimenta questo report.
           </p>
         </div>
       ) : (

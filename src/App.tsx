@@ -325,7 +325,6 @@ export default function App() {
               buildDietDataFromMenus(userDiet.dailyMenus) ??
               defaultDietData
             }
-            uploadedFile={userDiet.uploadedFile}
             adherenceDateKey={currentMenu?.date ?? viewedDateKey}
           />
         )}

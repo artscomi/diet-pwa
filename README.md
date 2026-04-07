@@ -29,7 +29,7 @@ App Next.js per il menu del giorno che rispetta la tua dieta: usa i 14 menu pred
 ```bash
 git clone <repo>
 cd react-pwa-app
-npm install
+yarn install
 ```
 
 ## Configurazione
@@ -56,27 +56,27 @@ Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” 
 
 ```bash
 # Sviluppo (frontend + API sulla stessa origine)
-npm run dev
+yarn dev
 ```
 
 Apri [http://localhost:3000](http://localhost:3000).
 
 ```bash
 # Build per produzione
-npm run build
+yarn build
 
 # Avvio in produzione
-npm start
+yarn start
 ```
 
 ## Script disponibili
 
 | Comando       | Descrizione                    |
 |---------------|--------------------------------|
-| `npm run dev` | Server di sviluppo (porta 3000) |
-| `npm run build` | Build ottimizzata per produzione |
-| `npm start`   | Avvia l’app in produzione      |
-| `npm run lint` | Esegue ESLint                  |
+| `yarn dev` | Server di sviluppo (porta 3000) |
+| `yarn build` | Build ottimizzata per produzione |
+| `yarn start`   | Avvia l’app in produzione      |
+| `yarn lint` | Esegue ESLint                  |
 
 ## Struttura del progetto
 

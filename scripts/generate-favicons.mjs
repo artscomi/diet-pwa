@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Genera favicon e icone PWA da public/pocketdiet-logo.svg (solo icona, senza testo).
- * Richiede: npm install (sharp)
+ * Richiede: yarn install (sharp)
  * Uso: node scripts/generate-favicons.mjs
  */
 

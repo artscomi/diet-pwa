@@ -1,3 +1,6 @@
+# Solo Yarn (evita lockfile npm accidentali)
+package-lock.json
+
 # Logs
 logs
 *.log
@@ -31,4 +34,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Generati da @ducanh2912/next-pwa al build
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/worker-*.js
+public/worker-*.js.map
+public/fallback-*.js
+public/fallback-*.js.map
 

@@ -860,3 +860,16 @@ button {
     );
   }
 }
+
+.offline-fallback {
+  box-sizing: border-box;
+  max-width: 28rem;
+  margin: 4rem auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.offline-fallback a {
+  color: var(--color-accent);
+  font-weight: 600;
+}

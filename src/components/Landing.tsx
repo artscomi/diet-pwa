@@ -340,7 +340,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         } catch {
           setUploadStatus(null);
           setError(
-            "Il server non ha risposto correttamente. Verifica che l’app sia avviata con npm run dev.",
+            "Il server non ha risposto correttamente. Verifica che l’app sia avviata con yarn dev.",
           );
           if (fileInputRef.current) fileInputRef.current.value = "";
           return;

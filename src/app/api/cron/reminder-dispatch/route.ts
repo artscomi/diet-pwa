@@ -13,7 +13,7 @@ import { getClockInTimeZone } from "@/server/reminderPushTime";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const NOTIFICATION_TITLE = "🥑 PocketDiet";
+const NOTIFICATION_TITLE = "";
 const NOTIFICATION_BODY =
   "Prima di chiudere la giornata, segna i tuoi progressi di oggi!";
 

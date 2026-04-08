@@ -13,9 +13,9 @@ import { getOrCreatePushClientId } from "@/utils/pushReminderClientId";
 import { registerMealReminderServiceWorker } from "@/utils/registerMealReminderSw";
 import { urlBase64ToUint8Array } from "@/utils/urlBase64ToUint8Array";
 
-const NOTIFICATION_TITLE = "Completamento dieta";
+const NOTIFICATION_TITLE = "🥑 PocketDiet";
 const NOTIFICATION_BODY =
-  "Segna la percentuale con cui hai seguito i pasti di oggi in PocketDiet.";
+  "Prima di chiudere la giornata, segna i tuoi progressi di oggi! Così potrai generare un report completo ogni volta che vorrai.";
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() ?? "";
 
 interface CompletionReminderEffectsProps {

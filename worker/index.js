@@ -22,8 +22,8 @@ self.addEventListener("notificationclick", (event) => {
 /** Notifiche inviate dal server (Web Push) quando l’app è chiusa. */
 self.addEventListener("push", (event) => {
   const fallback = {
-    title: "Completamento dieta",
-    body: "Segna la percentuale con cui hai seguito i pasti di oggi in PocketDiet.",
+    title: "🥑 PocketDiet",
+    body: "Prima di chiudere la giornata, segna i tuoi progressi di oggi! Così potrai generare un report completo ogni volta che vorrai.",
     tag: "pocketdiet-reminder",
     url: "/",
   };

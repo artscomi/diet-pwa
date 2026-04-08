@@ -13,9 +13,9 @@ import { getClockInTimeZone } from "@/server/reminderPushTime";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const NOTIFICATION_TITLE = "Completamento dieta";
+const NOTIFICATION_TITLE = "🥑 PocketDiet";
 const NOTIFICATION_BODY =
-  "Segna la percentuale con cui hai seguito i pasti di oggi in PocketDiet.";
+  "Prima di chiudere la giornata, segna i tuoi progressi di oggi! Così potrai generare un report completo ogni volta che vorrai.";
 
 const REMINDER_HOUR = Number(FIXED_COMPLETION_REMINDER_TIME.slice(0, 2));
 

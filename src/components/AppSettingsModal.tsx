@@ -67,9 +67,6 @@ export default function AppSettingsModal({
         <p className="app-settings-modal__hint">
           Un avviso al giorno per ricordarti di segnare quanto hai seguito la
           dieta. Qui puoi attivare o disattivare il promemoria in PocketDiet.
-          L’orario e fisso alle {FIXED_COMPLETION_REMINDER_TIME}. Il browser
-          gestisce ancora il permesso delle notifiche: puoi modificarlo dalle
-          impostazioni del sito quando vuoi.
         </p>
 
         <div className="app-settings-modal__row">

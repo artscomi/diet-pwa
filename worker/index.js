@@ -6,16 +6,18 @@ self.addEventListener("notificationclick", (event) => {
       ? event.notification.data.url
       : "/";
   event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
-      for (const client of clients) {
-        if (client.url && "focus" in client) {
-          return client.focus();
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clients) => {
+        for (const client of clients) {
+          if (client.url && "focus" in client) {
+            return client.focus();
+          }
         }
-      }
-      if (self.clients.openWindow) {
-        return self.clients.openWindow(url);
-      }
-    }),
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(url);
+        }
+      }),
   );
 });
 
@@ -23,7 +25,7 @@ self.addEventListener("notificationclick", (event) => {
 self.addEventListener("push", (event) => {
   const fallback = {
     title: "🥑 PocketDiet",
-    body: "Prima di chiudere la giornata, segna i tuoi progressi di oggi! Così potrai generare un report completo ogni volta che vorrai.",
+    body: "Prima di chiudere la giornata, segna i tuoi progressi di oggi!",
     tag: "pocketdiet-reminder",
     url: "/",
   };

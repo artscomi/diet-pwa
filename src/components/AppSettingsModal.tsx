@@ -55,27 +55,64 @@ export default function AppSettingsModal({
   }, [completionPrefs, persist]);
 
   const unsupported = perm === "unsupported";
+  const statusLabel = unsupported
+    ? "Non supportato"
+    : perm === "denied"
+      ? "Bloccato"
+      : completionPrefs.enabled && perm === "granted"
+        ? "Attivo"
+        : completionPrefs.enabled
+          ? "Da confermare"
+          : "Disattivato";
 
   if (!open) return null;
 
   return (
     <Modal title="Impostazioni" onClose={onClose} buttonLabel="Chiudi" wide>
       <div className="app-settings-modal__section">
-        <h3 className="app-settings-modal__section-title">
-          Promemoria completamento
-        </h3>
+        <div className="app-settings-modal__hero">
+          <div>
+            <p className="app-settings-modal__eyebrow">Promemoria serale</p>
+            <h3 className="app-settings-modal__section-title">
+              Tieni d’occhio i tuoi progressi
+            </h3>
+          </div>
+          <span className="app-settings-modal__badge">{statusLabel}</span>
+        </div>
+
         <p className="app-settings-modal__hint">
-          Un avviso al giorno per ricordarti di segnare quanto hai seguito la
-          dieta. Qui puoi attivare o disattivare il promemoria in PocketDiet.
+          Un promemoria al giorno per aiutarti a segnare con continuita come sta
+          andando la dieta e avere poi report piu completi.
         </p>
 
+        <div className="app-settings-modal__info-card">
+          <div className="app-settings-modal__info-item">
+            <span className="app-settings-modal__info-kicker">Orario</span>
+            <strong className="app-settings-modal__info-value">
+              Ogni giorno alle {FIXED_COMPLETION_REMINDER_TIME}
+            </strong>
+          </div>
+          <div className="app-settings-modal__info-item">
+            <span className="app-settings-modal__info-kicker">Messaggio</span>
+            <span className="app-settings-modal__info-copy">
+              Un piccolo promemoria serale per aggiornare i tuoi progressi.
+            </span>
+          </div>
+        </div>
+
         <div className="app-settings-modal__row">
-          <span
-            className="app-settings-modal__label"
-            id="settings-reminder-label"
-          >
-            Promemoria giornaliero
-          </span>
+          <div className="app-settings-modal__row-copy">
+            <span
+              className="app-settings-modal__label"
+              id="settings-reminder-label"
+            >
+              Attiva promemoria
+            </span>
+            <p className="app-settings-modal__row-hint">
+              Ricevi una notifica serale per ricordarti di registrare la tua
+              giornata.
+            </p>
+          </div>
           <label className="app-settings-modal__switch">
             <input
               type="checkbox"
@@ -111,13 +148,14 @@ export default function AppSettingsModal({
             className="app-settings-modal__status app-settings-modal__status--ok"
             role="status"
           >
-            Promemoria attivo in PocketDiet e permesso del browser concesso.
+            Perfetto: il promemoria e attivo e il browser puo inviarti la
+            notifica serale.
           </p>
         ) : completionPrefs.enabled && perm === "default" ? (
           <>
             <p className="app-settings-modal__status" role="status">
-              Il browser non ha ancora concesso le notifiche: tocca il pulsante
-              qui sotto e scegli «Consenti» nel messaggio del browser.
+              Ci siamo quasi: consenti le notifiche nel browser per ricevere il
+              promemoria.
             </p>
             <button
               type="button"
@@ -133,8 +171,7 @@ export default function AppSettingsModal({
           </>
         ) : (
           <p className="app-settings-modal__status" role="status">
-            Promemoria disattivato in PocketDiet: non verranno inviate notifiche
-            dall’app.
+            Il promemoria e disattivato: non ti invieremo notifiche serali.
           </p>
         )}
       </div>

@@ -15,7 +15,7 @@ export const maxDuration = 60;
 
 const NOTIFICATION_TITLE = "🥑 PocketDiet";
 const NOTIFICATION_BODY =
-  "Prima di chiudere la giornata, segna i tuoi progressi di oggi! Così potrai generare un report completo ogni volta che vorrai.";
+  "Prima di chiudere la giornata, segna i tuoi progressi di oggi!";
 
 const REMINDER_HOUR = Number(FIXED_COMPLETION_REMINDER_TIME.slice(0, 2));
 
@@ -31,21 +31,33 @@ function configureVapid(): boolean {
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
-    return NextResponse.json({ ok: false, error: "cron_unconfigured" }, { status: 503 });
+    return NextResponse.json(
+      { ok: false, error: "cron_unconfigured" },
+      { status: 503 },
+    );
   }
 
   const auth = request.headers.get("authorization");
   if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "unauthorized" },
+      { status: 401 },
+    );
   }
 
   if (!configureVapid()) {
-    return NextResponse.json({ ok: false, error: "vapid_unconfigured" }, { status: 503 });
+    return NextResponse.json(
+      { ok: false, error: "vapid_unconfigured" },
+      { status: 503 },
+    );
   }
 
   const redis = getReminderRedis();
   if (!redis) {
-    return NextResponse.json({ ok: false, error: "push_storage_unconfigured" }, { status: 503 });
+    return NextResponse.json(
+      { ok: false, error: "push_storage_unconfigured" },
+      { status: 503 },
+    );
   }
 
   const clientIds = (await redis.smembers(REMINDER_CLIENT_SET)) as string[];
@@ -104,5 +116,11 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, sent, skipped, errors, checked: clientIds.length });
+  return NextResponse.json({
+    ok: true,
+    sent,
+    skipped,
+    errors,
+    checked: clientIds.length,
+  });
 }

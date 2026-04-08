@@ -13,7 +13,7 @@ import { getOrCreatePushClientId } from "@/utils/pushReminderClientId";
 import { registerMealReminderServiceWorker } from "@/utils/registerMealReminderSw";
 import { urlBase64ToUint8Array } from "@/utils/urlBase64ToUint8Array";
 
-const NOTIFICATION_TITLE = "";
+const NOTIFICATION_TITLE = "🥑 Promemoria serale";
 const NOTIFICATION_BODY =
   "Prima di chiudere la giornata, segna i tuoi progressi di oggi!";
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() ?? "";

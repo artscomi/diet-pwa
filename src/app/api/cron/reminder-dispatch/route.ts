@@ -69,7 +69,7 @@ export async function GET(request: Request) {
     }
 
     const clock = getClockInTimeZone(now, record.timeZone);
-    if (clock.h !== REMINDER_HOUR) {
+    if (clock.h < REMINDER_HOUR) {
       skipped += 1;
       continue;
     }

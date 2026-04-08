@@ -82,14 +82,14 @@ La route cron richiede header:
 Authorization: Bearer <CRON_SECRET>
 ```
 
-Con il reminder fisso alle `21:00`, il cron puo anche essere eseguito ogni ora, pur con un comportamento meno preciso rispetto a un check al minuto.
+Con il reminder fisso alle `21:00`, il cron puo anche essere eseguito una volta al giorno, pur con un comportamento meno preciso rispetto a un check al minuto.
 
 ## Deploy su Vercel Hobby
 
-Per questa versione del reminder conviene:
+Per questa versione del reminder usiamo:
 
-- deployare l'app su **Vercel Hobby**
-- usare un **cron esterno** per chiamare la route di dispatch
+- deploy dell'app su **Vercel Hobby**
+- **Vercel Cron** giornaliero
 
 ### Variabili ambiente su Vercel
 
@@ -120,22 +120,22 @@ CRON_SECRET=
 4. Esegui il deploy
 5. Apri il dominio di produzione e attiva il promemoria su una sola tab
 
-### Cron esterno
+### Cron Vercel
 
-Su Vercel Hobby non configuriamo cron in `vercel.json`. Usiamo invece un servizio esterno come `cron-job.org`.
+Il progetto include un cron in [vercel.json](/Users/cristina.luerti/Desktop/personal-projects/diet-pwa-app/vercel.json) che chiama:
 
-Impostazione consigliata del job:
+- `GET /api/cron/reminder-dispatch`
 
-- **URL**: `https://<tuo-dominio>/api/cron/reminder-dispatch`
-- **Method**: `GET`
-- **Schedule**: ogni ora
-- **Header**:
+Schedule configurata:
 
-```http
-Authorization: Bearer <CRON_SECRET>
-```
+- `0 20 * * *`
 
-Con il promemoria fisso alle `21:00`, il job puo girare ogni ora. La finestra pratica di invio sara intorno alle `21`.
+La schedule di Vercel e in **UTC**. Con questa configurazione il reminder viene controllato ogni giorno alle `20:00 UTC`:
+
+- in inverno corrisponde circa alle `21:00` in Italia
+- in estate corrisponde circa alle `22:00` in Italia
+
+La route dispatch invia il promemoria se nel fuso locale dell'utente e gia passata l'ora `21:00` e non e ancora stato inviato quel giorno.
 
 ### Test produzione
 
@@ -150,7 +150,7 @@ curl -i "https://<tuo-dominio>/api/cron/reminder-dispatch" \
   -H "Authorization: Bearer <CRON_SECRET>"
 ```
 
-6. Controlla che la risposta contenga `sent: 1` oppure `skipped: 1` se il promemoria è già stato inviato oggi
+6. Controlla che la risposta contenga `sent: 1` oppure `skipped: 1` se il promemoria e gia stato inviato oggi
 
 ## Avvio
 

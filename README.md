@@ -44,13 +44,113 @@ L’app funziona subito con la **dieta predefinita**. Per abilitare il **caricam
    ```env
    OPENAI_API_KEY=sk-proj-...
    PEXELS_API_KEY=...   # opzionale: carosello foto sulla landing (solo desktop)
+   NEXT_PUBLIC_VAPID_PUBLIC_KEY=...  # opzionale: abilita Web Push remoto
+   VAPID_PUBLIC_KEY=...
+   VAPID_PRIVATE_KEY=...
+   VAPID_SUBJECT=mailto:you@example.com
+   UPSTASH_REDIS_REST_URL=...
+   UPSTASH_REDIS_REST_TOKEN=...
+   CRON_SECRET=...  # secret per chiamare la route cron di dispatch
    ```
    - OpenAI: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
    - Pexels: [pexels.com/api](https://www.pexels.com/api/) — per lo sfondo a rotazione su desktop; su mobile la landing usa uno sfondo neutro (slate) e il pannello bianco.
    - **Microsoft Clarity** (opzionale): [clarity.microsoft.com](https://clarity.microsoft.com/) – crea un progetto, copia il Project ID e imposta `NEXT_PUBLIC_CLARITY_PROJECT_ID=...` in `.env.local` per heatmap e registrazioni sessione.
    - **Hotjar** (opzionale): [hotjar.com](https://www.hotjar.com/) – imposta `NEXT_PUBLIC_HOTJAR_ID=...` (Site ID) e opzionalmente `NEXT_PUBLIC_HOTJAR_SV=6` (script version) per registrazioni e heatmap. Solo in produzione.
+   - **Web Push** (opzionale): genera una coppia di chiavi VAPID, esponi la public key anche come `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, salva le subscription su Upstash Redis e proteggi la route cron con `CRON_SECRET`.
 
-Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` lo sfondo desktop usa immagini di fallback. Senza `NEXT_PUBLIC_CLARITY_PROJECT_ID` Clarity non viene caricato. Clarity e Hotjar vengono caricati solo in produzione (non su localhost).
+Senza `OPENAI_API_KEY` l’app parte comunque; il pulsante “Carica un file” mostrerà un messaggio che invita a configurarla. Senza `PEXELS_API_KEY` lo sfondo desktop usa immagini di fallback. Senza `NEXT_PUBLIC_CLARITY_PROJECT_ID` Clarity non viene caricato. Clarity e Hotjar vengono caricati solo in produzione (non su localhost). Se non configuri le variabili Web Push, PocketDiet continua a usare il promemoria locale già esistente come fallback.
+
+## Reminder Push remoto
+
+La Fase 1 del promemoria remoto aggiunge:
+
+- registrazione della `PushSubscription` dal browser
+- salvataggio di `subscription` e `timeZone` su Redis
+- route cron `GET /api/cron/reminder-dispatch` che invia una notifica semplice
+- fallback locale ancora attivo se il push remoto non è configurato o fallisce
+- orario fisso del promemoria alle `21:00`
+
+Route principali:
+
+- `POST /api/push/reminder/subscribe`
+- `POST /api/push/reminder/unsubscribe`
+- `GET /api/cron/reminder-dispatch`
+
+La route cron richiede header:
+
+```http
+Authorization: Bearer <CRON_SECRET>
+```
+
+Con il reminder fisso alle `21:00`, il cron puo anche essere eseguito ogni ora, pur con un comportamento meno preciso rispetto a un check al minuto.
+
+## Deploy su Vercel Hobby
+
+Per questa versione del reminder conviene:
+
+- deployare l'app su **Vercel Hobby**
+- usare un **cron esterno** per chiamare la route di dispatch
+
+### Variabili ambiente su Vercel
+
+Nel progetto Vercel configura queste env:
+
+```env
+OPENAI_API_KEY=
+PEXELS_API_KEY=
+NEXT_PUBLIC_CLARITY_PROJECT_ID=
+NEXT_PUBLIC_HOTJAR_ID=
+NEXT_PUBLIC_HOTJAR_SV=6
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+VAPID_SUBJECT=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+CRON_SECRET=
+```
+
+`NEXT_PUBLIC_VAPID_PUBLIC_KEY` e `VAPID_PUBLIC_KEY` hanno lo stesso valore.
+
+### Deploy
+
+1. Collega il repository a Vercel
+2. Importa il progetto come app Next.js
+3. Inserisci le env di produzione
+4. Esegui il deploy
+5. Apri il dominio di produzione e attiva il promemoria su una sola tab
+
+### Cron esterno
+
+Su Vercel Hobby non configuriamo cron in `vercel.json`. Usiamo invece un servizio esterno come `cron-job.org`.
+
+Impostazione consigliata del job:
+
+- **URL**: `https://<tuo-dominio>/api/cron/reminder-dispatch`
+- **Method**: `GET`
+- **Schedule**: ogni ora
+- **Header**:
+
+```http
+Authorization: Bearer <CRON_SECRET>
+```
+
+Con il promemoria fisso alle `21:00`, il job puo girare ogni ora. La finestra pratica di invio sara intorno alle `21`.
+
+### Test produzione
+
+1. Apri il sito di produzione
+2. Consenti le notifiche del browser
+3. Attiva il promemoria
+4. Verifica che Redis contenga almeno un `clientId`
+5. Esegui manualmente:
+
+```bash
+curl -i "https://<tuo-dominio>/api/cron/reminder-dispatch" \
+  -H "Authorization: Bearer <CRON_SECRET>"
+```
+
+6. Controlla che la risposta contenga `sent: 1` oppure `skipped: 1` se il promemoria è già stato inviato oggi
 
 ## Avvio
 

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import {
   type CompletionReminderPreferences,
-  clearCompletionReminderFiredForDay,
+  FIXED_COMPLETION_REMINDER_TIME,
 } from "@/utils/completionReminderStorage";
 import "./AppSettingsModal.css";
 
@@ -66,9 +66,10 @@ export default function AppSettingsModal({
         </h3>
         <p className="app-settings-modal__hint">
           Un avviso al giorno per ricordarti di segnare quanto hai seguito la
-          dieta. Qui puoi attivare o disattivare il promemoria in PocketDiet. Il
-          browser gestisce ancora il permesso delle notifiche: puoi modificarlo
-          dalle impostazioni del sito quando vuoi.
+          dieta. Qui puoi attivare o disattivare il promemoria in PocketDiet.
+          L’orario e fisso alle {FIXED_COMPLETION_REMINDER_TIME}. Il browser
+          gestisce ancora il permesso delle notifiche: puoi modificarlo dalle
+          impostazioni del sito quando vuoi.
         </p>
 
         <div className="app-settings-modal__row">
@@ -90,27 +91,6 @@ export default function AppSettingsModal({
               <span className="app-settings-modal__switch-thumb" />
             </span>
           </label>
-        </div>
-
-        <div className="app-settings-modal__time-row">
-          <label
-            className="app-settings-modal__label"
-            htmlFor="settings-completion-time"
-          >
-            Orario
-          </label>
-          <input
-            id="settings-completion-time"
-            type="time"
-            className="app-settings-modal__time"
-            value={completionPrefs.time}
-            disabled={unsupported || !completionPrefs.enabled}
-            onChange={(e) => {
-              clearCompletionReminderFiredForDay(new Date().toDateString());
-              persist({ ...completionPrefs, time: e.target.value });
-            }}
-            aria-label="Orario del promemoria giornaliero"
-          />
         </div>
 
         {unsupported ? (

@@ -11,10 +11,10 @@ export interface CompletionReminderPreferences {
   time: string;
 }
 
-const DEFAULT_TIME = "21:00";
+export const FIXED_COMPLETION_REMINDER_TIME = "21:00";
 
 function defaultPreferences(): CompletionReminderPreferences {
-  return { enabled: true, time: DEFAULT_TIME };
+  return { enabled: true, time: FIXED_COMPLETION_REMINDER_TIME };
 }
 
 function normalizeTimeString(raw: string): string | null {
@@ -44,18 +44,12 @@ export function readCompletionReminderPreferences(): CompletionReminderPreferenc
   try {
     const raw = window.localStorage.getItem(COMPLETION_REMINDER_STORAGE_KEY);
     if (!raw) {
-      const migrated = readLegacyTime();
       const base = defaultPreferences();
-      if (migrated) base.time = migrated;
       return base;
     }
     const parsed = JSON.parse(raw) as Partial<CompletionReminderPreferences>;
     const base = defaultPreferences();
     if (typeof parsed.enabled === "boolean") base.enabled = parsed.enabled;
-    if (typeof parsed.time === "string") {
-      const t = normalizeTimeString(parsed.time);
-      if (t) base.time = t;
-    }
     return base;
   } catch {
     return defaultPreferences();
@@ -67,7 +61,10 @@ export function writeCompletionReminderPreferences(prefs: CompletionReminderPref
   try {
     window.localStorage.setItem(
       COMPLETION_REMINDER_STORAGE_KEY,
-      JSON.stringify({ enabled: prefs.enabled, time: prefs.time }),
+      JSON.stringify({
+        enabled: prefs.enabled,
+        time: FIXED_COMPLETION_REMINDER_TIME,
+      }),
     );
   } catch {
     /* ignore */

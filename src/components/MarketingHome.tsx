@@ -104,34 +104,39 @@ const MARKETING_SIGNAL_ITEMS = [
 
 const MARKETING_HIGHLIGHTS = [
   {
-    value: "PDF, foto o testo",
-    label: "Parti dal formato che hai gia",
+    value: "Carichi e basta",
+    label:
+      "PDF, foto o testo: PocketDiet ricostruisce i pasti senza farti riscrivere tutto",
   },
   {
-    value: "Report sintetico",
-    label: "Tieni traccia dei progressi nel tempo",
+    value: "Progressi in un colpo d'occhio",
+    label:
+      "Capisci subito se la settimana e andata piu vicina al piano o dove hai lasciato spazio",
   },
   {
-    value: "Lista condivisibile",
-    label: "Coinvolgi chi vive con te senza attrito",
+    value: "Lista che nasce dai pasti",
+    label:
+      "Le quantita seguono cio che mangi: meno stime al supermercato e meno spreco",
   },
 ] as const;
 
 const MARKETING_EDITORIAL_IMAGES = [
   {
-    src: "https://images.pexels.com/photos/4020654/pexels-photo-4020654.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Verdure ed erbe fresche organizzate sul piano cucina",
-    title: "Piu ordine gia dal momento della spesa",
+    src: "https://images.pexels.com/photos/28670062/pexels-photo-28670062.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Banco colorato di frutta e verdura fresca al supermercato",
+    title:
+      "In spesa ogni reparto ti sembra piu leggibile, perche sai gia cosa cercare",
   },
   {
-    src: "https://images.pexels.com/photos/8939258/pexels-photo-8939258.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Persona che consulta il telefono in cucina mentre prepara il cibo",
-    title: "Il piano resta chiaro anche nella routine reale",
+    src: "https://images.pexels.com/photos/8804979/pexels-photo-8804979.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Mano che tiene uno smartphone sopra un piatto con cibo sano",
+    title: "Due minuti al telefono e torni al tavolo sapendo cosa mangi dopo",
   },
   {
-    src: "https://images.pexels.com/photos/30635720/pexels-photo-30635720.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Contenitori con pasti organizzati in anticipo",
-    title: "Dai pasti al report, tutto diventa piu fluido",
+    src: "https://images.pexels.com/photos/4198023/pexels-photo-4198023.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Contenitori con pasti preparati e ingredienti ordinati sul piano",
+    title:
+      "Quando organizzi i pasti, il piano smette di essere solo una pagina astratta",
   },
 ] as const;
 
@@ -167,7 +172,7 @@ export default function MarketingHome() {
                 FAQ
               </a>
               <Link href="/upload" className="marketing-topbar__cta">
-                Hai gia una dieta? Vai a upload
+                Hai già una dieta? Vai all'upload
               </Link>
             </nav>
           </header>

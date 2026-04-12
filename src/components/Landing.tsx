@@ -119,17 +119,19 @@ const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 
 const LANDING_VALUE_STEPS = [
   {
-    title: "I tuoi pasti",
+    title: "Sai subito cosa mangiare oggi",
     blurb:
-      "Colazione, pranzo e cena con porzioni e alternative: tutto il giorno in un’unica schermata. Sempre a portata di mano.",
+      "Colazione, pranzo e cena con porzioni e alternative in una schermata semplice da leggere sul telefono.",
   },
   {
-    title: "Lista della spesa",
-    blurb: "Genera la lista della spesa in base ai pasti della tua dieta.",
+    title: "La spesa si prepara da sola",
+    blurb:
+      "PocketDiet trasforma i tuoi pasti in una lista pronta, cosi non devi ricopiare nulla.",
   },
   {
-    title: "Condividi",
-    blurb: "Condividi la lista della spesa con chi vuoi.",
+    title: "Coinvolgi chi vive con te",
+    blurb:
+      "Condividi la lista in un attimo, senza messaggi sparsi o foto del frigorifero.",
   },
 ] as const;
 
@@ -154,6 +156,30 @@ const STEP_DELAY_MS = [800, 2500] as const;
 
 const DIET_PARSE_VALIDATION_USER_MESSAGE =
   "Non siamo riusciti a leggere correttamente la dieta da questo file. A volte basta un secondo tentativo, puoi riprovare per favore?";
+
+const LANDING_TRUST_POINTS = [
+  "Ci vuole meno di 30 secondi",
+  "Funziona con PDF, foto e testo",
+  "Il tuo piano resta privato",
+] as const;
+
+const LANDING_FAQ_ITEMS = [
+  {
+    question: "Cosa succede dopo che carico la dieta?",
+    answer:
+      "Il piano viene organizzato in schermate piu semplici da consultare: pasti del giorno, porzioni, alternative e lista della spesa.",
+  },
+  {
+    question: "Funziona anche con una foto?",
+    answer:
+      "Si. Puoi caricare PDF, immagini del piano alimentare o anche testo copiato dal nutrizionista.",
+  },
+  {
+    question: "I miei dati sono privati?",
+    answer:
+      "I riferimenti completi restano sempre disponibili nelle pagine privacy e termini, cosi sai subito dove trovare tutte le informazioni sul trattamento dei dati.",
+  },
+] as const;
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

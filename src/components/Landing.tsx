@@ -124,6 +124,8 @@ export function clearUserDiet(): void {
 
 interface LandingProps {
   onDietLoaded: (diet: UserDiet) => void;
+  /** PWA standalone: solo upload, niente hero marketing / value prop / “Scopri”. */
+  uploadOnly?: boolean;
 }
 
 const MAX_FILE_SIZE_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
@@ -175,7 +177,10 @@ function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
-export default function Landing({ onDietLoaded }: LandingProps) {
+export default function Landing({
+  onDietLoaded,
+  uploadOnly = false,
+}: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -205,7 +210,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   }, []);
 
   useEffect(() => {
-    if (!desktopCarouselBg) return;
+    if (uploadOnly || !desktopCarouselBg) return;
     let cancelled = false;
     async function loadPexels() {
       const query =
@@ -231,9 +236,10 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     return () => {
       cancelled = true;
     };
-  }, [desktopCarouselBg]);
+  }, [desktopCarouselBg, uploadOnly]);
 
   useEffect(() => {
+    if (uploadOnly) return;
     let cancelled = false;
     async function loadValuePropPexels() {
       try {
@@ -268,9 +274,10 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [uploadOnly]);
 
   useEffect(() => {
+    if (uploadOnly) return;
     const track = valuePropTrackRef.current;
     if (!track) return;
     const stepCount = VALUE_PROP_TRACK_ITEMS.length;
@@ -292,10 +299,10 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     };
     const id = setInterval(advance, VALUE_PROP_SCROLL_INTERVAL_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [uploadOnly]);
 
   useEffect(() => {
-    if (!desktopCarouselBg) return;
+    if (uploadOnly || !desktopCarouselBg) return;
     const len = bgImages.length;
     if (len <= 1) return;
     const runFade = () => {
@@ -311,10 +318,10 @@ export default function Landing({ onDietLoaded }: LandingProps) {
       clearInterval(t);
       if (bgTimeoutRef.current) clearTimeout(bgTimeoutRef.current);
     };
-  }, [bgImages.length, desktopCarouselBg]);
+  }, [bgImages.length, desktopCarouselBg, uploadOnly]);
 
   useEffect(() => {
-    if (!desktopCarouselBg) return;
+    if (uploadOnly || !desktopCarouselBg) return;
     const len = bgImages.length;
     if (len <= 1) return;
     const nextIndex = (bgIndex + 1) % len;
@@ -323,7 +330,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
       const img = document.createElement("img");
       img.src = url;
     }
-  }, [bgIndex, bgImages, desktopCarouselBg]);
+  }, [bgIndex, bgImages, desktopCarouselBg, uploadOnly]);
 
   const processFile = useCallback(
     async (file: File) => {
@@ -474,12 +481,14 @@ export default function Landing({ onDietLoaded }: LandingProps) {
 
   const showDevDefaultLoader = process.env.NODE_ENV === "development";
 
+  const standaloneLayout = landingStandalone || uploadOnly;
+
   return (
     <div
-      className={`landing${landingStandalone ? " landing--standalone" : ""}`}
+      className={`landing${standaloneLayout ? " landing--standalone" : ""}${uploadOnly ? " landing--uploadOnly" : ""}`}
     >
       <div className="landing-hero">
-        {desktopCarouselBg && (
+        {desktopCarouselBg && !uploadOnly && (
           <div
             className="landing-bg"
             aria-hidden
@@ -503,8 +512,17 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               <span className="landing-logo__text">PocketDiet</span>
             </h1>
             <p className="landing-subtitle">
-              La dieta del tuo nutrizionista, sempre con te. Caricala qui e
-              consulta i tuoi pasti del giorno, direttamente dal telefono.
+              {uploadOnly ? (
+                <>
+                  Carica il file della dieta per aprire i pasti e la lista della
+                  spesa.
+                </>
+              ) : (
+                <>
+                  La dieta del tuo nutrizionista, sempre con te. Caricala qui e
+                  consulta i tuoi pasti del giorno, direttamente dal telefono.
+                </>
+              )}
             </p>
           </header>
 
@@ -602,96 +620,104 @@ export default function Landing({ onDietLoaded }: LandingProps) {
               </div>
             )}
 
-            <div className="landing-value-prop">
-              <p className="landing-value-prop__eyebrow">
-                <span className="landing-value-prop__eyebrowLead">
-                  Cosa puoi fare con
-                </span>{" "}
-                <span className="landing-value-prop__eyebrowBrand">
-                  PocketDiet
-                </span>
-              </p>
-              <div
-                ref={valuePropTrackRef}
-                className="landing-value-prop__track"
-                role="list"
-                aria-label="Scorri per vedere i passaggi"
-              >
-                {VALUE_PROP_TRACK_ITEMS.map((item) => {
-                  if (item.type === "spotlight") {
+            {!uploadOnly && (
+              <div className="landing-value-prop">
+                <p className="landing-value-prop__eyebrow">
+                  <span className="landing-value-prop__eyebrowLead">
+                    Cosa puoi fare con
+                  </span>{" "}
+                  <span className="landing-value-prop__eyebrowBrand">
+                    PocketDiet
+                  </span>
+                </p>
+                <div
+                  ref={valuePropTrackRef}
+                  className="landing-value-prop__track"
+                  role="list"
+                  aria-label="Scorri per vedere i passaggi"
+                >
+                  {VALUE_PROP_TRACK_ITEMS.map((item) => {
+                    if (item.type === "spotlight") {
+                      return (
+                        <div
+                          key="progressi-report"
+                          className="landing-value-prop__card landing-value-prop__card--spotlight"
+                          role="listitem"
+                          aria-labelledby="landing-spotlight-title"
+                        >
+                          <div
+                            className="landing-value-prop__photo"
+                            aria-hidden
+                          >
+                            <Image
+                              className="landing-value-prop__photoImg"
+                              src={VALUE_PROP_SPOTLIGHT_IMAGE}
+                              alt=""
+                              fill
+                              sizes="(max-width: 768px) 80vw, 320px"
+                              style={{
+                                objectFit: "cover",
+                                objectPosition: "center 38%",
+                              }}
+                            />
+                          </div>
+                          <h2
+                            id="landing-spotlight-title"
+                            className="landing-spotlight__title"
+                          >
+                            Progressi
+                          </h2>
+                          <p className="landing-spotlight__text">
+                            Tieni d&apos;occhio quanto riesci a seguire il
+                            piano, giorno dopo giorno, con un report facile da
+                            leggere.
+                          </p>
+                        </div>
+                      );
+                    }
+                    const step = LANDING_VALUE_STEPS[item.stepIndex];
+                    const src =
+                      valuePropCardImages[item.imageIndex] ??
+                      VALUE_PROP_CARD_FALLBACK[item.imageIndex];
                     return (
                       <div
-                        key="progressi-report"
-                        className="landing-value-prop__card landing-value-prop__card--spotlight"
+                        key={step.title}
+                        className="landing-value-prop__card"
                         role="listitem"
-                        aria-labelledby="landing-spotlight-title"
                       >
                         <div className="landing-value-prop__photo" aria-hidden>
                           <Image
                             className="landing-value-prop__photoImg"
-                            src={VALUE_PROP_SPOTLIGHT_IMAGE}
+                            src={src}
                             alt=""
                             fill
                             sizes="(max-width: 768px) 80vw, 320px"
                             style={{
                               objectFit: "cover",
-                              objectPosition: "center 38%",
+                              objectPosition: "center center",
                             }}
                           />
                         </div>
-                        <h2
-                          id="landing-spotlight-title"
-                          className="landing-spotlight__title"
-                        >
-                          Progressi
-                        </h2>
-                        <p className="landing-spotlight__text">
-                          Tieni d&apos;occhio quanto riesci a seguire il piano,
-                          giorno dopo giorno, con un report facile da leggere.
-                        </p>
+                        <span className="landing-value-prop__stepTitle">
+                          {step.title}
+                        </span>
+                        <span className="landing-value-prop__stepBlurb">
+                          {step.blurb}
+                        </span>
                       </div>
                     );
-                  }
-                  const step = LANDING_VALUE_STEPS[item.stepIndex];
-                  const src =
-                    valuePropCardImages[item.imageIndex] ??
-                    VALUE_PROP_CARD_FALLBACK[item.imageIndex];
-                  return (
-                    <div
-                      key={step.title}
-                      className="landing-value-prop__card"
-                      role="listitem"
-                    >
-                      <div className="landing-value-prop__photo" aria-hidden>
-                        <Image
-                          className="landing-value-prop__photoImg"
-                          src={src}
-                          alt=""
-                          fill
-                          sizes="(max-width: 768px) 80vw, 320px"
-                          style={{
-                            objectFit: "cover",
-                            objectPosition: "center center",
-                          }}
-                        />
-                      </div>
-                      <span className="landing-value-prop__stepTitle">
-                        {step.title}
-                      </span>
-                      <span className="landing-value-prop__stepBlurb">
-                        {step.blurb}
-                      </span>
-                    </div>
-                  );
-                })}
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="landing-discover">
-              <Link href="/" className="landing-header__backLink">
-                Scopri PocketDiet
-              </Link>
-            </div>
+            {!uploadOnly && (
+              <div className="landing-discover">
+                <Link href="/" className="landing-header__backLink">
+                  Scopri PocketDiet
+                </Link>
+              </div>
+            )}
 
             {error && (
               <p className="landing-error" role="alert">
@@ -704,7 +730,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         </div>
       </div>
 
-      {!landingStandalone && (
+      {!standaloneLayout && (
         <div className="landing-install-dock">
           <InstallAppCTA variant="stickyBar" />
         </div>

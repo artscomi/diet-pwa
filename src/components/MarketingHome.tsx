@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { loadUserDiet } from "@/components/Landing";
 import {
   IconChartBar,
   IconCopyPlus,
@@ -143,11 +145,19 @@ const MARKETING_EDITORIAL_IMAGES = [
 ] as const;
 
 export default function MarketingHome() {
+  const router = useRouter();
   const [standalone, setStandalone] = useState(false);
 
   useEffect(() => {
     setStandalone(isStandalone());
   }, []);
+
+  /** Dieta già in locale: la home marketing non serve, vai alla shell app (`/upload`). */
+  useEffect(() => {
+    if (loadUserDiet()) {
+      router.replace("/upload");
+    }
+  }, [router]);
 
   return (
     <div

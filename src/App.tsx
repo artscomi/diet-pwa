@@ -47,7 +47,9 @@ function addDaysToDateKey(dateKey: string, deltaDays: number): string {
 }
 
 export default function App() {
-  const [userDiet, setUserDiet] = useState<UserDiet | null>(loadUserDiet);
+  /** `null` finché non abbiamo letto `localStorage` (client): così la Landing non compare se la dieta c’è già. */
+  const [userDiet, setUserDiet] = useState<UserDiet | null>(null);
+  const [dietReady, setDietReady] = useState(false);
   const [currentMenu, setCurrentMenu] = useState<DailyMenuType | null>(null);
   const [todayDate, setTodayDate] = useState(new Date().toDateString());
   /** 0 = oggi (calendario), −1 = ieri, +1 = domani, … */
@@ -98,6 +100,11 @@ export default function App() {
 
   useEffect(() => {
     setAppStandalone(isStandalone());
+  }, []);
+
+  useEffect(() => {
+    setUserDiet(loadUserDiet());
+    setDietReady(true);
   }, []);
 
   useEffect(() => {
@@ -274,8 +281,19 @@ export default function App() {
     [currentMenu, viewedDateKey, getMenuForDateKey],
   );
 
+  if (!dietReady) {
+    return (
+      <div className="app" aria-busy="true" aria-label="Caricamento dieta" />
+    );
+  }
+
   if (!userDiet) {
-    return <Landing onDietLoaded={setUserDiet} />;
+    return (
+      <Landing
+        onDietLoaded={setUserDiet}
+        uploadOnly={appStandalone}
+      />
+    );
   }
 
   const appClassName = ["app", appStandalone ? "app--standalone" : ""]

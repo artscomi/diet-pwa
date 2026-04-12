@@ -4,6 +4,9 @@
   --marketing-color-primary-light: #34d399;
   --marketing-color-primary-rgb: 16 185 129;
   --marketing-color-base: #190b28;
+  /** Larghezza contenuto pagina iniziale (root marketing). */
+  --marketing-shell-max: 1560px;
+  --marketing-block-max: 1440px;
   min-height: 100vh;
   min-height: 100dvh;
   background:
@@ -73,7 +76,7 @@
 
 .marketing-home__main {
   width: 100%;
-  max-width: 1360px;
+  max-width: var(--marketing-shell-max);
   margin: 0 auto;
   padding: 1.25rem;
   padding-top: max(1.25rem, calc(env(safe-area-inset-top) + 1rem));
@@ -681,7 +684,7 @@
 .marketing-cta__inner,
 .marketing-editorial__inner {
   width: 100%;
-  max-width: 1280px;
+  max-width: var(--marketing-block-max);
   margin: 0 auto;
 }
 
@@ -887,7 +890,7 @@
   display: grid;
   gap: 0.9rem;
   width: 100%;
-  max-width: 1280px;
+  max-width: var(--marketing-block-max);
   margin: 0 auto;
 }
 
@@ -1444,7 +1447,7 @@
   .marketing-home__uploadDockInner {
     pointer-events: auto;
     width: 100%;
-    max-width: 1360px;
+    max-width: var(--marketing-shell-max);
     margin: 0 auto;
   }
 

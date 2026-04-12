@@ -4,6 +4,8 @@
   --landing-color-primary-hover: #059669;
   --landing-color-primary-rgb: 16 185 129;
   --landing-color-base: #190b28;
+  /** Larghezza massima colonna contenuti (pannello, value prop, sottotitolo). */
+  --landing-content-max: 720px;
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
@@ -83,7 +85,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 440px;
+  max-width: var(--landing-content-max);
   margin: 0 auto;
   background: #ffffff;
   box-sizing: border-box;
@@ -129,7 +131,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  max-width: 440px;
+  max-width: var(--landing-content-max);
   margin: 1.25rem auto 0;
   padding-top: 0.35rem;
   padding-bottom: 0.15rem;
@@ -173,7 +175,7 @@
   font-size: 1rem;
   color: var(--landing-color-base);
   line-height: 1.65;
-  max-width: 440px;
+  max-width: var(--landing-content-max);
   margin: 0 auto;
   letter-spacing: 0.02em;
   font-weight: 500;
@@ -218,7 +220,7 @@
 /* Value prop: eyebrow + tre card (ognuna con mini carosello Pexels) */
 .landing-value-prop {
   width: 100%;
-  max-width: 440px;
+  max-width: var(--landing-content-max);
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -357,7 +359,7 @@
   }
 
   .landing-panel {
-    max-width: 440px;
+    max-width: var(--landing-content-max);
     width: 100%;
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);

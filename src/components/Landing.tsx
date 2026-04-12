@@ -27,6 +27,9 @@ const LANDING_BG_FADE_MS = 450;
 /** Ultimo step (card “Condividi”): immagine fissa scelta dall’utente — Pexels 3850213 */
 const VALUE_PROP_LAST_STEP_IMAGE =
   "https://images.pexels.com/photos/3850213/pexels-photo-3850213.jpeg?auto=compress&cs=tinysrgb&w=800";
+/** Card “Progressi”: to-do / checklist (Pexels 6690908 — Tara Winstead) */
+const VALUE_PROP_SPOTLIGHT_IMAGE =
+  "https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?auto=compress&cs=tinysrgb&w=800";
 
 /**
  * Immagini di default per le 3 card (1–2 aggiornabili da API; ultima sempre VALUE_PROP_LAST_STEP_IMAGE).
@@ -128,6 +131,14 @@ const LANDING_VALUE_STEPS = [
     title: "Condividi",
     blurb: "Condividi la lista della spesa con chi vuoi.",
   },
+] as const;
+
+/** Carosello: card progressi in mezzo alle tre, con immagine fissa (checklist / dieta) */
+const VALUE_PROP_TRACK_ITEMS = [
+  { type: "photo" as const, stepIndex: 0, imageIndex: 0 },
+  { type: "spotlight" as const },
+  { type: "photo" as const, stepIndex: 1, imageIndex: 1 },
+  { type: "photo" as const, stepIndex: 2, imageIndex: 2 },
 ] as const;
 
 /** Limite per salvare l’anteprima in localStorage (500 KB) */
@@ -249,7 +260,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
   useEffect(() => {
     const track = valuePropTrackRef.current;
     if (!track) return;
-    const stepCount = LANDING_VALUE_STEPS.length;
+    const stepCount = VALUE_PROP_TRACK_ITEMS.length;
     if (stepCount < 2) return;
     let slide = 0;
     const reduceMotion = window.matchMedia(
@@ -593,9 +604,45 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                 role="list"
                 aria-label="Scorri per vedere i passaggi"
               >
-                {LANDING_VALUE_STEPS.map((step, i) => {
+                {VALUE_PROP_TRACK_ITEMS.map((item) => {
+                  if (item.type === "spotlight") {
+                    return (
+                      <div
+                        key="progressi-report"
+                        className="landing-value-prop__card landing-value-prop__card--spotlight"
+                        role="listitem"
+                        aria-labelledby="landing-spotlight-title"
+                      >
+                        <div className="landing-value-prop__photo" aria-hidden>
+                          <Image
+                            className="landing-value-prop__photoImg"
+                            src={VALUE_PROP_SPOTLIGHT_IMAGE}
+                            alt=""
+                            fill
+                            sizes="(max-width: 768px) 80vw, 320px"
+                            style={{
+                              objectFit: "cover",
+                              objectPosition: "center 38%",
+                            }}
+                          />
+                        </div>
+                        <h2
+                          id="landing-spotlight-title"
+                          className="landing-spotlight__title"
+                        >
+                          Progressi
+                        </h2>
+                        <p className="landing-spotlight__text">
+                          Percentuale di completamento ogni giorno, con report da
+                          condividere quando vuoi.
+                        </p>
+                      </div>
+                    );
+                  }
+                  const step = LANDING_VALUE_STEPS[item.stepIndex];
                   const src =
-                    valuePropCardImages[i] ?? VALUE_PROP_CARD_FALLBACK[i];
+                    valuePropCardImages[item.imageIndex] ??
+                    VALUE_PROP_CARD_FALLBACK[item.imageIndex];
                   return (
                     <div
                       key={step.title}

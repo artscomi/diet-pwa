@@ -142,6 +142,41 @@
   font-weight: 500;
 }
 
+.landing-value-prop__card--spotlight {
+  align-items: stretch;
+  text-align: left;
+  background: linear-gradient(
+    152deg,
+    rgba(236, 253, 245, 0.35) 0%,
+    rgba(255, 255, 255, 0.98) 38%,
+    rgba(248, 250, 252, 0.96) 100%
+  );
+  border-color: rgba(16, 185, 129, 0.28);
+  border-inline-start-width: 4px;
+  border-inline-start-color: #10b981;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 8px 24px rgba(15, 23, 42, 0.06);
+  justify-content: flex-start;
+}
+
+.landing-spotlight__title {
+  margin: 0 0 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.landing-spotlight__text {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.45;
+}
+
 /* Value prop: eyebrow + tre card (ognuna con mini carosello Pexels) */
 .landing-value-prop {
   width: 100%;

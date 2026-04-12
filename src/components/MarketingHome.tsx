@@ -8,13 +8,22 @@ import {
   IconCopyPlus,
   IconEdit,
   IconCheckbox,
+  IconFileUpload,
   IconMoodSmile,
   IconShoppingCart,
   IconToolsKitchen2,
 } from "@tabler/icons-react";
+import { MAX_UPLOAD_BYTES } from "@/constants/upload";
 import Footer from "./Footer";
 import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
 import "./MarketingHome.css";
+
+/** Stesso limite mostrato in `Landing` sul dropzone reale. */
+const MARKETING_MAX_UPLOAD_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
+
+/** Foto ampia da Pexels: sfondo nitido; il mock upload è HTML sopra. */
+const MARKETING_CTA_HERO_IMAGE =
+  "https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?auto=compress&cs=tinysrgb&w=1920";
 
 const MARKETING_BENEFITS = [
   {
@@ -106,7 +115,7 @@ const MARKETING_HIGHLIGHTS = [
   {
     value: "Carichi la tua dieta e non ci pensi più",
     label:
-      "PDF, foto o testo: PocketDiet ricostruisce i pasti senza farti riscrivere tutto",
+      "PDF, foto o testo: PocketDiet genera un piano alimentare quotidiano a partire dalla tua dieta",
   },
   {
     value: "Tieni traccia dei tuoi progressi",
@@ -114,9 +123,8 @@ const MARKETING_HIGHLIGHTS = [
       "Genera un report da condividere con il tuo nutrizionista per tenere traccia dei tuoi progressi.",
   },
   {
-    value: "Lista spesa mirata e senza sprechi",
-    label:
-      "Ogni quantità segue ciò che hai in menu: niente stime improvvisate in corsia, meno avanzi in frigo e meno spreco",
+    value: "Lista della spesa precisa, senza sprechi",
+    label: "Quantità coerenti con la tua dieta, senza approssimazioni.",
   },
 ] as const;
 
@@ -186,7 +194,7 @@ export default function MarketingHome() {
               Seguire la dieta del tuo nutrizionista non è mai stato così facile
             </p>
             <h1 className="marketing-hero__title">
-              La tua dieta, piu leggibile. Piu pratica. Piu quotidiana.
+              La dieta del tuo nutrizionista, sempre con te.
             </h1>
           </div>
 
@@ -301,9 +309,9 @@ export default function MarketingHome() {
 
           <div className="marketing-hero__introSub">
             <p className="marketing-hero__subtitle">
-              PocketDiet prende la dieta che hai già e la trasforma in qualcosa
-              di semplice da usare ogni giorno. Niente più PDF da rileggere o
-              informazioni sparse: sai subito cosa mangiare.
+              PocketDiet trasforma la dieta del tuo nutrizionista in un piano
+              alimentare semplice da seguire ogni giorno. Niente più PDF da
+              trovare e rileggere: apri l'app e sai subito cosa mangiare.
             </p>
           </div>
 
@@ -491,19 +499,60 @@ export default function MarketingHome() {
         <section className="marketing-cta">
           <div className="marketing-cta__inner">
             <div className="marketing-cta__panel">
-              <div>
-                <p className="marketing-section__eyebrow">Pronto a provarla?</p>
-                <h2 className="marketing-cta__title">
-                  Vai alla pagina di upload e importa la tua dieta in modo
-                  semplice e sicuro
-                </h2>
+              <div className="marketing-cta__panelTop">
+                <div>
+                  <p className="marketing-section__eyebrow">
+                    Pronto a provarla?
+                  </p>
+                  <h2 className="marketing-cta__title">
+                    Vai alla pagina di upload e importa la tua dieta in modo
+                    semplice e sicuro
+                  </h2>
+                </div>
+                <Link
+                  href="/upload"
+                  className="marketing-btn marketing-btn--primary"
+                >
+                  Vai alla pagina di upload
+                </Link>
               </div>
-              <Link
-                href="/upload"
-                className="marketing-btn marketing-btn--primary"
-              >
-                Vai alla pagina di upload
-              </Link>
+              <figure className="marketing-cta__visual">
+                <Link
+                  href="/upload"
+                  className="marketing-cta__visualLink"
+                  aria-label="Vai alla pagina di upload per importare la dieta"
+                >
+                  <Image
+                    src={MARKETING_CTA_HERO_IMAGE}
+                    alt=""
+                    fill
+                    sizes="(max-width: 767px) 100vw, min(1280px, 96vw)"
+                    quality={90}
+                    className="marketing-cta__visualImg"
+                    priority={false}
+                  />
+                </Link>
+                <div
+                  className="marketing-cta__visualOverlay"
+                  aria-hidden="true"
+                >
+                  <div className="marketing-cta__dropzone" role="presentation">
+                    <IconFileUpload
+                      size={40}
+                      className="marketing-cta__dropzoneIcon"
+                      stroke={1.5}
+                      aria-hidden
+                    />
+                    <p className="marketing-cta__dropzoneTitle">
+                      Carica la dieta del tuo nutrizionista
+                    </p>
+                    <p className="marketing-cta__dropzoneHint">
+                      PDF, foto o testo del piano alimentare (max{" "}
+                      {MARKETING_MAX_UPLOAD_MB} MB).
+                    </p>
+                  </div>
+                </div>
+              </figure>
             </div>
           </div>
         </section>

@@ -26,7 +26,7 @@ const MARKETING_BENEFITS = [
   },
   {
     title: "La spesa si prepara da sola",
-    body: "La lista della spesa prende forma dai tuoi pasti, cosi perdi meno tempo a organizzarti e arrivi piu preparata alla settimana.",
+    body: "Dal menu che segui in app nascono ingredienti e quantità già allineati al piano: niente ricopiature, meno indecisione in corsia e meno spreco in settimana.",
     image:
       "https://images.pexels.com/photos/3850888/pexels-photo-3850888.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Verdure e ingredienti freschi organizzati su un piano cucina",
@@ -104,39 +104,39 @@ const MARKETING_SIGNAL_ITEMS = [
 
 const MARKETING_HIGHLIGHTS = [
   {
-    value: "Carichi e basta",
+    value: "Carichi la tua dieta e non ci pensi più",
     label:
       "PDF, foto o testo: PocketDiet ricostruisce i pasti senza farti riscrivere tutto",
   },
   {
-    value: "Progressi in un colpo d'occhio",
+    value: "Tieni traccia dei tuoi progressi",
     label:
-      "Capisci subito se la settimana e andata piu vicina al piano o dove hai lasciato spazio",
+      "Genera un report da condividere con il tuo nutrizionista per tenere traccia dei tuoi progressi.",
   },
   {
-    value: "Lista che nasce dai pasti",
+    value: "Lista spesa mirata e senza sprechi",
     label:
-      "Le quantita seguono cio che mangi: meno stime al supermercato e meno spreco",
+      "Ogni quantità segue ciò che hai in menu: niente stime improvvisate in corsia, meno avanzi in frigo e meno spreco",
   },
 ] as const;
 
 const MARKETING_EDITORIAL_IMAGES = [
   {
-    src: "https://images.pexels.com/photos/28670062/pexels-photo-28670062.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Banco colorato di frutta e verdura fresca al supermercato",
-    title:
-      "In spesa ogni reparto ti sembra piu leggibile, perche sai gia cosa cercare",
+    src: "https://images.pexels.com/photos/27175522/pexels-photo-27175522.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Donna al supermercato che controlla gli scaffali davanti al carrello",
+    title: "Al supermercato non sai cosa comprare senza la dieta sotto mano",
   },
   {
-    src: "https://images.pexels.com/photos/8804979/pexels-photo-8804979.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Mano che tiene uno smartphone sopra un piatto con cibo sano",
-    title: "Due minuti al telefono e torni al tavolo sapendo cosa mangi dopo",
+    src: "https://images.pexels.com/photos/693267/pexels-photo-693267.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Persona al tavolo con piatto servito e smartphone in mano",
+    title:
+      "Arriva l'ora di cena: dov'è il PDF che ti aveva mandato il tuo nutrizionista?",
   },
   {
-    src: "https://images.pexels.com/photos/4198023/pexels-photo-4198023.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Contenitori con pasti preparati e ingredienti ordinati sul piano",
+    src: "https://images.pexels.com/photos/8844387/pexels-photo-8844387.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Due persone consultano una guida stampata su verdure e carboidrati sul tavolo da cucina",
     title:
-      "Quando organizzi i pasti, il piano smette di essere solo una pagina astratta",
+      "La dieta resta sul foglio: come fai a sapere se l'hai seguita davvero?",
   },
 ] as const;
 
@@ -181,20 +181,134 @@ export default function MarketingHome() {
 
       <main className="marketing-home__main">
         <section className="marketing-hero">
-          <div className="marketing-hero__copy">
+          <div className="marketing-hero__introHead">
             <p className="marketing-hero__eyebrow">
               Seguire la dieta del tuo nutrizionista non è mai stato così facile
             </p>
             <h1 className="marketing-hero__title">
               La tua dieta, piu leggibile. Piu pratica. Piu quotidiana.
             </h1>
+          </div>
+
+          <div className="marketing-hero__phoneCol">
+            <div className="marketing-phone" aria-hidden>
+              <div className="marketing-phone__device">
+                <div className="marketing-phone__notch" />
+                <div className="marketing-phone__shell">
+                  <div className="marketing-phone__appbar">
+                    <span className="marketing-phone__brandMini">
+                      PocketDiet
+                    </span>
+                    <div className="marketing-phone__appActions">
+                      <span className="marketing-phone__iconBtn">⚙</span>
+                      <span className="marketing-phone__changeDiet">
+                        Cambia dieta
+                      </span>
+                    </div>
+                  </div>
+                  <div className="marketing-phone__daybar">
+                    <span className="marketing-phone__navBtn">‹</span>
+                    <div className="marketing-phone__dayCenter">
+                      <span className="marketing-phone__dayBadge">OGGI</span>
+                      <span className="marketing-phone__dayText">
+                        Domenica 12 Aprile 2026
+                      </span>
+                    </div>
+                    <span className="marketing-phone__navBtn">›</span>
+                  </div>
+
+                  <div className="marketing-phone__progressCard">
+                    <div className="marketing-phone__progressTitle">
+                      Quanto hai rispettato la dieta oggi?
+                    </div>
+                    <div className="marketing-phone__progressPill">
+                      <span className="marketing-phone__progressIcon">
+                        <IconMoodSmile size={15} stroke={2} aria-hidden />
+                      </span>
+                      <span>84%</span>
+                    </div>
+                  </div>
+
+                  <div className="marketing-phone__menuCard">
+                    <div className="marketing-phone__mealSection">
+                      <span className="marketing-phone__mealLabel">
+                        Colazione
+                      </span>
+                      <span className="marketing-phone__mealRow">
+                        <strong>Carboidrati:</strong> Cereali da Colazione (30
+                        g)
+                      </span>
+                      <span className="marketing-phone__mealRow">
+                        <strong>Frutta:</strong> Pera (150 g)
+                      </span>
+                      <span className="marketing-phone__mealRow">
+                        <strong>Proteine:</strong> Yogurt greco (150 g)
+                      </span>
+                      <div className="marketing-phone__mealActions">
+                        <span>
+                          <IconCopyPlus size={16} stroke={2} aria-hidden />
+                        </span>
+                        <span>
+                          <IconCheckbox size={16} stroke={2} aria-hidden />
+                        </span>
+                        <span>
+                          <IconEdit size={16} stroke={2} aria-hidden />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="marketing-phone__menuCard marketing-phone__menuCard--compact">
+                    <div className="marketing-phone__mealSection">
+                      <span className="marketing-phone__mealLabel">
+                        Spuntino Mattutino
+                      </span>
+                      <span className="marketing-phone__mealText">
+                        Noci - secche (30 g)
+                      </span>
+                      <div className="marketing-phone__mealActions">
+                        <span>
+                          <IconCopyPlus size={16} stroke={2} aria-hidden />
+                        </span>
+                        <span>
+                          <IconCheckbox size={16} stroke={2} aria-hidden />
+                        </span>
+                        <span>
+                          <IconEdit size={16} stroke={2} aria-hidden />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="marketing-phone__bottomNav">
+                    <span className="marketing-phone__bottomNavItem marketing-phone__bottomNavItem--active">
+                      <IconToolsKitchen2 size={18} stroke={2} aria-hidden />
+                      <span>Pasti</span>
+                    </span>
+                    <span className="marketing-phone__bottomNavItem">
+                      <IconShoppingCart size={18} stroke={2} aria-hidden />
+                      <span>Spesa</span>
+                    </span>
+                    <span className="marketing-phone__bottomNavItem">
+                      <IconChartBar size={18} stroke={2} aria-hidden />
+                      <span>Report</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="marketing-hero__introSub">
             <p className="marketing-hero__subtitle">
-              PocketDiet prende il piano alimentare che hai gia ricevuto e lo
-              organizza in una forma piu chiara da consultare dal telefono.
-              L'obiettivo non e cambiare la dieta, ma ridurre attrito,
-              dispersione e complessita nella sua esecuzione quotidiana.
+              PocketDiet prende la dieta che hai già e la trasforma in qualcosa
+              di semplice da usare ogni giorno. Niente più PDF da rileggere o
+              informazioni sparse: sai subito cosa mangiare.
             </p>
-            <div
+          </div>
+
+          <div className="marketing-hero__rest">
+            {/* <div
               className="marketing-hero__signalBar"
               aria-label="Valore chiave"
             >
@@ -203,7 +317,7 @@ export default function MarketingHome() {
                   {item}
                 </span>
               ))}
-            </div>
+            </div> */}
             <div className="marketing-hero__actions">
               <Link
                 href="/upload"
@@ -218,117 +332,13 @@ export default function MarketingHome() {
                 Scopri come funziona
               </a>
             </div>
-            <ul className="marketing-hero__trust" aria-label="Punti chiave">
+            {/* <ul className="marketing-hero__trust" aria-label="Punti chiave">
               <li>Funziona con PDF, foto e testo</li>
               <li>Rende piu consultabili pasti, porzioni e alternative</li>
               <li>
                 Non sostituisce il nutrizionista: migliora l'esperienza d'uso
               </li>
-            </ul>
-          </div>
-
-          <div className="marketing-phone" aria-hidden>
-            <div className="marketing-phone__device">
-              <div className="marketing-phone__notch" />
-              <div className="marketing-phone__shell">
-                <div className="marketing-phone__appbar">
-                  <span className="marketing-phone__brandMini">PocketDiet</span>
-                  <div className="marketing-phone__appActions">
-                    <span className="marketing-phone__iconBtn">⚙</span>
-                    <span className="marketing-phone__changeDiet">
-                      Cambia dieta
-                    </span>
-                  </div>
-                </div>
-                <div className="marketing-phone__daybar">
-                  <span className="marketing-phone__navBtn">‹</span>
-                  <div className="marketing-phone__dayCenter">
-                    <span className="marketing-phone__dayBadge">OGGI</span>
-                    <span className="marketing-phone__dayText">
-                      Domenica 12 Aprile 2026
-                    </span>
-                  </div>
-                  <span className="marketing-phone__navBtn">›</span>
-                </div>
-
-                <div className="marketing-phone__progressCard">
-                  <div className="marketing-phone__progressTitle">
-                    Quanto hai rispettato la dieta oggi?
-                  </div>
-                  <div className="marketing-phone__progressPill">
-                    <span className="marketing-phone__progressIcon">
-                      <IconMoodSmile size={15} stroke={2} aria-hidden />
-                    </span>
-                    <span>84%</span>
-                  </div>
-                </div>
-
-                <div className="marketing-phone__menuCard">
-                  <div className="marketing-phone__mealSection">
-                    <span className="marketing-phone__mealLabel">
-                      Colazione
-                    </span>
-                    <span className="marketing-phone__mealRow">
-                      <strong>Carboidrati:</strong> Cereali da Colazione (30 g)
-                    </span>
-                    <span className="marketing-phone__mealRow">
-                      <strong>Frutta:</strong> Pera (150 g)
-                    </span>
-                    <span className="marketing-phone__mealRow">
-                      <strong>Proteine:</strong> Yogurt greco (150 g)
-                    </span>
-                    <div className="marketing-phone__mealActions">
-                      <span>
-                        <IconCopyPlus size={16} stroke={2} aria-hidden />
-                      </span>
-                      <span>
-                        <IconCheckbox size={16} stroke={2} aria-hidden />
-                      </span>
-                      <span>
-                        <IconEdit size={16} stroke={2} aria-hidden />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="marketing-phone__menuCard marketing-phone__menuCard--compact">
-                  <div className="marketing-phone__mealSection">
-                    <span className="marketing-phone__mealLabel">
-                      Spuntino Mattutino
-                    </span>
-                    <span className="marketing-phone__mealText">
-                      Noci - secche (30 g)
-                    </span>
-                    <div className="marketing-phone__mealActions">
-                      <span>
-                        <IconCopyPlus size={16} stroke={2} aria-hidden />
-                      </span>
-                      <span>
-                        <IconCheckbox size={16} stroke={2} aria-hidden />
-                      </span>
-                      <span>
-                        <IconEdit size={16} stroke={2} aria-hidden />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="marketing-phone__bottomNav">
-                  <span className="marketing-phone__bottomNavItem marketing-phone__bottomNavItem--active">
-                    <IconToolsKitchen2 size={18} stroke={2} aria-hidden />
-                    <span>Pasti</span>
-                  </span>
-                  <span className="marketing-phone__bottomNavItem">
-                    <IconShoppingCart size={18} stroke={2} aria-hidden />
-                    <span>Spesa</span>
-                  </span>
-                  <span className="marketing-phone__bottomNavItem">
-                    <IconChartBar size={18} stroke={2} aria-hidden />
-                    <span>Report</span>
-                  </span>
-                </div>
-              </div>
-            </div>
+            </ul> */}
           </div>
         </section>
 
@@ -343,8 +353,14 @@ export default function MarketingHome() {
           </div>
         </section>
 
-        <section className="marketing-editorial" aria-label="Contesto d'uso">
+        <section
+          className="marketing-editorial"
+          aria-label="Cosa succede senza PocketDiet"
+        >
           <div className="marketing-editorial__inner">
+            <p className="marketing-editorial__eyebrow">
+              Cosa succede senza PocketDiet
+            </p>
             {MARKETING_EDITORIAL_IMAGES.map((item) => (
               <article key={item.title} className="marketing-editorial__card">
                 <div className="marketing-editorial__media">
@@ -368,7 +384,10 @@ export default function MarketingHome() {
         >
           <div className="marketing-section__inner marketing-section__inner--wide">
             <div className="marketing-section__header">
-              <p className="marketing-section__eyebrow">Cosa cambia davvero</p>
+              <p className="marketing-section__eyebrow">
+                Cosa cambia davvero con PocketDiet
+              </p>
+
               <h2 className="marketing-section__title">
                 Dalla prescrizione alla consultazione quotidiana
               </h2>
@@ -497,9 +516,25 @@ export default function MarketingHome() {
       </div>
 
       {!standalone && (
-        <div className="marketing-home__installDock">
-          <InstallAppCTA variant="stickyBar" />
-        </div>
+        <>
+          <div
+            className="marketing-home__uploadDock"
+            role="region"
+            aria-label="Carica la dieta"
+          >
+            <div className="marketing-home__uploadDockInner">
+              <Link
+                href="/upload"
+                className="marketing-btn marketing-btn--primary marketing-home__uploadDockBtn"
+              >
+                Carica la tua dieta
+              </Link>
+            </div>
+          </div>
+          <div className="marketing-home__installDock">
+            <InstallAppCTA variant="stickyBar" />
+          </div>
+        </>
       )}
     </div>
   );

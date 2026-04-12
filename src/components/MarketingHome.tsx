@@ -202,7 +202,6 @@ export default function MarketingHome() {
                       PocketDiet
                     </span>
                     <div className="marketing-phone__appActions">
-                      <span className="marketing-phone__iconBtn">⚙</span>
                       <span className="marketing-phone__changeDiet">
                         Cambia dieta
                       </span>

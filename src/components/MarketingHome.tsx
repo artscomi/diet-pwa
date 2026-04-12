@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -147,17 +147,42 @@ const MARKETING_EDITORIAL_IMAGES = [
 export default function MarketingHome() {
   const router = useRouter();
   const [standalone, setStandalone] = useState(false);
+  /** `false` = boot (loader), finché non sappiamo se c’è dieta in locale. */
+  const [marketingReady, setMarketingReady] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setStandalone(isStandalone());
-  }, []);
-
-  /** Dieta già in locale: la home marketing non serve, vai alla shell app (`/upload`). */
-  useEffect(() => {
     if (loadUserDiet()) {
       router.replace("/upload");
+      return;
     }
+    setMarketingReady(true);
   }, [router]);
+
+  if (!marketingReady) {
+    return (
+      <div
+        className="marketing-home marketing-home--boot"
+        aria-busy="true"
+        aria-live="polite"
+        aria-label="Caricamento PocketDiet"
+      >
+        <div className="marketing-home__boot">
+          <div className="marketing-home__bootMark">
+            <Image
+              src="/favicon-icon.svg"
+              alt=""
+              width={56}
+              height={56}
+              priority
+            />
+            <span className="marketing-home__bootBrand">PocketDiet</span>
+          </div>
+          <span className="marketing-home__bootSpinner" aria-hidden />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

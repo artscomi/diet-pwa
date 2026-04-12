@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   IconChartBar,
@@ -17,16 +18,32 @@ import "./MarketingHome.css";
 
 const MARKETING_BENEFITS = [
   {
-    title: "Consulta il piano con piu chiarezza",
-    body: "Pasti, porzioni e alternative vengono presentati in una schermata ordinata, pensata per essere letta rapidamente durante la giornata.",
+    title: "Sai subito cosa mangiare oggi",
+    body: "Apri l'app e trovi subito cosa mangiare, con piu chiarezza tra pasti, porzioni e alternative durante la giornata.",
+    image:
+      "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Persona che consulta il telefono mentre prepara il cibo",
   },
   {
-    title: "Riduci il carico operativo",
-    body: "PocketDiet trasforma i pasti della dieta in una lista della spesa pronta, riducendo passaggi manuali, ricopiature e dimenticanze.",
+    title: "La spesa si prepara da sola",
+    body: "La lista della spesa prende forma dai tuoi pasti, cosi perdi meno tempo a organizzarti e arrivi piu preparata alla settimana.",
+    image:
+      "https://images.pexels.com/photos/3850888/pexels-photo-3850888.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Verdure e ingredienti freschi organizzati su un piano cucina",
   },
   {
-    title: "Condividi in modo piu ordinato",
-    body: "La lista puo essere condivisa in pochi secondi, con un formato piu chiaro e piu facile da usare anche da chi vive con te.",
+    title: "Invia il report al tuo nutrizionista",
+    body: "I progressi diventano piu facili da leggere e da raccontare, anche quando vuoi confrontarti con il tuo nutrizionista.",
+    image:
+      "https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Persona che annota o controlla i progressi del piano alimentare",
+  },
+  {
+    title: "Condividi la lista della spesa con chi vuoi",
+    body: "Chi vive con te riceve una lista piu chiara e immediata, senza messaggi sparsi, note volanti o confusione.",
+    image:
+      "https://images.pexels.com/photos/8844386/pexels-photo-8844386.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Spesa e organizzazione domestica condivisa",
   },
 ] as const;
 
@@ -34,14 +51,23 @@ const MARKETING_STEPS = [
   {
     label: "1. Carica il piano alimentare",
     body: "Puoi partire da PDF, foto o testo del piano ricevuto dal nutrizionista.",
+    image:
+      "https://images.pexels.com/photos/7669729/pexels-photo-7669729.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Persona che usa uno smartphone in cucina mentre consulta un contenuto",
   },
   {
     label: "2. PocketDiet lo riorganizza",
     body: "Pasti, porzioni, alternative e lista della spesa vengono presentati in un formato piu chiaro e piu adatto all'uso quotidiano.",
+    image: null,
+    alt: "",
+    appPreview: true,
   },
   {
     label: "3. Lo consulti ogni giorno",
     body: "Dal telefono trovi subito le informazioni rilevanti, senza dover tornare ogni volta al documento originale.",
+    image:
+      "https://images.pexels.com/photos/8804979/pexels-photo-8804979.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Mano che tiene uno smartphone con contenuti food sullo schermo",
   },
 ] as const;
 
@@ -72,6 +98,39 @@ const MARKETING_SIGNAL_ITEMS = [
   "Pensata per l'uso quotidiano dal telefono",
   "Piu chiarezza tra pasti, porzioni e alternative",
   "Una pagina upload dedicata, semplice e immediata",
+] as const;
+
+const MARKETING_HIGHLIGHTS = [
+  {
+    value: "PDF, foto o testo",
+    label: "Parti dal formato che hai gia",
+  },
+  {
+    value: "Report sintetico",
+    label: "Tieni traccia dei progressi nel tempo",
+  },
+  {
+    value: "Lista condivisibile",
+    label: "Coinvolgi chi vive con te senza attrito",
+  },
+] as const;
+
+const MARKETING_EDITORIAL_IMAGES = [
+  {
+    src: "https://images.pexels.com/photos/4020654/pexels-photo-4020654.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Verdure ed erbe fresche organizzate sul piano cucina",
+    title: "Piu ordine gia dal momento della spesa",
+  },
+  {
+    src: "https://images.pexels.com/photos/8939258/pexels-photo-8939258.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Persona che consulta il telefono in cucina mentre prepara il cibo",
+    title: "Il piano resta chiaro anche nella routine reale",
+  },
+  {
+    src: "https://images.pexels.com/photos/30635720/pexels-photo-30635720.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Contenitori con pasti organizzati in anticipo",
+    title: "Dai pasti al report, tutto diventa piu fluido",
+  },
 ] as const;
 
 export default function MarketingHome() {
@@ -117,7 +176,7 @@ export default function MarketingHome() {
         <section className="marketing-hero">
           <div className="marketing-hero__copy">
             <p className="marketing-hero__eyebrow">
-              Un modo piu chiaro di usare la dieta del tuo nutrizionista
+              Seguire la dieta del tuo nutrizionista non è mai stato così facile
             </p>
             <h1 className="marketing-hero__title">
               La tua dieta, piu leggibile. Piu pratica. Piu quotidiana.
@@ -128,7 +187,10 @@ export default function MarketingHome() {
               L'obiettivo non e cambiare la dieta, ma ridurre attrito,
               dispersione e complessita nella sua esecuzione quotidiana.
             </p>
-            <div className="marketing-hero__signalBar" aria-label="Valore chiave">
+            <div
+              className="marketing-hero__signalBar"
+              aria-label="Valore chiave"
+            >
               {MARKETING_SIGNAL_ITEMS.map((item) => (
                 <span key={item} className="marketing-hero__signalPill">
                   {item}
@@ -263,21 +325,40 @@ export default function MarketingHome() {
           </div>
         </section>
 
-        <section className="marketing-proof">
-          <div className="marketing-proof__inner">
-            <div className="marketing-proof__card">
-              <p className="marketing-proof__kicker">
-                Non cambia la dieta del tuo nutrizionista.
-              </p>
-              <p className="marketing-proof__text">
-                La rende piu ordinata, piu consultabile e piu semplice da seguire
-                nel contesto reale della giornata.
-              </p>
-            </div>
+        <section className="marketing-highlights" aria-label="Punti chiave">
+          <div className="marketing-highlights__inner">
+            {MARKETING_HIGHLIGHTS.map((item) => (
+              <article key={item.value} className="marketing-highlights__card">
+                <p className="marketing-highlights__value">{item.value}</p>
+                <p className="marketing-highlights__label">{item.label}</p>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section className="marketing-section marketing-section--benefits" id="come-funziona">
+        <section className="marketing-editorial" aria-label="Contesto d'uso">
+          <div className="marketing-editorial__inner">
+            {MARKETING_EDITORIAL_IMAGES.map((item) => (
+              <article key={item.title} className="marketing-editorial__card">
+                <div className="marketing-editorial__media">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 767px) 100vw, 33vw"
+                    className="marketing-editorial__img"
+                  />
+                </div>
+                <p className="marketing-editorial__caption">{item.title}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="marketing-section marketing-section--benefits"
+          id="come-funziona"
+        >
           <div className="marketing-section__inner marketing-section__inner--wide">
             <div className="marketing-section__header">
               <p className="marketing-section__eyebrow">Cosa cambia davvero</p>
@@ -288,6 +369,15 @@ export default function MarketingHome() {
             <div className="marketing-grid">
               {MARKETING_BENEFITS.map((item) => (
                 <article key={item.title} className="marketing-card">
+                  <div className="marketing-card__media">
+                    <Image
+                      src={item.image}
+                      alt={item.alt}
+                      fill
+                      sizes="(max-width: 767px) 100vw, 25vw"
+                      className="marketing-card__img"
+                    />
+                  </div>
                   <h3>{item.title}</h3>
                   <p>{item.body}</p>
                 </article>
@@ -307,6 +397,45 @@ export default function MarketingHome() {
             <div className="marketing-steps">
               {MARKETING_STEPS.map((step) => (
                 <article key={step.label} className="marketing-step">
+                  {step.appPreview ? (
+                    <div className="marketing-stepPreview" aria-hidden>
+                      <div className="marketing-stepPreview__header">
+                        <span className="marketing-stepPreview__badge">OGGI</span>
+                        <span className="marketing-stepPreview__date">
+                          Domenica 12 Aprile
+                        </span>
+                      </div>
+                      <div className="marketing-stepPreview__card">
+                        <span className="marketing-stepPreview__title">
+                          Colazione
+                        </span>
+                        <span className="marketing-stepPreview__row">
+                          <strong>Carboidrati:</strong> Cereali da colazione
+                        </span>
+                        <span className="marketing-stepPreview__row">
+                          <strong>Frutta:</strong> Pera
+                        </span>
+                        <span className="marketing-stepPreview__row">
+                          <strong>Proteine:</strong> Yogurt greco
+                        </span>
+                      </div>
+                      <div className="marketing-stepPreview__chips">
+                        <span>Alternative</span>
+                        <span>Spesa</span>
+                        <span>Report</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="marketing-card__media marketing-card__media--step">
+                      <Image
+                        src={step.image}
+                        alt={step.alt}
+                        fill
+                        sizes="(max-width: 767px) 100vw, 33vw"
+                        className="marketing-card__img"
+                      />
+                    </div>
+                  )}
                   <h3>{step.label}</h3>
                   <p>{step.body}</p>
                 </article>
@@ -319,9 +448,6 @@ export default function MarketingHome() {
           <div className="marketing-section__inner marketing-section__inner--narrow">
             <div className="marketing-section__header">
               <p className="marketing-section__eyebrow">Domande frequenti</p>
-              <h2 className="marketing-section__title">
-                Prima di andare su upload
-              </h2>
             </div>
             <div className="marketing-faq">
               {MARKETING_FAQ.map((item) => (
@@ -340,7 +466,8 @@ export default function MarketingHome() {
               <div>
                 <p className="marketing-section__eyebrow">Pronto a provarla?</p>
                 <h2 className="marketing-cta__title">
-                  Vai alla pagina di upload e importa il tuo piano alimentare
+                  Vai alla pagina di upload e importa la tua dieta in modo
+                  semplice e sicuro
                 </h2>
               </div>
               <Link

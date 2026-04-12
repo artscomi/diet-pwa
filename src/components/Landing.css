@@ -112,6 +112,26 @@
   padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 2rem));
 }
 
+.landing-header__top {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.landing-header__backLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  color: #334155;
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
 .landing-header h1 {
   line-height: 1;
   margin-bottom: 1rem;

@@ -3,6 +3,7 @@ import { Montserrat, Baloo_2 } from "next/font/google";
 import CookieBanner from "@/components/CookieBanner";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
 import { Analytics } from "@vercel/analytics/next";
+import type { Metadata } from "next";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -18,14 +19,45 @@ const baloo2 = Baloo_2({
   display: "swap",
 });
 
-export const metadata = {
+const defaultSocialImage = "/opengraph-image";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://pocketdiet.app"),
   title: "PocketDiet — La dieta del nutrizionista, sempre in tasca",
   description:
     "Carica la dieta del tuo nutrizionista e consulta i tuoi pasti del giorno, direttamente dal telefono. Personalizza gli ingredienti e installa l'app.",
+  applicationName: "PocketDiet",
+  category: "health",
+  openGraph: {
+    title: "PocketDiet",
+    description:
+      "La dieta del tuo nutrizionista, piu semplice da consultare dal telefono.",
+    type: "website",
+    locale: "it_IT",
+    siteName: "PocketDiet",
+    images: [
+      {
+        url: defaultSocialImage,
+        width: 512,
+        height: 512,
+        alt: "PocketDiet",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "PocketDiet",
+    description:
+      "La dieta del tuo nutrizionista, piu semplice da consultare dal telefono.",
+    images: [defaultSocialImage],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "PocketDiet",
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 

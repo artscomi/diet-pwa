@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  IconChartBar,
+  IconCopyPlus,
+  IconEdit,
+  IconCheckbox,
+  IconMoodSmile,
+  IconShoppingCart,
+  IconToolsKitchen2,
+} from "@tabler/icons-react";
 import Footer from "./Footer";
 import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
 import "./MarketingHome.css";
@@ -144,30 +153,101 @@ export default function MarketingHome() {
             <div className="marketing-phone__device">
               <div className="marketing-phone__notch" />
               <div className="marketing-phone__shell">
-                <div className="marketing-phone__topbar">
-                  <span>Oggi</span>
-                  <span>Martedi</span>
+                <div className="marketing-phone__appbar">
+                  <span className="marketing-phone__brandMini">PocketDiet</span>
+                  <div className="marketing-phone__appActions">
+                    <span className="marketing-phone__iconBtn">⚙</span>
+                    <span className="marketing-phone__changeDiet">
+                      Cambia dieta
+                    </span>
+                  </div>
                 </div>
-                <div className="marketing-phone__heroCard">
-                  <strong>Cosa mangi oggi</strong>
-                  <span>Tutto in una schermata semplice</span>
+                <div className="marketing-phone__daybar">
+                  <span className="marketing-phone__navBtn">‹</span>
+                  <div className="marketing-phone__dayCenter">
+                    <span className="marketing-phone__dayBadge">OGGI</span>
+                    <span className="marketing-phone__dayText">
+                      Domenica 12 Aprile 2026
+                    </span>
+                  </div>
+                  <span className="marketing-phone__navBtn">›</span>
                 </div>
-                <div className="marketing-phone__meal">
-                  <span className="marketing-phone__mealLabel">Colazione</span>
-                  <span className="marketing-phone__mealText">
-                    Yogurt greco, avena, fragole
+
+                <div className="marketing-phone__progressCard">
+                  <div className="marketing-phone__progressTitle">
+                    Quanto hai rispettato la dieta oggi?
+                  </div>
+                  <div className="marketing-phone__progressPill">
+                    <span className="marketing-phone__progressIcon">
+                      <IconMoodSmile size={15} stroke={2} aria-hidden />
+                    </span>
+                    <span>84%</span>
+                  </div>
+                </div>
+
+                <div className="marketing-phone__menuCard">
+                  <div className="marketing-phone__mealSection">
+                    <span className="marketing-phone__mealLabel">
+                      Colazione
+                    </span>
+                    <span className="marketing-phone__mealRow">
+                      <strong>Carboidrati:</strong> Cereali da Colazione (30 g)
+                    </span>
+                    <span className="marketing-phone__mealRow">
+                      <strong>Frutta:</strong> Pera (150 g)
+                    </span>
+                    <span className="marketing-phone__mealRow">
+                      <strong>Proteine:</strong> Yogurt greco (150 g)
+                    </span>
+                    <div className="marketing-phone__mealActions">
+                      <span>
+                        <IconCopyPlus size={16} stroke={2} aria-hidden />
+                      </span>
+                      <span>
+                        <IconCheckbox size={16} stroke={2} aria-hidden />
+                      </span>
+                      <span>
+                        <IconEdit size={16} stroke={2} aria-hidden />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="marketing-phone__menuCard marketing-phone__menuCard--compact">
+                  <div className="marketing-phone__mealSection">
+                    <span className="marketing-phone__mealLabel">
+                      Spuntino Mattutino
+                    </span>
+                    <span className="marketing-phone__mealText">
+                      Noci - secche (30 g)
+                    </span>
+                    <div className="marketing-phone__mealActions">
+                      <span>
+                        <IconCopyPlus size={16} stroke={2} aria-hidden />
+                      </span>
+                      <span>
+                        <IconCheckbox size={16} stroke={2} aria-hidden />
+                      </span>
+                      <span>
+                        <IconEdit size={16} stroke={2} aria-hidden />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="marketing-phone__bottomNav">
+                  <span className="marketing-phone__bottomNavItem marketing-phone__bottomNavItem--active">
+                    <IconToolsKitchen2 size={18} stroke={2} aria-hidden />
+                    <span>Pasti</span>
                   </span>
-                </div>
-                <div className="marketing-phone__meal">
-                  <span className="marketing-phone__mealLabel">Pranzo</span>
-                  <span className="marketing-phone__mealText">
-                    Riso basmati, pollo, zucchine
+                  <span className="marketing-phone__bottomNavItem">
+                    <IconShoppingCart size={18} stroke={2} aria-hidden />
+                    <span>Spesa</span>
                   </span>
-                </div>
-                <div className="marketing-phone__chips">
-                  <span>Alternative</span>
-                  <span>Lista spesa</span>
-                  <span>Condividi</span>
+                  <span className="marketing-phone__bottomNavItem">
+                    <IconChartBar size={18} stroke={2} aria-hidden />
+                    <span>Report</span>
+                  </span>
                 </div>
               </div>
             </div>

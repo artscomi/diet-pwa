@@ -248,11 +248,10 @@
 .marketing-phone__shell {
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-rows: auto auto auto auto auto;
-  align-content: start;
-  gap: 0.8rem;
-  padding: 2.15rem 0.95rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.58rem;
+  padding: 2.05rem 0.78rem 0.78rem;
   border-radius: 30px;
   background:
     linear-gradient(
@@ -267,73 +266,235 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.marketing-phone__topbar,
-.marketing-phone__chips {
+.marketing-phone__appbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
 }
 
-.marketing-phone__topbar span,
-.marketing-phone__chips span {
+.marketing-phone__brandMini {
+  font-family: var(--font-baloo2), cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: -0.03em;
+}
+
+.marketing-phone__appActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.marketing-phone__iconBtn,
+.marketing-phone__changeDiet,
+.marketing-phone__navBtn,
+.marketing-phone__installBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.72rem;
   border-radius: 999px;
-  font-size: 0.75rem;
   font-weight: 700;
 }
 
-.marketing-phone__topbar span {
-  background: rgba(15, 23, 42, 0.06);
-  color: #334155;
+.marketing-phone__iconBtn {
+  width: 1.95rem;
+  height: 1.95rem;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: #475569;
+  font-size: 0.95rem;
 }
 
-.marketing-phone__heroCard {
+.marketing-phone__changeDiet {
+  min-height: 1.8rem;
+  padding: 0.38rem 0.62rem;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: #475569;
+  font-size: 0.66rem;
+}
+
+.marketing-phone__daybar {
   display: grid;
-  gap: 0.2rem;
-  padding: 0.95rem;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  color: #ffffff;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.1rem 0 0.42rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
 }
 
-.marketing-phone__heroCard strong {
+.marketing-phone__navBtn {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: #ffffff;
+  color: #0f172a;
   font-size: 1rem;
 }
 
-.marketing-phone__heroCard span {
-  font-size: 0.84rem;
-  color: rgba(255, 255, 255, 0.92);
+.marketing-phone__dayCenter {
+  display: grid;
+  justify-items: center;
+  gap: 0.22rem;
 }
 
-.marketing-phone__meal {
+.marketing-phone__dayBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.62rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.14);
+  color: #047857;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.marketing-phone__dayText {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.marketing-phone__progressCard,
+.marketing-phone__menuCard,
+.marketing-phone__bottomNav,
+.marketing-phone__installBar {
   display: grid;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.marketing-phone__progressCard,
+.marketing-phone__menuCard {
+  gap: 0.58rem;
+  padding: 0.78rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.marketing-phone__progressTitle {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.marketing-phone__progressPill {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(220, 252, 231, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  color: #047857;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.marketing-phone__progressIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.marketing-phone__menuCard--compact {
   gap: 0.2rem;
-  padding: 0.85rem 0.95rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.marketing-phone__mealSection {
+  display: grid;
+  gap: 0.34rem;
+  padding: 0.72rem 0.78rem;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.14);
 }
 
 .marketing-phone__mealLabel {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #10b981;
+  color: #1e293b;
 }
 
 .marketing-phone__mealText {
-  font-size: 0.94rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #0f172a;
 }
 
-.marketing-phone__chips span {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+.marketing-phone__mealRow {
+  font-size: 0.68rem;
+  line-height: 1.32;
+  color: #334155;
+}
+
+.marketing-phone__mealRow strong {
+  color: #0f172a;
+}
+
+.marketing-phone__mealActions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  margin-top: 0.1rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+  color: #64748b;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.marketing-phone__mealActions span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marketing-phone__mealActions svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.marketing-phone__bottomNav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  align-self: end;
+  margin-top: auto;
+  padding: 0.48rem 0.4rem;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.marketing-phone__bottomNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-self: stretch;
+  width: 100%;
+  gap: 0.22rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.marketing-phone__bottomNavItem svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.marketing-phone__bottomNavItem--active {
+  color: #10b981;
 }
 
 .marketing-proof,

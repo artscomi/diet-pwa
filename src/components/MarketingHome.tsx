@@ -23,7 +23,7 @@ import "./MarketingHome.css";
 const MARKETING_MAX_UPLOAD_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 
 /** Foto ampia da Pexels: sfondo nitido; il mock upload è HTML sopra. */
-const MARKETING_CTA_HERO_IMAGE = `https://images.pexels.com/photos/247685/pexels-photo-247685.png?${PEXELS_CDN_QUERY_FULL}`;
+const MARKETING_CTA_HERO_IMAGE = `https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?${PEXELS_CDN_QUERY_FULL}`;
 
 const MARKETING_BENEFITS = [
   {

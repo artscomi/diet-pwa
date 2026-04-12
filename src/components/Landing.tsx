@@ -220,7 +220,7 @@ export default function Landing({
       const page = Math.floor(Math.random() * 5) + 1;
       try {
         const res = await fetch(
-          `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=15&page=${page}&purpose=background`,
+          `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=24&page=${page}&purpose=background&size=large`,
         );
         if (cancelled || !res.ok) return;
         const data = (await res.json()) as { urls?: string[] };
@@ -246,7 +246,7 @@ export default function Landing({
         const responses = await Promise.all(
           VALUE_PROP_PEXELS_QUERIES.map((query, i) =>
             fetch(
-              `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=6&page=${i + 1}&purpose=card`,
+              `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=10&page=${i + 1}&purpose=card`,
             ),
           ),
         );

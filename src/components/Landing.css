@@ -37,6 +37,7 @@
   align-items: center;
   padding: 1rem;
   box-sizing: border-box;
+  isolation: isolate;
 }
 
 @media (max-width: 767.98px) {
@@ -67,19 +68,6 @@
   background-position: center;
   background-repeat: no-repeat;
   transition: opacity 0.45s ease-in-out;
-}
-
-.landing-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    165deg,
-    rgba(6, 6, 10, 0.38) 0%,
-    rgba(6, 6, 10, 0.62) 48%,
-    rgba(4, 4, 8, 0.78) 100%
-  );
 }
 
 .landing:not(.landing--standalone) .landing-hero {
@@ -197,7 +185,7 @@
   font-family: var(--font-baloo2), cursive;
   font-weight: 700;
   font-size: clamp(2rem, 5vw, 2.35rem);
-  color: var(--landing-color-base);
+  color: var(--landing-color-primary);
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -236,7 +224,7 @@
   margin: 0;
   font-size: 0.6875rem;
   font-weight: 500;
-  color: var(--landing-text-muted);
+  color: var(--landing-color-base);
   line-height: 1.45;
 }
 
@@ -250,27 +238,25 @@
 
 .landing-value-prop__eyebrow {
   margin: 0 0 1rem;
-  font-size: 0.8125rem;
+  font-size: 1.0625rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: -0.02em;
   line-height: 1.35;
   text-align: center;
-  text-transform: uppercase;
-  color: var(--landing-text-muted);
+  color: var(--landing-color-primary);
 }
 
 .landing-value-prop__eyebrowLead {
-  font-weight: 600;
-  color: var(--landing-text-muted);
+  font-weight: 500;
+  color: var(--landing-color-primary);
 }
 
 .landing-value-prop__eyebrowBrand {
   font-family: var(--font-baloo2), cursive;
   font-weight: 700;
-  font-size: 1.05em;
-  color: var(--landing-color-base);
-  letter-spacing: -0.02em;
-  text-transform: none;
+  font-size: 1.125em;
+  color: var(--landing-color-primary);
+  letter-spacing: -0.03em;
 }
 
 .landing-value-prop__card {
@@ -341,7 +327,7 @@
 .landing-value-prop__stepBlurb {
   font-size: 0.6875rem;
   font-weight: 500;
-  color: var(--landing-text-muted);
+  color: var(--landing-color-base);
   line-height: 1.45;
   max-width: 100%;
   padding-inline: 0.15rem;
@@ -384,6 +370,11 @@
     min-height: 100vh;
     background: transparent;
     padding: 2rem;
+  }
+
+  /* Durante il fade del carosello l’opacità va a 0: sfondo chiaro sotto, non il nero di `.landing`. */
+  .landing-hero:has(.landing-bg) {
+    background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 55%, #cbd5e1 100%);
   }
 
   .landing-panel {

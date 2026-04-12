@@ -616,27 +616,36 @@
 
 .marketing-editorial {
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  padding-top: 2.35rem;
+  padding-bottom: 2.35rem;
 }
 
 .marketing-editorial__inner {
   display: grid;
-  gap: 1rem;
+  gap: 1.1rem;
+  padding-inline: max(1.25rem, env(safe-area-inset-left))
+    max(1.25rem, env(safe-area-inset-right));
 }
 
 .marketing-editorial__card {
-  display: grid;
-  gap: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  min-height: 0;
   transition: transform 0.22s ease;
 }
 
 .marketing-editorial__media {
   position: relative;
   width: 100%;
+  flex: 0 0 auto;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 28px;
+  border-radius: 24px;
   background: #e2e8f0;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 18px 40px rgba(15, 23, 42, 0.07);
   transition:
     transform 0.22s ease,
     box-shadow 0.22s ease;
@@ -648,10 +657,12 @@
 
 .marketing-editorial__caption {
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.45;
+  font-size: 0.98rem;
+  line-height: 1.5;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: #0f172a;
+  text-wrap: balance;
 }
 
 .marketing-editorial__card:hover {
@@ -684,7 +695,7 @@
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  padding: 0.25rem 0 2.2rem;
+  padding: 0.25rem 0 2.5rem;
 }
 
 .marketing-highlights__inner {
@@ -1060,15 +1071,22 @@
 
   .marketing-editorial__inner {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.35rem;
+    align-items: stretch;
+  }
+
+  .marketing-editorial__card {
+    height: 100%;
+  }
+
+  .marketing-editorial__media {
+    flex: 1 1 auto;
+    min-height: 13.5rem;
+    aspect-ratio: unset;
   }
 
   .marketing-editorial__card:nth-child(2) .marketing-editorial__media {
-    aspect-ratio: 3.7 / 4.4;
-  }
-
-  .marketing-editorial__card:nth-child(1),
-  .marketing-editorial__card:nth-child(3) {
-    padding-top: 1.25rem;
+    min-height: 15.5rem;
   }
 
   .marketing-steps {

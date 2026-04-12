@@ -42,8 +42,8 @@ const MARKETING_BENEFITS = [
     title: "Condividi la lista della spesa con chi vuoi",
     body: "Chi vive con te riceve una lista piu chiara e immediata, senza messaggi sparsi, note volanti o confusione.",
     image:
-      "https://images.pexels.com/photos/8844386/pexels-photo-8844386.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Spesa e organizzazione domestica condivisa",
+      "https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Lista della spesa su quaderno, carrellino e busta su sfondo verde acqua",
   },
 ] as const;
 
@@ -54,6 +54,7 @@ const MARKETING_STEPS = [
     image:
       "https://images.pexels.com/photos/7669729/pexels-photo-7669729.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "Persona che usa uno smartphone in cucina mentre consulta un contenuto",
+    appPreview: false,
   },
   {
     label: "2. PocketDiet lo riorganizza",
@@ -63,11 +64,12 @@ const MARKETING_STEPS = [
     appPreview: true,
   },
   {
-    label: "3. Lo consulti ogni giorno",
+    label: "3. Consulti la tua dieta ogni giorno",
     body: "Dal telefono trovi subito le informazioni rilevanti, senza dover tornare ogni volta al documento originale.",
     image:
-      "https://images.pexels.com/photos/8804979/pexels-photo-8804979.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "Mano che tiene uno smartphone con contenuti food sullo schermo",
+      "https://images.pexels.com/photos/9788841/pexels-photo-9788841.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    alt: "Persona a colazione che consulta lo smartphone con una ciotola di cereali e frutta",
+    appPreview: false,
   },
 ] as const;
 
@@ -400,7 +402,9 @@ export default function MarketingHome() {
                   {step.appPreview ? (
                     <div className="marketing-stepPreview" aria-hidden>
                       <div className="marketing-stepPreview__header">
-                        <span className="marketing-stepPreview__badge">OGGI</span>
+                        <span className="marketing-stepPreview__badge">
+                          OGGI
+                        </span>
                         <span className="marketing-stepPreview__date">
                           Domenica 12 Aprile
                         </span>

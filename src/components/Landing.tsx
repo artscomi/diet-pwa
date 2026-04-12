@@ -25,9 +25,9 @@ const LANDING_BG_FALLBACK = [
 ];
 const LANDING_BG_INTERVAL_MS = 12000;
 const LANDING_BG_FADE_MS = 450;
-/** Ultimo step (card “Condividi”): immagine fissa scelta dall’utente — Pexels 3850213 */
+/** Ultimo step (card “Condividi”): immagine fissa — Pexels 6214370 (lista spesa) */
 const VALUE_PROP_LAST_STEP_IMAGE =
-  "https://images.pexels.com/photos/3850213/pexels-photo-3850213.jpeg?auto=compress&cs=tinysrgb&w=800";
+  "https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?auto=compress&cs=tinysrgb&w=800";
 /** Card “Progressi”: to-do / checklist (Pexels 6690908 — Tara Winstead) */
 const VALUE_PROP_SPOTLIGHT_IMAGE =
   "https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?auto=compress&cs=tinysrgb&w=800";

@@ -57,6 +57,11 @@ const MARKETING_FAQ = [
       "Si. La pagina upload accetta PDF, immagini del piano alimentare e testo copiato dal nutrizionista.",
   },
   {
+    question: "Posso tracciare i progressi e vedere un report?",
+    answer:
+      "Si. PocketDiet puo aiutarti a tenere traccia di quanto stai seguendo il piano durante la giornata e a consultare un report sintetico dei progressi.",
+  },
+  {
     question: "PocketDiet sostituisce il nutrizionista?",
     answer:
       "No. PocketDiet non sostituisce il professionista: aiuta a consultare e seguire con piu continuita la dieta che hai gia ricevuto.",
@@ -80,31 +85,35 @@ export default function MarketingHome() {
     <div
       className={`marketing-home${standalone ? " marketing-home--standalone" : ""}`}
     >
-      <main className="marketing-home__main">
-        <header className="marketing-topbar">
-          <Link
-            href="/"
-            className="marketing-topbar__brand"
-            aria-label="PocketDiet home"
-          >
-            <span className="marketing-topbar__brandName">PocketDiet</span>
-          </Link>
-          <nav
-            className="marketing-topbar__nav"
-            aria-label="Navigazione principale"
-          >
-            <a href="#come-funziona" className="marketing-topbar__link">
-              Come funziona
-            </a>
-            <a href="#faq" className="marketing-topbar__link">
-              FAQ
-            </a>
-            <Link href="/upload" className="marketing-topbar__cta">
-              Hai gia una dieta? Vai a upload
+      <div className="marketing-topbarWrap">
+        <div className="marketing-home__main marketing-home__main--topbar">
+          <header className="marketing-topbar">
+            <Link
+              href="/"
+              className="marketing-topbar__brand"
+              aria-label="PocketDiet home"
+            >
+              <span className="marketing-topbar__brandName">PocketDiet</span>
             </Link>
-          </nav>
-        </header>
+            <nav
+              className="marketing-topbar__nav"
+              aria-label="Navigazione principale"
+            >
+              <a href="#come-funziona" className="marketing-topbar__link">
+                Come funziona
+              </a>
+              <a href="#faq" className="marketing-topbar__link">
+                FAQ
+              </a>
+              <Link href="/upload" className="marketing-topbar__cta">
+                Hai gia una dieta? Vai a upload
+              </Link>
+            </nav>
+          </header>
+        </div>
+      </div>
 
+      <main className="marketing-home__main">
         <section className="marketing-hero">
           <div className="marketing-hero__copy">
             <p className="marketing-hero__eyebrow">
@@ -255,87 +264,101 @@ export default function MarketingHome() {
         </section>
 
         <section className="marketing-proof">
-          <div className="marketing-proof__card">
-            <p className="marketing-proof__kicker">
-              Non cambia la dieta del tuo nutrizionista.
-            </p>
-            <p className="marketing-proof__text">
-              La rende piu ordinata, piu consultabile e piu semplice da seguire
-              nel contesto reale della giornata.
-            </p>
+          <div className="marketing-proof__inner">
+            <div className="marketing-proof__card">
+              <p className="marketing-proof__kicker">
+                Non cambia la dieta del tuo nutrizionista.
+              </p>
+              <p className="marketing-proof__text">
+                La rende piu ordinata, piu consultabile e piu semplice da seguire
+                nel contesto reale della giornata.
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="marketing-section" id="come-funziona">
-          <div className="marketing-section__header">
-            <p className="marketing-section__eyebrow">Cosa cambia davvero</p>
-            <h2 className="marketing-section__title">
-              Dalla prescrizione alla consultazione quotidiana
-            </h2>
-          </div>
-          <div className="marketing-grid">
-            {MARKETING_BENEFITS.map((item) => (
-              <article key={item.title} className="marketing-card">
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
+        <section className="marketing-section marketing-section--benefits" id="come-funziona">
+          <div className="marketing-section__inner marketing-section__inner--wide">
+            <div className="marketing-section__header">
+              <p className="marketing-section__eyebrow">Cosa cambia davvero</p>
+              <h2 className="marketing-section__title">
+                Dalla prescrizione alla consultazione quotidiana
+              </h2>
+            </div>
+            <div className="marketing-grid">
+              {MARKETING_BENEFITS.map((item) => (
+                <article key={item.title} className="marketing-card">
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section className="marketing-section">
-          <div className="marketing-section__header">
-            <p className="marketing-section__eyebrow">Come funziona</p>
-            <h2 className="marketing-section__title">
-              Un flusso semplice, pensato per l'uso reale
-            </h2>
-          </div>
-          <div className="marketing-steps">
-            {MARKETING_STEPS.map((step) => (
-              <article key={step.label} className="marketing-step">
-                <h3>{step.label}</h3>
-                <p>{step.body}</p>
-              </article>
-            ))}
+        <section className="marketing-section marketing-section--steps">
+          <div className="marketing-section__inner marketing-section__inner--mid">
+            <div className="marketing-section__header">
+              <p className="marketing-section__eyebrow">Come funziona</p>
+              <h2 className="marketing-section__title">
+                Un flusso semplice, pensato per l'uso reale
+              </h2>
+            </div>
+            <div className="marketing-steps">
+              {MARKETING_STEPS.map((step) => (
+                <article key={step.label} className="marketing-step">
+                  <h3>{step.label}</h3>
+                  <p>{step.body}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
         <section className="marketing-section marketing-section--faq" id="faq">
-          <div className="marketing-section__header">
-            <p className="marketing-section__eyebrow">Domande frequenti</p>
-            <h2 className="marketing-section__title">
-              Prima di andare su upload
-            </h2>
-          </div>
-          <div className="marketing-faq">
-            {MARKETING_FAQ.map((item) => (
-              <article key={item.question} className="marketing-faq__item">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </article>
-            ))}
+          <div className="marketing-section__inner marketing-section__inner--narrow">
+            <div className="marketing-section__header">
+              <p className="marketing-section__eyebrow">Domande frequenti</p>
+              <h2 className="marketing-section__title">
+                Prima di andare su upload
+              </h2>
+            </div>
+            <div className="marketing-faq">
+              {MARKETING_FAQ.map((item) => (
+                <article key={item.question} className="marketing-faq__item">
+                  <h3 className="marketing-faq__question">{item.question}</h3>
+                  <p className="marketing-faq__answer">{item.answer}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
         <section className="marketing-cta">
-          <div className="marketing-cta__panel">
-            <div>
-              <p className="marketing-section__eyebrow">Pronto a provarla?</p>
-              <h2 className="marketing-cta__title">
-                Vai alla pagina di upload e importa il tuo piano alimentare
-              </h2>
+          <div className="marketing-cta__inner">
+            <div className="marketing-cta__panel">
+              <div>
+                <p className="marketing-section__eyebrow">Pronto a provarla?</p>
+                <h2 className="marketing-cta__title">
+                  Vai alla pagina di upload e importa il tuo piano alimentare
+                </h2>
+              </div>
+              <Link
+                href="/upload"
+                className="marketing-btn marketing-btn--primary"
+              >
+                Vai alla pagina di upload
+              </Link>
             </div>
-            <Link
-              href="/upload"
-              className="marketing-btn marketing-btn--primary"
-            >
-              Vai alla pagina di upload
-            </Link>
           </div>
         </section>
-
-        <Footer showInstallCTA={false} />
       </main>
+
+      <div
+        className={`marketing-home__footerWrap${standalone ? "" : " marketing-home__footerWrap--withDock"}`}
+      >
+        <Footer showInstallCTA={false} />
+      </div>
 
       {!standalone && (
         <div className="marketing-home__installDock">

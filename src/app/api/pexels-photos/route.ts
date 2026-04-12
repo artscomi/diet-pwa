@@ -2,17 +2,25 @@ import { NextResponse } from "next/server";
 
 const PEXELS_API = "https://api.pexels.com/v1/search";
 
-/** Risposta Pexels: array di foto con src.landscape / large2x */
+/** Risposta Pexels: `original` = massima qualità (ideale per sfondo fullscreen). */
 interface PexelsPhoto {
-  src: { landscape: string; large2x: string; original: string };
+  src: {
+    original?: string;
+    large2x?: string;
+    large?: string;
+    landscape?: string;
+    portrait?: string;
+  };
 }
 interface PexelsResponse {
   photos: PexelsPhoto[];
 }
 
 /**
- * GET /api/pexels-photos?query=food&per_page=15
- * Restituisce URL di immagini da Pexels (tema food). Richiede PEXELS_API_KEY in .env.local
+ * GET /api/pexels-photos?query=healthy+food&per_page=15&purpose=background|card
+ * - `purpose=background`: URL `src.original` (massima qualità) per sfondo fullscreen.
+ * - `purpose=card` o omesso: `large2x` / `large` (card value prop).
+ * Richiede PEXELS_API_KEY in .env.local
  */
 export async function GET(request: Request) {
   const apiKey = process.env.PEXELS_API_KEY;
@@ -24,13 +32,15 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query") ?? "food";
+  const query = searchParams.get("query") ?? "healthy food colorful";
   const perPage = Math.min(
     30,
     Math.max(5, parseInt(searchParams.get("per_page") ?? "15", 10) || 15)
   );
   const page =
     Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
+  /** `background` = URL originali (massima qualità) per cover desktop; default = card / thumb. */
+  const purpose = searchParams.get("purpose") ?? "";
 
   try {
     const url = new URL(PEXELS_API);
@@ -53,7 +63,28 @@ export async function GET(request: Request) {
 
     const data = (await res.json()) as PexelsResponse;
     const urls = (data.photos ?? [])
-      .map((p) => p.src?.landscape || p.src?.large2x || p.src?.original)
+      .map((p) => {
+        const s = p.src;
+        if (!s) return "";
+        if (purpose === "background") {
+          return (
+            s.original ||
+            s.large2x ||
+            s.landscape ||
+            s.large ||
+            s.portrait ||
+            ""
+          );
+        }
+        return (
+          s.large2x ||
+          s.large ||
+          s.landscape ||
+          s.portrait ||
+          s.original ||
+          ""
+        );
+      })
       .filter(Boolean);
 
     return NextResponse.json({ urls });

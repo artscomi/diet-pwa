@@ -15,36 +15,38 @@ import {
   ACCEPT_UPLOAD,
 } from "@/constants/upload";
 import { clearAllMealCompletions } from "@/utils/mealCompletionStatus";
+import {
+  PEXELS_CDN_QUERY_CARD,
+  PEXELS_CDN_QUERY_FULL,
+} from "@/constants/pexelsCdn";
 import "./Landing.css";
 
-/** Fallback desktop se Pexels non risponde */
+/** Fallback desktop se Pexels non risponde (CDN a massima larghezza utile). */
 const LANDING_BG_FALLBACK = [
   "/landing-bg.png",
-  "https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&w=1920",
-  "https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&w=1920",
+  `https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?${PEXELS_CDN_QUERY_FULL}`,
+  `https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?${PEXELS_CDN_QUERY_FULL}`,
 ];
 const LANDING_BG_INTERVAL_MS = 12000;
 const LANDING_BG_FADE_MS = 450;
 /** Ultimo step (card “Condividi”): immagine fissa — Pexels 6214370 (lista spesa) */
-const VALUE_PROP_LAST_STEP_IMAGE =
-  "https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?auto=compress&cs=tinysrgb&w=800";
+const VALUE_PROP_LAST_STEP_IMAGE = `https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?${PEXELS_CDN_QUERY_CARD}`;
 /** Card “Progressi”: to-do / checklist (Pexels 6690908 — Tara Winstead) */
-const VALUE_PROP_SPOTLIGHT_IMAGE =
-  "https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?auto=compress&cs=tinysrgb&w=800";
+const VALUE_PROP_SPOTLIGHT_IMAGE = `https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?${PEXELS_CDN_QUERY_CARD}`;
 
 /**
  * Immagini di default per le 3 card (1–2 aggiornabili da API; ultima sempre VALUE_PROP_LAST_STEP_IMAGE).
  */
 const VALUE_PROP_CARD_FALLBACK: [string, string, string] = [
-  "https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=800",
-  "https://images.pexels.com/photos/264507/pexels-photo-264507.jpeg?auto=compress&cs=tinysrgb&w=800",
+  `https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?${PEXELS_CDN_QUERY_CARD}`,
+  `https://images.pexels.com/photos/264507/pexels-photo-264507.jpeg?${PEXELS_CDN_QUERY_CARD}`,
   VALUE_PROP_LAST_STEP_IMAGE,
 ];
 
-/** Ricerche Pexels solo per le prime due card */
+/** Ricerche Pexels solo per le prime due card (sempre cibo / stile di vita sano). */
 const VALUE_PROP_PEXELS_QUERIES = [
-  "colorful healthy lunch plate",
-  "fresh vegetables tomatoes ingredients kitchen",
+  "healthy colorful lunch bowl vegetables",
+  "fresh healthy vegetables ingredients wooden table",
 ] as const;
 /** Auto-scroll orizzontale tra le card (non tra le foto nella stessa card) */
 const VALUE_PROP_SCROLL_INTERVAL_MS = 5500;
@@ -70,7 +72,15 @@ function mergeValuePropCardImages(
   ];
 }
 
-const FOOD_QUERIES = ["healthy food", "salad", "diet", "hipster diet"];
+/** Sfondo desktop: solo query orientate a cibo sano (Pexels). */
+const HEALTHY_BG_QUERIES = [
+  "healthy food colorful",
+  "healthy salad bowl fresh",
+  "fresh vegetables healthy meal",
+  "healthy breakfast fruit yogurt",
+  "nutritious balanced plate",
+  "healthy meal prep vegetables",
+] as const;
 
 const USER_DIET_KEY = "userDiet";
 const DIET_MENU_PREFIX = "dietMenu_";
@@ -199,11 +209,13 @@ export default function Landing({ onDietLoaded }: LandingProps) {
     let cancelled = false;
     async function loadPexels() {
       const query =
-        FOOD_QUERIES[Math.floor(Math.random() * FOOD_QUERIES.length)];
+        HEALTHY_BG_QUERIES[
+          Math.floor(Math.random() * HEALTHY_BG_QUERIES.length)
+        ];
       const page = Math.floor(Math.random() * 5) + 1;
       try {
         const res = await fetch(
-          `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=15&page=${page}`,
+          `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=15&page=${page}&purpose=background`,
         );
         if (cancelled || !res.ok) return;
         const data = (await res.json()) as { urls?: string[] };
@@ -228,7 +240,7 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         const responses = await Promise.all(
           VALUE_PROP_PEXELS_QUERIES.map((query, i) =>
             fetch(
-              `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=6&page=${i + 1}`,
+              `/api/pexels-photos?query=${encodeURIComponent(query)}&per_page=6&page=${i + 1}&purpose=card`,
             ),
           ),
         );
@@ -479,11 +491,6 @@ export default function Landing({ onDietLoaded }: LandingProps) {
         )}
         <div className="landing-panel">
           <header className="landing-header">
-            <div className="landing-header__top">
-              <Link href="/" className="landing-header__backLink">
-                Scopri PocketDiet
-              </Link>
-            </div>
             <h1 className="landing-logo">
               <Image
                 src="/favicon-icon.svg"
@@ -678,6 +685,12 @@ export default function Landing({ onDietLoaded }: LandingProps) {
                   );
                 })}
               </div>
+            </div>
+
+            <div className="landing-discover">
+              <Link href="/" className="landing-header__backLink">
+                Scopri PocketDiet
+              </Link>
             </div>
 
             {error && (

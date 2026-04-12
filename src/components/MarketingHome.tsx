@@ -14,6 +14,7 @@ import {
   IconToolsKitchen2,
 } from "@tabler/icons-react";
 import { MAX_UPLOAD_BYTES } from "@/constants/upload";
+import { PEXELS_CDN_QUERY_FULL } from "@/constants/pexelsCdn";
 import Footer from "./Footer";
 import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
 import "./MarketingHome.css";
@@ -22,36 +23,31 @@ import "./MarketingHome.css";
 const MARKETING_MAX_UPLOAD_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 
 /** Foto ampia da Pexels: sfondo nitido; il mock upload è HTML sopra. */
-const MARKETING_CTA_HERO_IMAGE =
-  "https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?auto=compress&cs=tinysrgb&w=1920";
+const MARKETING_CTA_HERO_IMAGE = `https://images.pexels.com/photos/247685/pexels-photo-247685.png?${PEXELS_CDN_QUERY_FULL}`;
 
 const MARKETING_BENEFITS = [
   {
     title: "Sai subito cosa mangiare oggi",
     body: "Apri l'app e trovi subito cosa mangiare, con piu chiarezza tra pasti, porzioni e alternative durante la giornata.",
-    image:
-      "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: `https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona che consulta il telefono mentre prepara il cibo",
   },
   {
     title: "La spesa si prepara da sola",
     body: "Dal menu che segui in app nascono ingredienti e quantità già allineati al piano: niente ricopiature, meno indecisione in corsia e meno spreco in settimana.",
-    image:
-      "https://images.pexels.com/photos/3850888/pexels-photo-3850888.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: `https://images.pexels.com/photos/3850888/pexels-photo-3850888.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Verdure e ingredienti freschi organizzati su un piano cucina",
   },
   {
     title: "Invia il report al tuo nutrizionista",
     body: "I progressi diventano piu facili da leggere e da raccontare, anche quando vuoi confrontarti con il tuo nutrizionista.",
-    image:
-      "https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: `https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona che annota o controlla i progressi del piano alimentare",
   },
   {
     title: "Condividi la lista della spesa con chi vuoi",
     body: "Chi vive con te riceve una lista piu chiara e immediata, senza messaggi sparsi, note volanti o confusione.",
-    image:
-      "https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: `https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Lista della spesa su quaderno, carrellino e busta su sfondo verde acqua",
   },
 ] as const;
@@ -60,8 +56,7 @@ const MARKETING_STEPS = [
   {
     label: "1. Carica il piano alimentare",
     body: "Puoi partire da PDF, foto o testo del piano ricevuto dal nutrizionista.",
-    image:
-      "https://images.pexels.com/photos/7669729/pexels-photo-7669729.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: `https://images.pexels.com/photos/7669729/pexels-photo-7669729.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona che usa uno smartphone in cucina mentre consulta un contenuto",
     appPreview: false,
   },
@@ -75,8 +70,7 @@ const MARKETING_STEPS = [
   {
     label: "3. Consulti la tua dieta ogni giorno",
     body: "Dal telefono trovi subito le informazioni rilevanti, senza dover tornare ogni volta al documento originale.",
-    image:
-      "https://images.pexels.com/photos/9788841/pexels-photo-9788841.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: `https://images.pexels.com/photos/9788841/pexels-photo-9788841.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona a colazione che consulta lo smartphone con una ciotola di cereali e frutta",
     appPreview: false,
   },
@@ -130,18 +124,18 @@ const MARKETING_HIGHLIGHTS = [
 
 const MARKETING_EDITORIAL_IMAGES = [
   {
-    src: "https://images.pexels.com/photos/27175522/pexels-photo-27175522.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    src: `https://images.pexels.com/photos/27175522/pexels-photo-27175522.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Donna al supermercato che controlla gli scaffali davanti al carrello",
     title: "Al supermercato non sai cosa comprare senza la dieta sotto mano",
   },
   {
-    src: "https://images.pexels.com/photos/693267/pexels-photo-693267.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    src: `https://images.pexels.com/photos/693267/pexels-photo-693267.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona al tavolo con piatto servito e smartphone in mano",
     title:
       "Arriva l'ora di cena: dov'è il PDF che ti aveva mandato il tuo nutrizionista?",
   },
   {
-    src: "https://images.pexels.com/photos/8844387/pexels-photo-8844387.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    src: `https://images.pexels.com/photos/8844387/pexels-photo-8844387.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Due persone consultano una guida stampata su verdure e carboidrati sul tavolo da cucina",
     title:
       "La dieta resta sul foglio: come fai a sapere se l'hai seguita davvero?",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,10 +27,13 @@ const MARKETING_MAX_UPLOAD_MB = MAX_UPLOAD_BYTES / 1024 / 1024;
 /** Foto ampia da Pexels: sfondo nitido; il mock upload è HTML sopra. */
 const MARKETING_CTA_HERO_IMAGE = `https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?${PEXELS_CDN_QUERY_FULL}`;
 
+/** Sfondo dietro l’header della homepage (fascia orizzontale, cibo sano). */
+const MARKETING_HEADER_BG_IMAGE = `https://images.pexels.com/photos/5965989/pexels-photo-5965989.jpeg?${PEXELS_CDN_QUERY_FULL}`;
+
 const MARKETING_BENEFITS = [
   {
     title: "Sai subito cosa mangiare oggi",
-    body: "Apri l'app e trovi subito cosa mangiare, con piu chiarezza tra pasti, porzioni e alternative durante la giornata.",
+    body: "Apri l'app e trovi subito cosa mangiare, con più chiarezza tra pasti, porzioni e alternative durante la giornata.",
     image: `https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona che consulta il telefono mentre prepara il cibo",
   },
@@ -42,13 +45,13 @@ const MARKETING_BENEFITS = [
   },
   {
     title: "Invia il report al tuo nutrizionista",
-    body: "I progressi diventano piu facili da leggere e da raccontare, anche quando vuoi confrontarti con il tuo nutrizionista.",
+    body: "I progressi diventano più facili da leggere e da raccontare, anche quando vuoi confrontarti con il tuo nutrizionista.",
     image: `https://images.pexels.com/photos/6690908/pexels-photo-6690908.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Persona che annota o controlla i progressi del piano alimentare",
   },
   {
     title: "Condividi la lista della spesa con chi vuoi",
-    body: "Chi vive con te riceve una lista piu chiara e immediata, senza messaggi sparsi, note volanti o confusione.",
+    body: "Chi vive con te riceve una lista più chiara e immediata, senza messaggi sparsi, note volanti o confusione.",
     image: `https://images.pexels.com/photos/6214370/pexels-photo-6214370.jpeg?${PEXELS_CDN_QUERY_FULL}`,
     alt: "Lista della spesa su quaderno, carrellino e busta su sfondo verde acqua",
   },
@@ -64,7 +67,7 @@ const MARKETING_STEPS = [
   },
   {
     label: "2. PocketDiet lo riorganizza",
-    body: "Pasti, porzioni, alternative e lista della spesa vengono presentati in un formato piu chiaro e piu adatto all'uso quotidiano.",
+    body: "Pasti, porzioni, alternative e lista della spesa vengono presentati in un formato più chiaro e più adatto all'uso quotidiano.",
     image: null,
     alt: "",
     appPreview: true,
@@ -80,30 +83,30 @@ const MARKETING_STEPS = [
 
 const MARKETING_FAQ = [
   {
-    question: "Cosa succede dopo che carico la dieta?",
+    question: "Cosa succede dopo aver caricato la dieta?",
     answer:
-      "Il piano viene riorganizzato in schermate piu semplici da consultare dal telefono, mantenendo il contenuto del documento ma rendendolo piu fruibile nella routine quotidiana.",
+      "Il piano viene riorganizzato in schermate più semplici da consultare dal telefono, mantenendo il contenuto del documento ma rendendolo più fruibile nella routine quotidiana.",
   },
   {
     question: "Funziona anche con una foto?",
     answer:
-      "Si. La pagina upload accetta PDF, immagini del piano alimentare e testo copiato dal nutrizionista.",
+      "Sì. La pagina upload accetta PDF, immagini del piano alimentare e testo copiato dal nutrizionista.",
   },
   {
     question: "Posso tracciare i progressi e vedere un report?",
     answer:
-      "Si. PocketDiet puo aiutarti a tenere traccia di quanto stai seguendo il piano durante la giornata e a consultare un report sintetico dei progressi.",
+      "Sì. PocketDiet può aiutarti a tenere traccia di quanto stai seguendo il piano durante la giornata e a consultare un report sintetico dei progressi.",
   },
   {
     question: "PocketDiet sostituisce il nutrizionista?",
     answer:
-      "No. PocketDiet non sostituisce il professionista: aiuta a consultare e seguire con piu continuita la dieta che hai gia ricevuto.",
+      "No. PocketDiet non sostituisce il professionista: aiuta a consultare e seguire con più continuità la dieta che hai già ricevuto.",
   },
 ] as const;
 
 const MARKETING_SIGNAL_ITEMS = [
   "Pensata per l'uso quotidiano dal telefono",
-  "Piu chiarezza tra pasti, porzioni e alternative",
+  "Più chiarezza tra pasti, porzioni e alternative",
   "Una pagina upload dedicata, semplice e immediata",
 ] as const;
 
@@ -186,9 +189,14 @@ export default function MarketingHome() {
 
   return (
     <div
-      className={`marketing-home${standalone ? " marketing-home--standalone" : ""}`}
+      className={`marketing-home marketing-home--heroPhoto${standalone ? " marketing-home--standalone" : ""}`}
+      style={
+        {
+          "--marketing-hero-bg-image": `url("${MARKETING_HEADER_BG_IMAGE}")`,
+        } as CSSProperties
+      }
     >
-      <div className="marketing-topbarWrap">
+      <div className="marketing-topbarWrap marketing-topbarWrap--overHero">
         <div className="marketing-home__main marketing-home__main--topbar">
           <header className="marketing-topbar">
             <Link
@@ -336,10 +344,14 @@ export default function MarketingHome() {
           </div>
 
           <div className="marketing-hero__introSub">
-            <p className="marketing-hero__subtitle">
+            <p className="marketing-hero__subtitle marketing-hero__subtitle--lead">
               PocketDiet trasforma la dieta del tuo nutrizionista in un piano
-              alimentare semplice da seguire ogni giorno. Niente più PDF da
-              trovare e rileggere: apri l'app e sai subito cosa mangiare.
+              alimentare semplice da seguire ogni giorno.
+            </p>
+            <p className="marketing-hero__subtitle marketing-hero__subtitle--detail">
+              {
+                "Niente più PDF da trovare e rileggere: apri l'app e sai subito cosa mangiare."
+              }
             </p>
           </div>
 
@@ -370,7 +382,7 @@ export default function MarketingHome() {
             </div>
             {/* <ul className="marketing-hero__trust" aria-label="Punti chiave">
               <li>Funziona con PDF, foto e testo</li>
-              <li>Rende piu consultabili pasti, porzioni e alternative</li>
+              <li>Rende più consultabili pasti, porzioni e alternative</li>
               <li>
                 Non sostituisce il nutrizionista: migliora l'esperienza d'uso
               </li>
@@ -530,11 +542,10 @@ export default function MarketingHome() {
               <div className="marketing-cta__panelTop">
                 <div>
                   <p className="marketing-section__eyebrow">
-                    Pronto a provarla?
+                    Pronto a provare?
                   </p>
                   <h2 className="marketing-cta__title">
-                    Vai alla pagina di upload e importa la tua dieta in modo
-                    semplice e sicuro
+                    Importa la tua dieta in modo semplice e sicuro
                   </h2>
                 </div>
                 <Link

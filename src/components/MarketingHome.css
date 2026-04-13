@@ -19,6 +19,66 @@
   color: var(--marketing-color-base);
 }
 
+/*
+ * Foto Pexels: solo nei primi 100vh (non sull’intera altezza della pagina),
+ * altrimenti `cover` sulla pagina lunghissima zooma tantissimo l’immagine.
+ */
+.marketing-home--heroPhoto {
+  position: relative;
+  isolation: isolate;
+  background-color: #f8fafc;
+}
+
+.marketing-home--heroPhoto::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--marketing-hero-bg-image, none);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.marketing-home--heroPhoto::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.78) min(36vh, 400px),
+      rgba(247, 248, 250, 0.9) min(56vh, 620px),
+      #ffffff 100%
+    ),
+    radial-gradient(
+      circle at 12% 0%,
+      rgb(var(--marketing-color-primary-rgb) / 0.06),
+      transparent min(28%, 20rem)
+    );
+  background-size: auto, auto;
+  background-repeat: no-repeat;
+}
+
+.marketing-home--heroPhoto > main.marketing-home__main,
+.marketing-home--heroPhoto > .marketing-home__footerWrap,
+.marketing-home--heroPhoto > .marketing-home__uploadDock,
+.marketing-home--heroPhoto > .marketing-home__installDock {
+  position: relative;
+  z-index: 2;
+}
+
 .marketing-home--boot {
   display: flex;
   align-items: center;
@@ -82,6 +142,15 @@
   padding-top: max(1.25rem, calc(env(safe-area-inset-top) + 1rem));
 }
 
+/* Con bg foto: meno spazio sopra al blocco copy (padding non si somma all’header). */
+.marketing-home--heroPhoto > main.marketing-home__main {
+  padding-top: 0.3rem;
+}
+
+.marketing-home--heroPhoto .marketing-hero {
+  padding-top: 0.2rem;
+}
+
 .marketing-home--standalone .marketing-home__main {
   padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1.5rem));
 }
@@ -100,6 +169,13 @@
   -webkit-backdrop-filter: blur(16px);
   background: rgba(255, 255, 255, 0.9);
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.marketing-topbarWrap--overHero {
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.62);
+  border-bottom-color: rgba(15, 23, 42, 0.07);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset;
 }
 
 .marketing-topbar {
@@ -156,7 +232,7 @@
   display: grid;
   gap: 2rem;
   align-items: start;
-  padding: 3rem 0 2rem;
+  padding: 1.5rem 0 2rem;
   grid-template-columns: 1fr;
   grid-template-areas:
     "introHead"
@@ -212,6 +288,10 @@
   font-size: 1.05rem;
   line-height: 1.75;
   color: var(--marketing-color-base);
+}
+
+.marketing-hero__introSub .marketing-hero__subtitle + .marketing-hero__subtitle {
+  margin-top: 0.55rem;
 }
 
 .marketing-hero__signalBar {
@@ -320,7 +400,7 @@
   content: "";
   position: absolute;
   left: 50%;
-  top: 52%;
+  top: 50%;
   width: 82%;
   max-width: 320px;
   aspect-ratio: 1;
@@ -343,15 +423,9 @@
   aspect-ratio: 390 / 780;
   padding: 12px;
   border-radius: 42px;
-  transform: rotate(-3deg);
-  transform-origin: center center;
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 34%),
     linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
-  box-shadow:
-    0 40px 90px rgba(15, 23, 42, 0.16),
-    0 0 0 10px rgba(255, 255, 255, 0.55),
-    0 10px 24px rgba(15, 23, 42, 0.08);
   z-index: 1;
 }
 
@@ -1212,8 +1286,8 @@
 
 .marketing-cta__title {
   font-size: clamp(1.6rem, 4vw, 2.1rem);
-  max-width: 28ch;
-  padding-bottom: 0.45rem;
+
+  padding-bottom: 1rem;
 }
 
 .marketing-home__uploadDock {
@@ -1261,6 +1335,10 @@
     padding-bottom: max(7rem, calc(env(safe-area-inset-bottom) + 5rem));
   }
 
+  .marketing-home--heroPhoto > main.marketing-home__main {
+    padding-top: 0.65rem;
+  }
+
   .marketing-home__main--topbar {
     padding-top: max(0.8rem, calc(env(safe-area-inset-top) + 0.6rem));
     padding-bottom: 0;
@@ -1273,12 +1351,34 @@
       "introSub phone"
       "rest phone";
     gap: 0.85rem 2rem;
-    padding: 3.8rem 0 6.4rem;
+    padding: 2rem 0 6.4rem;
     align-items: start;
   }
 
   .marketing-hero__phoneCol {
     margin-top: 0.85rem;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero {
+    padding-top: 0.45rem;
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-content: center;
+    align-items: center;
+    gap: 0.55rem 2rem;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__phoneCol {
+    margin-top: 0;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__rest {
+    margin-top: 0.35rem;
+  }
+
+  .marketing-phone__device {
+    transform: rotate(-2.5deg);
+    transform-origin: center center;
   }
 
   .marketing-grid {
@@ -1341,14 +1441,23 @@
     padding-right: max(var(--m-lg), env(safe-area-inset-right));
   }
 
+  .marketing-home--heroPhoto::before {
+    background-position: center 35%;
+  }
+
   .marketing-topbarWrap {
-    position: static;
+    position: relative;
+    z-index: 20;
     padding-inline: max(var(--m-lg), env(safe-area-inset-left))
       max(var(--m-lg), env(safe-area-inset-right));
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: rgba(252, 252, 253, 0.92);
     border-bottom-color: rgba(15, 23, 42, 0.04);
+  }
+
+  .marketing-topbarWrap--overHero {
+    background: rgba(252, 252, 253, 0.72);
   }
 
   .marketing-home__main--topbar {
@@ -1465,8 +1574,19 @@
       "phone"
       "introSub"
       "rest";
-    padding: var(--m-xl) 0 var(--m-2xl);
+    padding: var(--m-md) 0 var(--m-2xl);
     justify-items: stretch;
+  }
+
+  .marketing-home--heroPhoto > main.marketing-home__main {
+    padding-top: var(--m-md);
+    padding-left: max(var(--m-md), env(safe-area-inset-left));
+    padding-right: max(var(--m-md), env(safe-area-inset-right));
+  }
+
+  .marketing-home--heroPhoto .marketing-topbar {
+    padding-top: var(--m-sm);
+    padding-bottom: var(--m-sm);
   }
 
   .marketing-hero__introHead,
@@ -1580,10 +1700,7 @@
     padding: 11px;
     border-radius: 38px;
     transform: none;
-    box-shadow:
-      0 28px 56px rgba(15, 23, 42, 0.12),
-      0 0 0 8px rgba(255, 255, 255, 0.5),
-      0 8px 20px rgba(15, 23, 42, 0.06);
+    box-shadow: none;
   }
 
   .marketing-phone__device::before {
@@ -1745,6 +1862,127 @@
   .marketing-phone__bottomNavItem--active::before {
     bottom: -0.4rem;
     width: 1.55rem;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero {
+    padding: 0 0 var(--m-2xl);
+    grid-template-areas:
+      "introHead"
+      "phone"
+      "introSub"
+      "rest";
+    gap: var(--m-md);
+    justify-items: center;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__introHead,
+  .marketing-home--heroPhoto .marketing-hero__introSub,
+  .marketing-home--heroPhoto .marketing-hero__rest {
+    width: 100%;
+    max-width: min(22.5rem, 100%);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__introHead {
+    gap: var(--m-sm);
+    padding-top: 0;
+    padding-bottom: var(--m-md);
+  }
+
+  .marketing-home--heroPhoto
+    .marketing-hero__introHead
+    .marketing-hero__eyebrow {
+    margin-bottom: var(--m-sm);
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__eyebrow {
+    color: #065f46;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__title {
+    max-width: 100%;
+    font-size: clamp(1.5rem, 5.5vw, 2.1rem);
+    line-height: 1.11;
+    letter-spacing: -0.035em;
+    margin-bottom: 0;
+    text-wrap: balance;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__phoneCol {
+    width: 100%;
+    max-width: min(268px, 80vw);
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    justify-self: center;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__phoneCol .marketing-phone {
+    transform: scale(0.88);
+    transform-origin: top center;
+    margin-bottom: calc((0.88 - 1) * min(20vh, 120px));
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__phoneCol .marketing-phone__device {
+    width: min(100%, min(268px, 80vw));
+  }
+
+  .marketing-home--heroPhoto .marketing-phone__menuCard--compact {
+    display: none;
+  }
+
+  .marketing-home--heroPhoto .marketing-phone__shell {
+    gap: 0.45rem;
+    padding: 1.45rem var(--m-sm) var(--m-sm);
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__introSub {
+    padding-top: 0;
+    margin-top: calc(-1 * var(--m-lg));
+    display: flex;
+    flex-direction: column;
+    gap: var(--m-sm);
+    align-items: stretch;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__rest {
+    margin-top: var(--m-sm);
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__actions {
+    align-items: stretch;
+  }
+
+  .marketing-home--heroPhoto
+    .marketing-hero__introSub
+    .marketing-hero__subtitle
+    + .marketing-hero__subtitle {
+    margin-top: 0;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__subtitle {
+    text-align: center;
+    text-wrap: balance;
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__subtitle--lead {
+    font-weight: 600;
+    color: var(--marketing-color-base);
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__subtitle--detail {
+    font-size: 0.9rem;
+    line-height: 1.52;
+    color: rgba(25, 11, 40, 0.82);
   }
 
   .marketing-highlights {

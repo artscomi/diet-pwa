@@ -290,7 +290,9 @@
   color: var(--marketing-color-base);
 }
 
-.marketing-hero__introSub .marketing-hero__subtitle + .marketing-hero__subtitle {
+.marketing-hero__introSub
+  .marketing-hero__subtitle
+  + .marketing-hero__subtitle {
   margin-top: 0.55rem;
 }
 
@@ -1300,7 +1302,7 @@
   bottom: 0;
   z-index: 50;
   pointer-events: none;
-  padding-top: 0.7rem;
+  padding-top: 1rem;
   padding-left: max(0.85rem, env(safe-area-inset-left));
   padding-right: max(0.85rem, env(safe-area-inset-right));
   padding-bottom: max(0.7rem, calc(env(safe-area-inset-bottom) + 0.45rem));
@@ -1311,22 +1313,6 @@
       rgba(255, 255, 255, 0.92) 26%
     ),
     rgba(255, 255, 255, 0.92);
-}
-
-.marketing-home__uploadDockInner {
-  pointer-events: auto;
-  width: 100%;
-  max-width: 32rem;
-  margin: 0 auto;
-  display: grid;
-  gap: 0.42rem;
-  padding: 0.65rem;
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.74) inset,
-    0 14px 34px rgba(15, 23, 42, 0.08);
 }
 
 .marketing-home__uploadDockBtn {

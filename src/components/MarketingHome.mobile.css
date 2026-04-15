@@ -1,0 +1,640 @@
+@media (max-width: 767.98px) {
+  .marketing-home {
+    --m-xs: 0.5rem;
+    --m-sm: 0.75rem;
+    --m-md: 1rem;
+    --m-lg: 1.25rem;
+    --m-xl: 1.5rem;
+    --m-2xl: 2rem;
+    /* Ritmo verticale: sezioni interne vs “strisce” (hero → highlights → CTA) */
+    --marketing-mobile-section-y: 1.75rem;
+    --marketing-mobile-block-gap: 1.2rem;
+    --marketing-mobile-stripe-y: 2.5rem;
+    --marketing-mobile-dock-offset: calc(6.25rem + env(safe-area-inset-bottom));
+  }
+
+  .marketing-home__main {
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    padding-right: max(0.85rem, env(safe-area-inset-right));
+  }
+
+  .marketing-home--heroPhoto::before {
+    background-position: center 28%;
+  }
+
+  .marketing-home--heroPhoto::after {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.62) 0%,
+        rgba(255, 255, 255, 0.82) 24%,
+        rgba(248, 250, 252, 0.95) 42%,
+        #ffffff 100%
+      ),
+      radial-gradient(
+        circle at 50% 0%,
+        rgb(var(--marketing-color-primary-rgb) / 0.08),
+        transparent 42%
+      );
+  }
+
+  .marketing-home--heroPhoto > main.marketing-home__main {
+    padding-top: 0.75rem;
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    padding-right: max(0.85rem, env(safe-area-inset-right));
+  }
+
+  .marketing-topbarWrap {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    padding-right: max(1.05rem, env(safe-area-inset-right));
+    padding-top: max(0.2rem, calc(env(safe-area-inset-top) + 0.05rem));
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .marketing-topbarWrap--overHero {
+    background: rgba(255, 255, 255, 0.62);
+    border-bottom-color: rgba(15, 23, 42, 0.07);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset;
+  }
+
+  .marketing-home__main--topbar {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+  }
+
+  .marketing-topbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.35rem 0 0.35rem;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .marketing-topbar__brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 1.35rem;
+    flex: 0 1 auto;
+  }
+
+  .marketing-topbar__brandName {
+    font-size: 1.2rem;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+  }
+
+  .marketing-topbar__nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .marketing-topbar__link {
+    justify-content: center;
+    min-height: auto;
+    padding: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.25;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    color: rgba(25, 11, 40, 0.78);
+  }
+
+  .marketing-topbar__link:hover {
+    color: var(--marketing-color-base);
+  }
+
+  .marketing-topbar__cta {
+    display: none;
+  }
+
+  .marketing-hero {
+    gap: 1.45rem;
+    padding: 1.15rem 0 2.15rem;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "introHead"
+      "phone"
+      "introSub"
+      "rest";
+  }
+
+  .marketing-home--heroPhoto .marketing-hero {
+    gap: var(--marketing-mobile-block-gap);
+    padding: 0.65rem 0 var(--marketing-mobile-stripe-y);
+    justify-items: stretch;
+  }
+
+  .marketing-hero__introHead,
+  .marketing-hero__introSub,
+  .marketing-hero__rest {
+    width: 100%;
+    max-width: min(38rem, 100%);
+    margin-inline: auto;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .marketing-hero__eyebrow,
+  .marketing-section__eyebrow {
+    margin: 0;
+    font-size: 0.69rem;
+    letter-spacing: 0.12em;
+    line-height: 1.45;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__eyebrow {
+    color: #065f46;
+  }
+
+  .marketing-hero__title {
+    max-width: 10.5ch;
+    margin-inline: auto;
+    font-size: clamp(2.2rem, 10vw, 3.1rem);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
+    padding-bottom: 2rem;
+  }
+
+  .marketing-home--heroPhoto .marketing-hero__title {
+    max-width: 11ch;
+    font-size: clamp(2.1rem, 9.4vw, 3rem);
+  }
+
+  .marketing-hero__introSub {
+    display: grid;
+    gap: 1rem;
+    padding: 1.15rem 1.1rem 1.15rem;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 24px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .marketing-hero__subtitle,
+  .marketing-home--heroPhoto .marketing-hero__subtitle {
+    max-width: 100%;
+    margin: 0;
+    text-align: center;
+    text-wrap: balance;
+    font-size: 0.96rem;
+    line-height: 1.56;
+    color: rgba(25, 11, 40, 0.86);
+  }
+
+  .marketing-home--heroPhoto
+    .marketing-hero__introSub
+    .marketing-hero__subtitle
+    + .marketing-hero__subtitle {
+    margin-top: 0;
+  }
+
+  .marketing-hero__subtitle--lead,
+  .marketing-home--heroPhoto .marketing-hero__subtitle--lead {
+    color: var(--marketing-color-base);
+    font-weight: 700;
+  }
+
+  .marketing-hero__rest {
+    gap: var(--marketing-mobile-block-gap);
+  }
+
+  .marketing-hero__actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .marketing-hero__actions .marketing-btn {
+    width: 100%;
+  }
+
+  .marketing-home:not(.marketing-home--standalone)
+    .marketing-hero__actions
+    .marketing-btn--primary {
+    display: none;
+  }
+
+  .marketing-btn {
+    min-height: 3.1rem;
+  }
+
+  .marketing-btn--secondary {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  }
+
+  .marketing-hero__phoneCol {
+    width: 100%;
+    max-width: 100%;
+    margin: -0.2rem 0 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .marketing-hero__phoneCol .marketing-phone {
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  .marketing-phone::before {
+    width: min(90vw, 19rem);
+    top: 48%;
+    opacity: 0.55;
+  }
+
+  .marketing-phone__device {
+    width: min(100%, 18.75rem);
+    aspect-ratio: 390 / 812;
+    padding: 0.65rem;
+    border-radius: 2.15rem;
+    transform: none;
+    box-shadow:
+      0 26px 54px rgba(15, 23, 42, 0.12),
+      0 10px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .marketing-phone__device::before {
+    inset: 0.5rem;
+    border-radius: 1.75rem;
+  }
+
+  .marketing-phone__notch {
+    top: 0.65rem;
+    width: 32%;
+    height: 1.05rem;
+    border-radius: 0 0 0.9rem 0.9rem;
+  }
+
+  .marketing-phone__shell {
+    gap: 0.52rem;
+    padding: 1.65rem var(--m-sm) var(--m-sm);
+    border-radius: 1.7rem;
+  }
+
+  .marketing-phone__appbar {
+    gap: var(--m-xs);
+    padding-bottom: 0.55rem;
+  }
+
+  .marketing-phone__brandMini {
+    font-size: 0.98rem;
+  }
+
+  .marketing-phone__changeDiet {
+    min-height: 1.72rem;
+    padding: 0.34rem 0.56rem;
+    font-size: 0.63rem;
+  }
+
+  .marketing-phone__daybar {
+    gap: 0.35rem;
+    padding: 0.05rem 0 0.5rem;
+  }
+
+  .marketing-phone__navBtn {
+    width: 1.78rem;
+    height: 1.78rem;
+    font-size: 0.92rem;
+  }
+
+  .marketing-phone__dayBadge {
+    padding: 0.28rem 0.58rem;
+    font-size: 0.6rem;
+  }
+
+  .marketing-phone__dayText {
+    font-size: 0.74rem;
+    line-height: 1.25;
+  }
+
+  .marketing-phone__progressCard,
+  .marketing-phone__menuCard {
+    gap: 0.55rem;
+    padding: 0.72rem;
+    border-radius: 1rem;
+  }
+
+  .marketing-phone__progressTitle {
+    font-size: 0.71rem;
+  }
+
+  .marketing-phone__progressPill {
+    padding: 0.35rem 0.68rem;
+    font-size: 0.74rem;
+  }
+
+  .marketing-phone__menuCard--compact {
+    gap: 0.3rem;
+    padding: 0.55rem 0.62rem;
+    border-radius: 0.95rem;
+  }
+
+  .marketing-phone__menuCard--compact .marketing-phone__mealSection {
+    padding: 0.55rem 0.62rem;
+    gap: 0.28rem;
+  }
+
+  .marketing-phone__menuCard--compact .marketing-phone__mealLabel {
+    font-size: 0.74rem;
+  }
+
+  .marketing-phone__menuCard--compact .marketing-phone__mealText {
+    font-size: 0.7rem;
+    line-height: 1.35;
+  }
+
+  .marketing-phone__menuCard--compact .marketing-phone__mealActions {
+    margin-top: 0.08rem;
+    padding-top: 0.42rem;
+    gap: 0.3rem;
+  }
+
+  .marketing-phone__mealSection {
+    gap: 0.35rem;
+    padding: 0.72rem;
+    border-radius: 0.9rem;
+  }
+
+  .marketing-phone__mealLabel {
+    font-size: 0.79rem;
+  }
+
+  .marketing-phone__mealRow {
+    font-size: 0.69rem;
+    line-height: 1.42;
+  }
+
+  .marketing-phone__mealText {
+    font-size: 0.74rem;
+  }
+
+  .marketing-phone__mealActions {
+    margin-top: 0.15rem;
+    padding-top: 0.55rem;
+    gap: 0.35rem;
+  }
+
+  .marketing-phone__mealActions span {
+    min-height: 1.72rem;
+  }
+
+  .marketing-phone__mealActions svg,
+  .marketing-phone__bottomNavItem svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .marketing-phone__bottomNav {
+    padding: 0.5rem 0.35rem;
+    border-radius: 0.95rem;
+  }
+
+  .marketing-phone__bottomNavItem {
+    gap: 0.18rem;
+    font-size: 0.61rem;
+  }
+
+  .marketing-phone__bottomNavItem--active::before {
+    bottom: -0.35rem;
+    width: 1.4rem;
+  }
+
+  .marketing-highlights {
+    padding: var(--m-lg) 0 var(--marketing-mobile-stripe-y);
+  }
+
+  .marketing-highlights__inner,
+  .marketing-editorial__inner,
+  .marketing-cta__inner {
+    padding-inline: max(0.85rem, env(safe-area-inset-left))
+      max(0.85rem, env(safe-area-inset-right));
+  }
+
+  .marketing-highlights__inner,
+  .marketing-grid,
+  .marketing-steps,
+  .marketing-faq,
+  .marketing-editorial__inner {
+    gap: var(--marketing-mobile-block-gap);
+  }
+
+  .marketing-highlights__card,
+  .marketing-card,
+  .marketing-faq__item {
+    padding: 1.12rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.035);
+  }
+
+  .marketing-step {
+    padding: 1.25rem 1.1rem 1.15rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.035);
+  }
+
+  .marketing-step .marketing-card__media,
+  .marketing-step .marketing-stepPreview {
+    margin-bottom: 1.2rem;
+  }
+
+  .marketing-highlights__card {
+    text-align: left;
+  }
+
+  .marketing-highlights__value {
+    font-size: 0.96rem;
+    line-height: 1.32;
+  }
+
+  .marketing-highlights__label,
+  .marketing-card p,
+  .marketing-step p,
+  .marketing-faq__answer {
+    font-size: 0.91rem;
+    line-height: 1.58;
+  }
+
+  .marketing-editorial {
+    padding-top: var(--marketing-mobile-section-y);
+    padding-bottom: var(--marketing-mobile-section-y);
+  }
+
+  .marketing-editorial__eyebrow {
+    margin-bottom: 0.55rem;
+    padding-inline: 0;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-align: left;
+  }
+
+  .marketing-editorial__card,
+  .marketing-editorial__card:hover,
+  .marketing-editorial__card:hover .marketing-editorial__media,
+  .marketing-card:hover,
+  .marketing-step:hover,
+  .marketing-faq__item:hover,
+  .marketing-highlights__card:hover {
+    transform: none;
+  }
+
+  .marketing-editorial__caption {
+    font-size: 0.95rem;
+    line-height: 1.42;
+    text-align: left;
+  }
+
+  .marketing-section--benefits .marketing-section__inner,
+  .marketing-section--steps .marketing-section__inner,
+  .marketing-section--faq .marketing-section__inner {
+    padding-top: var(--marketing-mobile-section-y);
+    padding-bottom: var(--marketing-mobile-section-y);
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    padding-right: max(0.85rem, env(safe-area-inset-right));
+  }
+
+  /* Stesso ritmo delle altre sezioni: il +m-lg staccava troppo dai benefit */
+  .marketing-section--steps .marketing-section__inner {
+    padding-top: var(--marketing-mobile-section-y);
+  }
+
+  .marketing-section--benefits {
+    padding-bottom: 1.25rem;
+  }
+
+  /* Spazio tra step e FAQ (né attaccato né enorme) */
+  .marketing-section--steps {
+    padding-top: 1.25rem;
+    padding-bottom: 1.35rem;
+  }
+
+  .marketing-section--faq {
+    padding-top: 1.35rem;
+  }
+
+  .marketing-section__header {
+    margin-bottom: var(--m-lg);
+    gap: 0.55rem;
+    text-align: center;
+    max-width: 26rem;
+    margin-inline: auto;
+  }
+
+  .marketing-section__title,
+  .marketing-cta__title {
+    max-width: none;
+    font-size: clamp(1.5rem, 7vw, 2rem);
+    line-height: 1.06;
+  }
+
+  .marketing-card h3,
+  .marketing-step h3,
+  .marketing-faq__question {
+    font-size: 0.98rem;
+    line-height: 1.34;
+  }
+
+  .marketing-faq__item {
+    padding: 1.12rem 1.05rem 1.12rem 1.2rem;
+  }
+
+  .marketing-faq__question,
+  .marketing-faq__answer,
+  .marketing-card,
+  .marketing-step {
+    text-align: left;
+  }
+
+  .marketing-cta {
+    padding-top: var(--marketing-mobile-section-y);
+    padding-bottom: var(--marketing-mobile-stripe-y);
+  }
+
+  .marketing-cta__panel {
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+  }
+
+  .marketing-cta__panelTop {
+    gap: 1.1rem;
+    text-align: center;
+  }
+
+  .marketing-cta__panel .marketing-btn {
+    width: 100%;
+  }
+
+  .marketing-cta__visual {
+    max-height: none;
+    aspect-ratio: 1 / 1.02;
+    margin-top: 1rem;
+    border-radius: 1rem;
+  }
+
+  .marketing-cta__visualLink {
+    border-radius: 1rem;
+  }
+
+  .marketing-cta__visualOverlay {
+    padding: 0.85rem;
+    background: rgba(15, 23, 42, 0.2);
+  }
+
+  .marketing-cta__dropzone {
+    min-height: 8.4rem;
+    max-width: 100%;
+    gap: 0.55rem;
+    padding: 0.95rem;
+    border-radius: 1.15rem;
+  }
+
+  .marketing-cta__dropzoneIcon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .marketing-cta__dropzoneTitle {
+    font-size: 0.96rem;
+  }
+
+  .marketing-cta__dropzoneHint {
+    font-size: 0.82rem;
+  }
+
+  .marketing-home__installDock {
+    display: none;
+  }
+
+  .marketing-home__uploadDock {
+    display: block;
+  }
+
+  .marketing-home__footerWrap--withDock {
+    margin-bottom: calc(var(--m-lg) + var(--marketing-mobile-dock-offset));
+  }
+}

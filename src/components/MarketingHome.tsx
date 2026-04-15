@@ -308,7 +308,7 @@ export default function MarketingHome() {
                         Spuntino Mattutino
                       </span>
                       <span className="marketing-phone__mealText">
-                        Noci - secche (30 g)
+                        Mandorle (30 g)
                       </span>
                       <div className="marketing-phone__mealActions">
                         <span>
@@ -615,7 +615,7 @@ export default function MarketingHome() {
                 href="/upload"
                 className="marketing-btn marketing-btn--primary marketing-home__uploadDockBtn"
               >
-                Carica la tua dieta
+                Carica ora
               </Link>
             </div>
           </div>

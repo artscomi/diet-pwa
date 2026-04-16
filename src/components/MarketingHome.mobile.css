@@ -10,7 +10,10 @@
     --marketing-mobile-section-y: 1.75rem;
     --marketing-mobile-block-gap: 1.2rem;
     --marketing-mobile-stripe-y: 2.5rem;
-    --marketing-mobile-dock-offset: calc(6.25rem + env(safe-area-inset-bottom));
+    /* Allineato a .marketing-home__uploadDock + .marketing-home__uploadDockBtn (base) */
+    --marketing-mobile-dock-offset: calc(
+      1rem + 3.15rem + max(0.7rem, calc(env(safe-area-inset-bottom) + 0.45rem))
+    );
   }
 
   .marketing-home__main {

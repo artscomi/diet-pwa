@@ -30,6 +30,27 @@ const MARKETING_CTA_HERO_IMAGE = `https://images.pexels.com/photos/143133/pexels
 /** Sfondo dietro l’header della homepage (fascia orizzontale, cibo sano). */
 const MARKETING_HEADER_BG_IMAGE = `https://images.pexels.com/photos/5965989/pexels-photo-5965989.jpeg?${PEXELS_CDN_QUERY_FULL}`;
 
+/** Data lunga in italiano per il mock telefono (es. "Giovedì 16 aprile 2026"). */
+function formatItalianLongDate(date: Date): string {
+  const s = date.toLocaleDateString("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** Solo giorno della settimana, numero e mese (es. "Giovedì 16 aprile"). */
+function formatItalianDayMonth(date: Date): string {
+  const s = date.toLocaleDateString("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 const MARKETING_BENEFITS = [
   {
     title: "Sai subito cosa mangiare oggi",
@@ -254,8 +275,11 @@ export default function MarketingHome() {
                     <span className="marketing-phone__navBtn">‹</span>
                     <div className="marketing-phone__dayCenter">
                       <span className="marketing-phone__dayBadge">OGGI</span>
-                      <span className="marketing-phone__dayText">
-                        Domenica 12 Aprile 2026
+                      <span
+                        className="marketing-phone__dayText"
+                        suppressHydrationWarning
+                      >
+                        {formatItalianLongDate(new Date())}
                       </span>
                     </div>
                     <span className="marketing-phone__navBtn">›</span>
@@ -477,8 +501,11 @@ export default function MarketingHome() {
                         <span className="marketing-stepPreview__badge">
                           OGGI
                         </span>
-                        <span className="marketing-stepPreview__date">
-                          Domenica 12 Aprile
+                        <span
+                          className="marketing-stepPreview__date"
+                          suppressHydrationWarning
+                        >
+                          {formatItalianDayMonth(new Date())}
                         </span>
                       </div>
                       <div className="marketing-stepPreview__card">

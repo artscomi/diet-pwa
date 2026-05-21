@@ -107,12 +107,6 @@ export default function RootLayout({
         <meta name="theme-color" content="#10b981" />
       </head>
       <body>
-        <Script
-          id="agile-telecom-chat-widget"
-          src="https://pre-lora-api.agiletelecom.com/api/agent-chat/chat-widget.js"
-          strategy="afterInteractive"
-          data-widget-token="1e2d34cd-5fc4-4a64-afb3-3af37ea69c30"
-        />
         {children}
         <CookieBanner />
         <AnalyticsScripts />

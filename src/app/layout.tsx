@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Montserrat, Baloo_2 } from "next/font/google";
+import Script from "next/script";
 import CookieBanner from "@/components/CookieBanner";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
 import { Analytics } from "@vercel/analytics/next";
@@ -106,16 +107,12 @@ export default function RootLayout({
         <meta name="theme-color" content="#10b981" />
       </head>
       <body>
-        {/*
-        Widget chat Agile Telecom — disattivato (commentato per non eseguire lo script).
-        Dopo l’idratazione: strategy="afterInteractive". Token = istanza lato provider.
         <Script
           id="agile-telecom-chat-widget"
           src="https://pre-lora-api.agiletelecom.com/api/agent-chat/chat-widget.js"
           strategy="afterInteractive"
-          data-widget-token="1c49d86a-398a-4d92-b33b-fd5d1d6679e4"
+          data-widget-token="1e2d34cd-5fc4-4a64-afb3-3af37ea69c30"
         />
-        */}
         {children}
         <CookieBanner />
         <AnalyticsScripts />

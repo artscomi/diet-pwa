@@ -109,6 +109,7 @@ export default function RootLayout({
           defer
           src="https://pre-lora-api.agiletelecom.com/api/booking/public/cri-milano/widget/booking-standalone.iife.js"
           data-booking-slug="cri-milano"
+          data-booking-base-api-url="https://pre-lora-api.agiletelecom.com"
           data-booking-label="Prenota ora"
         />
       </head>

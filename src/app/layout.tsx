@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Montserrat, Baloo_2 } from "next/font/google";
-import Script from "next/script";
 import CookieBanner from "@/components/CookieBanner";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
 import { Analytics } from "@vercel/analytics/next";
@@ -105,6 +104,13 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
         <meta name="theme-color" content="#10b981" />
+        {/* Widget prenotazioni Agile Telecom — slug = istanza lato provider. */}
+        <script
+          defer
+          src="https://pre-lora-api.agiletelecom.com/api/booking/public/cri-milano/widget/booking-standalone.iife.js"
+          data-booking-slug="cri-milano"
+          data-booking-label="Prenota ora"
+        />
       </head>
       <body>
         {children}

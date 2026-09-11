@@ -107,9 +107,8 @@ export default function RootLayout({
         {/* Widget prenotazioni Agile Telecom — slug = istanza lato provider. */}
         <script
           defer
-          src="https://pre-lora-api.agiletelecom.com/api/booking/public/cri-milano/widget/booking-standalone.iife.js"
-          data-booking-slug="cri-milano"
-          data-booking-base-api-url="https://pre-lora-api.agiletelecom.com"
+          src="https://lora-api.agiletelecom.com/api/booking/public/ecologista/widget/booking-standalone.iife.js"
+          data-booking-slug="ecologista"
           data-booking-label="Prenota ora"
         />
       </head>

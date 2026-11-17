@@ -19,6 +19,8 @@ import AppSettingsModal from "@/components/AppSettingsModal";
 import AppToast from "@/components/AppToast";
 import CompletionReminderEffects from "@/components/CompletionReminderEffects";
 import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
+import ProductFeedbackCard from "@/components/ProductFeedbackCard";
+import { recordActiveDay } from "@/utils/productMetrics";
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -103,8 +105,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    setUserDiet(loadUserDiet());
+    const stored = loadUserDiet();
+    // Prima del render del menu: così la survey legge il conteggio aggiornato.
+    if (stored) recordActiveDay();
+    setUserDiet(stored);
     setDietReady(true);
+  }, []);
+
+  const handleDietLoaded = useCallback((diet: UserDiet) => {
+    recordActiveDay();
+    setUserDiet(diet);
   }, []);
 
   useEffect(() => {
@@ -290,7 +300,7 @@ export default function App() {
   if (!userDiet) {
     return (
       <Landing
-        onDietLoaded={setUserDiet}
+        onDietLoaded={handleDietLoaded}
         uploadOnly={appStandalone}
       />
     );
@@ -368,6 +378,9 @@ export default function App() {
       )}
 
       <main ref={appMainRef} className="app-main">
+        {view === "menu" && currentMenu && menuDayOffset === 0 && (
+          <ProductFeedbackCard />
+        )}
         {view === "menu" && currentMenu && (
           <DailyMenu
             ref={menuRef}

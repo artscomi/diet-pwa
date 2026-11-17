@@ -2,6 +2,8 @@
 
 App Next.js per il menu del giorno che rispetta la tua dieta: usa i 14 menu predefiniti oppure carica un file (PDF, immagine o testo) e ottieni la dieta in formato strutturato grazie a OpenAI.
 
+> Problema, early adopter, metriche AAARRR, ipotesi e script di intervista: vedi [PRODUCT.md](PRODUCT.md).
+
 ## Funzionalità
 
 - **Pagina iniziale**: scegli “Usa dieta predefinita” o “Carica un file” con la tua dieta

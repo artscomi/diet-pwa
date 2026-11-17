@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { UninstallPlatform } from './UninstallInstructionsModal'
 import InstallAppModal, { type InstallModalVariant } from './InstallAppModal'
+import { trackOnce } from '@/utils/productMetrics'
 import './InstallAppCTA.css'
 
 /** Evento beforeinstallprompt (Chrome/Edge). Non disponibile su Safari/iOS. */
@@ -92,6 +93,7 @@ export default function InstallAppCTA({ variant = 'banner' }: InstallAppCTAProps
     }
 
     const handleInstalled = () => {
+      trackOnce('app_installed')
       installPromptRef.current = null
       setShowInstall(false)
     }

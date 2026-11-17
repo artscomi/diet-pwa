@@ -15,6 +15,7 @@ import {
   ACCEPT_UPLOAD,
 } from "@/constants/upload";
 import { clearAllMealCompletions } from "@/utils/mealCompletionStatus";
+import { fileKind, trackEvent, trackOnce } from "@/utils/productMetrics";
 import {
   PEXELS_CDN_QUERY_CARD,
   PEXELS_CDN_QUERY_FULL,
@@ -199,6 +200,7 @@ export default function Landing({
 
   useEffect(() => {
     setLandingStandalone(isStandalone());
+    trackEvent("upload_page_viewed");
   }, []);
 
   useEffect(() => {
@@ -347,9 +349,19 @@ export default function Landing({
         setError(
           `File troppo grande. Dimensione massima: ${MAX_FILE_SIZE_MB} MB.`,
         );
+        trackEvent("diet_upload_failed", {
+          fileKind: fileKind(file.type),
+          reason: "too_large",
+        });
         if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
+
+      const kind = fileKind(file.type);
+      const startedAt = Date.now();
+      const fail = (reason: string) =>
+        trackEvent("diet_upload_failed", { fileKind: kind, reason });
+      trackEvent("diet_upload_started", { fileKind: kind });
 
       setUploadStatus("loading");
       setLoadingStep(0);
@@ -369,6 +381,7 @@ export default function Landing({
         try {
           json = text ? (JSON.parse(text) as typeof json) : {};
         } catch {
+          fail("bad_response");
           setUploadStatus(null);
           setError(
             "Il server non ha risposto correttamente. Verifica che l’app sia avviata con yarn dev.",
@@ -378,6 +391,7 @@ export default function Landing({
         }
 
         if (!res.ok) {
+          fail(`http_${res.status}`);
           setUploadStatus(null);
           setError(json.error || "Errore durante l'analisi del file");
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -385,6 +399,7 @@ export default function Landing({
         }
 
         if (!json.success || !json.data) {
+          fail("invalid_payload");
           setUploadStatus(null);
           setError("Risposta non valida dal server");
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -393,6 +408,7 @@ export default function Landing({
 
         const validation = validateDietJson(json.data);
         if (!validation.valid) {
+          fail("validation");
           setUploadStatus(null);
           if (process.env.NODE_ENV === "development" && validation.error) {
             console.warn("[validateDietJson]", validation.error);
@@ -426,9 +442,17 @@ export default function Landing({
         setUploadStatus(null);
         clearSavedDailyMenus();
         saveUserDiet(toSave);
+        const successProps = {
+          fileKind: kind,
+          menus: toSave.dailyMenus.length,
+          seconds: Math.round((Date.now() - startedAt) / 1000),
+        };
+        trackEvent("diet_upload_succeeded", successProps);
+        trackOnce("acquired", successProps);
         onDietLoaded(toSave);
         if (fileInputRef.current) fileInputRef.current.value = "";
       } catch (err) {
+        fail("network");
         setUploadStatus(null);
         setError(
           err instanceof Error

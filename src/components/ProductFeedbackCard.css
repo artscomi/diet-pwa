@@ -1,0 +1,95 @@
+.feedback-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.1rem 1.15rem 1.15rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #10b981;
+}
+
+.feedback-card__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.feedback-card__close:hover {
+  background: #f3f4f6;
+}
+
+.feedback-card__eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #059669;
+}
+
+.feedback-card__title {
+  margin: 0 2rem 0.8rem 0;
+  font-size: 1rem;
+  line-height: 1.35;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.feedback-card__text {
+  margin: 0 0 0.9rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.feedback-card__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.feedback-card__option {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.feedback-card__option:hover,
+.feedback-card__option:focus-visible {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.feedback-card__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 12px;
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.feedback-card__cta:hover {
+  background: #059669;
+}

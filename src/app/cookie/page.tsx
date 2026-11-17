@@ -42,6 +42,18 @@ export default function CookiePolicyPage() {
       </section>
 
       <section className="legal-section">
+        <h2>Statistiche anonime di utilizzo</h2>
+        <p>
+          Usiamo Vercel Web Analytics, che non imposta cookie, per contare in
+          forma aggregata alcune azioni (ad esempio “dieta caricata” o “lista
+          della spesa condivisa”) e capire quali funzioni sono utili. Sul
+          dispositivo salviamo solo la data del primo utilizzo e i giorni di
+          utilizzo, per raggruppare le statistiche per settimana. Non inviamo
+          nomi, file, contenuti della dieta o testi scritti da te.
+        </p>
+      </section>
+
+      <section className="legal-section">
         <h2>Come gestire cookie</h2>
         <p>
           Puoi gestire o disabilitare i cookie dalle impostazioni del browser.

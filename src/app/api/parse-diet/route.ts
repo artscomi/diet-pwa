@@ -27,6 +27,7 @@ Se invece il contenuto È una dieta/menu:
     {
       "id": "menu-1",
       "name": "Menu Giorno 1",
+      "weekday": 1,
       "colazione": {
         "carboidrati": { "name": "...", "quantity": numero, "unit": "g" },
         "frutta": { "name": "...", "quantity": numero, "unit": "g" }
@@ -77,7 +78,9 @@ Se invece il contenuto È una dieta/menu:
 REGOLE PER dailyMenus:
 - Per ogni giorno/menu presente nel contenuto dell'utente, crea un elemento in dailyMenus.
 - Copia i nomi degli alimenti e le quantità DAL TESTO (es. "Pasta integrale 70g" -> name: "Pasta integrale", quantity: 70, unit: "g").
-- Se un pasto non è specificato nel testo, usa un valore ragionevole basato sul contesto.
+- Se un pasto o un alimento NON è specificato nel testo, OMETTI quel campo (o l'intero pasto). Non inventare mai alimenti o quantità: l'utente deve vedere solo ciò che ha scritto il suo nutrizionista.
+- "weekday": se il documento associa il menu a un giorno della settimana, indica il numero (1 = lunedì, 2 = martedì, …, 7 = domenica). Se il menu vale per più giorni, crea un elemento per ciascun giorno. Se i menu NON sono associati a giorni della settimana (es. "Giorno 1", "Menu A"), ometti "weekday".
+- "name": usa l'etichetta del documento (es. "Lunedì", "Giorno 1", "Menu A").
 - Per "frutta" (colazione) e "verdure" (pranzo e cena): se il documento elenca PIÙ tipi da consumare insieme o da alternare come acquisti distinti (es. "200g verdure a scelta: zucchine, carote, melanzane"), usa un ARRAY di oggetti { name, quantity, unit } con UNA voce per ogni tipo e la quantità indicata o ripartita in modo sensato; NON unificare tutto in un solo nome generico "Verdure" o "Frutta" se i tipi sono specificati.
 
 REGOLE PER dietData (IMPORTANTE):
@@ -85,7 +88,7 @@ REGOLE PER dietData (IMPORTANTE):
 - Includi ogni alimento unico menzionato nel documento per quella categoria (es. se il documento elenca "pollo OPPURE tacchino OPPURE pesce", mettili tutti come alternative in proteine).
 - Includi anche gli alimenti usati nei dailyMenus.
 - Se il documento contiene tabelle di sostituzione o liste di alternative, estraile tutte.
-- Ogni array deve avere almeno 1 elemento. Se il documento menziona un solo alimento per una categoria, metti solo quello.
+- Se il documento menziona un solo alimento per una categoria, metti solo quello. Se una categoria non compare nel documento, usa un array vuoto [].
 - NON inventare alternative non presenti nel documento.
 
 Restituisci SOLO il JSON.`;

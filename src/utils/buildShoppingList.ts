@@ -5,6 +5,7 @@ import type {
   ShoppingItem,
   ShoppingCategory,
 } from "@/types/diet";
+import { pickMenuTemplateForDate } from "@/utils/menuForDate";
 import { flattenFoodSlot } from "@/utils/foodAlternatives";
 
 const CATEGORY_MAP: Record<string, ShoppingCategory> = {
@@ -64,18 +65,6 @@ function addDaysToDateKey(dateKey: string, deltaDays: number): string {
   return d.toDateString();
 }
 
-/** Stesso criterio di rotazione menu dell’app (`getMenuForDateKey`). */
-function menuIndexForDateKey(dateKey: string, menuCount: number): number {
-  if (menuCount <= 0) return 0;
-  const d = new Date(dateKey);
-  const startOfYear = new Date(d.getFullYear(), 0, 0);
-  const diff = d.getTime() - startOfYear.getTime();
-  const dayMs = 1000 * 60 * 60 * 24;
-  if (!Number.isFinite(diff)) return 0;
-  const dayOfYear = Math.floor(diff / dayMs);
-  return ((dayOfYear % menuCount) + menuCount) % menuCount;
-}
-
 export type BuildShoppingListOptions = {
   /** Chiave del giorno 0 (`Date.toDateString()`). Default: oggi locale. */
   todayKey?: string;
@@ -94,14 +83,13 @@ export function buildShoppingList(
 ): ShoppingItem[] {
   const today = new Date();
   const baseKey = opts?.todayKey ?? today.toDateString();
-  const len = dailyMenus.length;
 
   const aggregated = new Map<string, { name: string; totalQuantity: number; unit: string; category: ShoppingCategory }>();
 
   for (let d = 0; d < days; d++) {
     const dateKey = addDaysToDateKey(baseKey, d);
-    const menuIndex = menuIndexForDateKey(dateKey, len);
-    const template = len > 0 ? dailyMenus[menuIndex] : undefined;
+    // Stesso criterio del menu del giorno nell'app.
+    const template = pickMenuTemplateForDate(dailyMenus, dateKey);
 
     const resolved = opts?.resolveSavedMenu?.(dateKey);
     const useSaved =

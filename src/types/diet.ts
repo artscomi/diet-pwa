@@ -28,6 +28,8 @@ export interface Cena {
 export interface DailyMenu {
   id: string
   name: string
+  /** Giorno della settimana indicato dal nutrizionista (1 = lunedì … 7 = domenica), se presente */
+  weekday?: number
   colazione: Colazione
   spuntinoMattutino: FoodItem
   pranzo: Pranzo

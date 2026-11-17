@@ -49,6 +49,13 @@ function validateMenu(menu: unknown): boolean {
   }
   if (m.olio != null && !isFoodItem(m.olio)) return false
   if (m.duranteLaGiornata != null && typeof m.duranteLaGiornata !== 'string') return false
+  // weekday non valido: si ignora (il menu resta valido, segue la rotazione)
+  if (
+    m.weekday != null &&
+    !(typeof m.weekday === 'number' && Number.isInteger(m.weekday) && m.weekday >= 1 && m.weekday <= 7)
+  ) {
+    delete m.weekday
+  }
   return true
 }
 

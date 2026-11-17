@@ -31,6 +31,7 @@ const EVENT_STAGE = {
   diet_upload_failed: "acquisition",
   diet_upload_succeeded: "acquisition",
   acquired: "acquisition",
+  diet_review_answered: "acquisition",
   // Activation — prima esperienza di valore: segna com'è andato un pasto
   activated: "activation",
   // Retention — torna e usa il prodotto

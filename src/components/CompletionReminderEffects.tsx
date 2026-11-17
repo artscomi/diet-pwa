@@ -20,6 +20,8 @@ const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() ?? "";
 
 interface CompletionReminderEffectsProps {
   prefs: CompletionReminderPreferences;
+  /** Incrementato quando l'utente concede il permesso notifiche: riattiva la sottoscrizione push. */
+  permissionRev?: number;
 }
 
 async function syncRemoteSubscription(
@@ -68,11 +70,12 @@ async function unsubscribeRemote(clientId: string): Promise<void> {
 }
 
 /**
- * Nessuna UI: registra lo SW, chiede il permesso se il promemoria è attivo nelle impostazioni,
- * invia la notifica giornaliera all’orario scelto.
+ * Nessuna UI: registra lo SW e, se il promemoria è attivo e il permesso è già concesso,
+ * invia la notifica giornaliera all’orario scelto. Il permesso si chiede altrove, in contesto.
  */
 export default function CompletionReminderEffects({
   prefs,
+  permissionRev = 0,
 }: CompletionReminderEffectsProps) {
   const [swReady, setSwReady] = useState(false);
   const [remotePushActive, setRemotePushActive] = useState(false);
@@ -95,14 +98,9 @@ export default function CompletionReminderEffects({
         return;
       }
       if (cancelled) return;
+      // Il permesso NON viene chiesto all'apertura: lo chiediamo nel momento in cui
+      // l'utente ne capisce il valore (dopo il primo check-in, o dalle impostazioni).
       setSwReady(true);
-
-      if (!prefsRef.current.enabled) return;
-
-      if (Notification.permission === "default") {
-        // Sempre applicare il risultato (vedi Strict Mode: non usare flag cancelled qui).
-        await Notification.requestPermission();
-      }
     })();
     return () => {
       cancelled = true;
@@ -151,7 +149,7 @@ export default function CompletionReminderEffects({
     return () => {
       cancelled = true;
     };
-  }, [swReady, prefs.enabled]);
+  }, [swReady, prefs.enabled, permissionRev]);
 
   useEffect(() => {
     if (!swReady || !prefs.enabled || Notification.permission !== "granted") {
@@ -189,7 +187,7 @@ export default function CompletionReminderEffects({
       document.removeEventListener("visibilitychange", onVisibility);
       window.clearInterval(id);
     };
-  }, [swReady, prefs.enabled]);
+  }, [swReady, prefs.enabled, permissionRev]);
 
   useEffect(() => {
     if (!swReady || !prefs.enabled || remotePushActive) return;

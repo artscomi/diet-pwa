@@ -20,7 +20,12 @@ import AppToast from "@/components/AppToast";
 import CompletionReminderEffects from "@/components/CompletionReminderEffects";
 import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
 import ProductFeedbackCard from "@/components/ProductFeedbackCard";
-import { recordActiveDay } from "@/utils/productMetrics";
+import Modal from "@/components/Modal";
+import {
+  markMilestone,
+  recordActiveDay,
+  trackEvent,
+} from "@/utils/productMetrics";
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -69,6 +74,13 @@ export default function App() {
   const [shoppingMenuRev, setShoppingMenuRev] = useState(0);
   const [replicateToast, setReplicateToast] = useState<string | null>(null);
   const dismissReplicateToast = useCallback(() => setReplicateToast(null), []);
+  /** Incrementato quando il browser concede le notifiche: riattiva la sottoscrizione push. */
+  const [notificationPermissionRev, setNotificationPermissionRev] = useState(0);
+  const bumpNotificationPermission = useCallback(
+    () => setNotificationPermissionRev((r) => r + 1),
+    [],
+  );
+  const [reminderOfferOpen, setReminderOfferOpen] = useState(false);
 
   const persistCompletionPrefs = useCallback(
     (next: CompletionReminderPreferences) => {
@@ -291,6 +303,45 @@ export default function App() {
     [currentMenu, viewedDateKey, getMenuForDateKey],
   );
 
+  /**
+   * Dopo un check-in: al primo in assoluto un riscontro positivo; e, una sola volta,
+   * la proposta del promemoria serale — nel momento in cui l'utente ne capisce il valore.
+   */
+  const handleMealCheckIn = useCallback(({ first }: { first: boolean }) => {
+    const canAsk =
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "default";
+    if (canAsk && markMilestone("reminder_offer_shown")) {
+      setReminderOfferOpen(true);
+      return;
+    }
+    if (first) setReplicateToast("Primo pasto segnato! 🎉");
+  }, []);
+
+  const answerReminderOffer = useCallback(
+    async (accept: boolean) => {
+      setReminderOfferOpen(false);
+      if (!accept) {
+        trackEvent("reminder_offer_answered", { answer: "no" });
+        return;
+      }
+      let permission: NotificationPermission = "default";
+      try {
+        permission = await Notification.requestPermission();
+      } catch {
+        /* browser senza supporto */
+      }
+      trackEvent("reminder_offer_answered", { answer: "yes", permission });
+      if (permission === "granted") {
+        persistCompletionPrefs({ ...completionPrefs, enabled: true });
+        bumpNotificationPermission();
+        setReplicateToast("Promemoria attivo: ci sentiamo alle 21:00.");
+      }
+    },
+    [completionPrefs, persistCompletionPrefs, bumpNotificationPermission],
+  );
+
   if (!dietReady) {
     return (
       <div className="app" aria-busy="true" aria-label="Caricamento dieta" />
@@ -394,6 +445,7 @@ export default function App() {
               defaultDietData
             }
             adherenceDateKey={currentMenu?.date ?? viewedDateKey}
+            onMealCheckIn={handleMealCheckIn}
           />
         )}
         {view === "shopping" && (
@@ -433,7 +485,26 @@ export default function App() {
         {!appStandalone ? <InstallAppCTA variant="stickyBar" /> : null}
       </div>
 
-      <CompletionReminderEffects prefs={completionPrefs} />
+      <CompletionReminderEffects
+        prefs={completionPrefs}
+        permissionRev={notificationPermissionRev}
+      />
+
+      {reminderOfferOpen ? (
+        <Modal
+          title="Pasto segnato! 🎉"
+          onClose={() => void answerReminderOffer(false)}
+          buttonLabel="No, grazie"
+          primaryLabel="Sì, ricordamelo"
+          onPrimaryClick={() => void answerReminderOffer(true)}
+        >
+          <p>
+            Vuoi un promemoria alle <strong>21:00</strong> per segnare com&apos;è
+            andata la giornata? Puoi disattivarlo quando vuoi dalle
+            impostazioni.
+          </p>
+        </Modal>
+      ) : null}
 
       <DietReportModal
         open={reportModalOpen}
@@ -445,6 +516,7 @@ export default function App() {
         onClose={() => setSettingsModalOpen(false)}
         completionPrefs={completionPrefs}
         onCompletionPrefsChange={persistCompletionPrefs}
+        onPermissionGranted={bumpNotificationPermission}
       />
 
       <AppToast message={replicateToast} onDismiss={dismissReplicateToast} />

@@ -11,6 +11,8 @@ interface AppSettingsModalProps {
   onClose: () => void;
   completionPrefs: CompletionReminderPreferences;
   onCompletionPrefsChange: (next: CompletionReminderPreferences) => void;
+  /** Chiamato quando il browser concede il permesso notifiche. */
+  onPermissionGranted?: () => void;
 }
 
 export default function AppSettingsModal({
@@ -18,6 +20,7 @@ export default function AppSettingsModal({
   onClose,
   completionPrefs,
   onCompletionPrefsChange,
+  onPermissionGranted,
 }: AppSettingsModalProps) {
   const [perm, setPerm] = useState<NotificationPermission | "unsupported">(
     "default",
@@ -48,6 +51,7 @@ export default function AppSettingsModal({
     ) {
       const p = await Notification.requestPermission();
       setPerm(p);
+      if (p === "granted") onPermissionGranted?.();
     }
     persist({ ...completionPrefs, enabled: nextEnabled });
     trackEvent("reminder_toggled", {
@@ -55,7 +59,7 @@ export default function AppSettingsModal({
       permission:
         "Notification" in window ? Notification.permission : "unsupported",
     });
-  }, [completionPrefs, persist]);
+  }, [completionPrefs, persist, onPermissionGranted]);
 
   const unsupported = perm === "unsupported";
 
@@ -124,6 +128,7 @@ export default function AppSettingsModal({
                 if (!("Notification" in window)) return;
                 const p = await Notification.requestPermission();
                 setPerm(p);
+                if (p === "granted") onPermissionGranted?.();
               }}
             >
               Consenti notifiche nel browser

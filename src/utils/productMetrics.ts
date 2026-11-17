@@ -38,6 +38,7 @@ const EVENT_STAGE = {
   meal_checkin_day: "retention",
   retained: "retention",
   reminder_toggled: "retention",
+  reminder_offer_answered: "retention",
   app_installed: "retention",
   // Referral — porta PocketDiet fuori dall'app
   shopping_list_shared: "referral",
@@ -195,11 +196,21 @@ export function trackEvent(name: ProductEvent, props: Props = {}): void {
   }
 }
 
-/** Evento "milestone": inviato una sola volta per dispositivo. */
-export function trackOnce(name: ProductEvent, props: Props = {}): void {
-  if (typeof window === "undefined") return;
-  if (!setMilestone(name)) return;
+/**
+ * Evento "milestone": inviato una sola volta per dispositivo.
+ * Restituisce `true` se è la prima volta (utile per reagire nella UI).
+ */
+export function trackOnce(name: ProductEvent, props: Props = {}): boolean {
+  if (typeof window === "undefined") return false;
+  if (!setMilestone(name)) return false;
   trackEvent(name, props);
+  return true;
+}
+
+/** Segna una milestone di UI (non inviata agli analytics). `true` se nuova. */
+export function markMilestone(name: string): boolean {
+  if (typeof window === "undefined") return false;
+  return setMilestone(name);
 }
 
 /** Evento inviato al massimo una volta al giorno. */

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import { type CompletionReminderPreferences } from "@/utils/completionReminderStorage";
+import { trackEvent } from "@/utils/productMetrics";
 import "./AppSettingsModal.css";
 
 interface AppSettingsModalProps {
@@ -49,6 +50,11 @@ export default function AppSettingsModal({
       setPerm(p);
     }
     persist({ ...completionPrefs, enabled: nextEnabled });
+    trackEvent("reminder_toggled", {
+      enabled: nextEnabled,
+      permission:
+        "Notification" in window ? Notification.permission : "unsupported",
+    });
   }, [completionPrefs, persist]);
 
   const unsupported = perm === "unsupported";

@@ -10,6 +10,7 @@ import { formatShoppingQuantityDisplay } from "@/utils/formatShoppingQuantity";
 import { ChevronDownIcon, TrashIcon, ShareIcon, ClipboardCheckIcon } from "./Icons";
 import type { DailyMenu as DailyMenuType } from "@/types/diet";
 import type { ShoppingCategory, ShoppingItem } from "@/types/diet";
+import { referralUrl, trackEvent } from "@/utils/productMetrics";
 import "./ShoppingList.css";
 
 const LS_CHECKED = "shoppingList_checked";
@@ -154,6 +155,7 @@ export default function ShoppingList({
       });
     });
 
+    lines.push("", `Creata con PocketDiet — ${referralUrl("shopping_list")}`);
     return lines.join("\n");
   }, [days, grouped]);
 
@@ -163,6 +165,7 @@ export default function ShoppingList({
     if (navigator.share) {
       try {
         await navigator.share({ title: "Lista della spesa", text });
+        trackEvent("shopping_list_shared", { method: "native", days });
         return;
       } catch {
         /* user cancelled or share failed — fall through to clipboard */
@@ -171,10 +174,11 @@ export default function ShoppingList({
 
     try {
       await navigator.clipboard.writeText(text);
+      trackEvent("shopping_list_shared", { method: "clipboard", days });
       setShared(true);
       setTimeout(() => setShared(false), 2000);
     } catch { /* ignore */ }
-  }, [buildShareText]);
+  }, [buildShareText, days]);
 
   return (
     <div className="shopping-list-card">

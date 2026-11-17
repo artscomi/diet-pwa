@@ -15,6 +15,7 @@ import {
   IconMailFilled,
   IconShare3,
 } from "@tabler/icons-react";
+import { trackEvent } from "@/utils/productMetrics";
 import "./DietReportModal.css";
 
 interface DietReportModalProps {
@@ -33,6 +34,10 @@ export default function DietReportModal({ open, onClose }: DietReportModalProps)
       }
       const r = buildAdherenceReport();
       const text = formatAdherenceReportAsText(r);
+      trackEvent("report_shared", {
+        channel,
+        evaluatedDays: r.evaluatedDays,
+      });
       if (channel === "whatsapp") {
         window.open(
           getAdherenceShareWhatsAppUrl(text),

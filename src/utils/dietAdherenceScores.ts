@@ -1,3 +1,4 @@
+import { referralUrl } from "@/utils/productMetrics";
 const LS_KEY = "dietAdherenceScores";
 
 /** Emesso dopo `clearAdherenceScores` così la UI aggiorna i cursori senza ricaricare. */
@@ -102,6 +103,8 @@ export function formatAdherenceReportAsText(r: AdherenceReport): string {
     ...r.sortedEntries.map((e) => `• ${e.dateLabel}: ${e.score}%`),
     "",
     "La percentuale per giorno deriva dal completamento pasti (completato, in parte, saltato).",
+    "",
+    `Report generato con PocketDiet — ${referralUrl("adherence_report")}`,
   ];
   return lines.join("\n");
 }

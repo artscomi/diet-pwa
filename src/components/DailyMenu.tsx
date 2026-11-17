@@ -52,6 +52,7 @@ import {
   IconMoodSad2,
   IconMoodSmile,
 } from "@tabler/icons-react";
+import { trackOnce, trackOncePerDay } from "@/utils/productMetrics";
 import "./DailyMenu.css";
 
 const MEAL_SLOT_GROUP_LABEL: Record<ReplicateMealSlot, string> = {
@@ -579,6 +580,10 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           saveMealCompletionMap(mealStatusDateKey, draft);
           return draft;
         });
+        if (next !== null) {
+          trackOnce("activated", { slot, status: next });
+          trackOncePerDay("meal_checkin_day", { slot, status: next });
+        }
       },
       [mealStatusDateKey],
     );

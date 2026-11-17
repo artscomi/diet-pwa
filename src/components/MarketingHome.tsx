@@ -17,6 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { MAX_UPLOAD_BYTES } from "@/constants/upload";
 import { PEXELS_CDN_QUERY_FULL } from "@/constants/pexelsCdn";
+import { trackEvent } from "@/utils/productMetrics";
 import Footer from "./Footer";
 import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
 import "./MarketingHome.css";
@@ -181,6 +182,10 @@ export default function MarketingHome() {
       return;
     }
     setMarketingReady(true);
+    const params = new URLSearchParams(window.location.search);
+    trackEvent("landing_viewed", {
+      source: params.get("utm_source") ?? "direct",
+    });
   }, [router]);
 
   if (!marketingReady) {

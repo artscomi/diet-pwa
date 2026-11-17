@@ -21,6 +21,8 @@ import CompletionReminderEffects from "@/components/CompletionReminderEffects";
 import AppBottomNav, { type AppContentView } from "@/components/AppBottomNav";
 import ProductFeedbackCard from "@/components/ProductFeedbackCard";
 import Modal from "@/components/Modal";
+import DietReviewModal, { summarizeDiet } from "@/components/DietReviewModal";
+import { pickMenuTemplateForDate } from "@/utils/menuForDate";
 import {
   markMilestone,
   recordActiveDay,
@@ -124,9 +126,13 @@ export default function App() {
     setDietReady(true);
   }, []);
 
+  /** Dieta appena caricata: mostra il riepilogo da controllare. */
+  const [reviewDiet, setReviewDiet] = useState<UserDiet | null>(null);
+
   const handleDietLoaded = useCallback((diet: UserDiet) => {
     recordActiveDay();
     setUserDiet(diet);
+    setReviewDiet(diet);
   }, []);
 
   useEffect(() => {
@@ -144,17 +150,9 @@ export default function App() {
 
   const getMenuForDateKey = useCallback(
     (dateKey: string): DailyMenuType => {
-      const d = new Date(dateKey);
-      const startOfYear = new Date(d.getFullYear(), 0, 0);
-      const diff = d.getTime() - startOfYear.getTime();
-      const len = dailyMenusSource.length;
-      const dayMs = 1000 * 60 * 60 * 24;
-      let menuIndex = 0;
-      if (Number.isFinite(diff) && len > 0) {
-        const dayOfYear = Math.floor(diff / dayMs);
-        menuIndex = ((dayOfYear % len) + len) % len;
-      }
-      const template = dailyMenusSource[menuIndex] ?? dailyMenusSource[0];
+      const template =
+        pickMenuTemplateForDate(dailyMenusSource, dateKey) ??
+        dailyMenusSource[0];
       return {
         ...template,
         date: dateKey,
@@ -194,6 +192,23 @@ export default function App() {
     clearUserDiet();
     setUserDiet(null);
   }, []);
+
+  const answerDietReview = useCallback(
+    (ok: boolean) => {
+      if (reviewDiet) {
+        const summary = summarizeDiet(reviewDiet);
+        trackEvent("diet_review_answered", {
+          answer: ok ? "ok" : "reupload",
+          menus: summary.menuCount,
+          byWeekday: summary.weekdays.length > 0,
+          missingMeals: summary.meals.filter((m) => !m.present).length,
+        });
+      }
+      setReviewDiet(null);
+      if (!ok) handleNewDiet();
+    },
+    [reviewDiet, handleNewDiet],
+  );
 
   const handleChangeDietClick = useCallback(() => {
     const warnUnsaved =
@@ -489,6 +504,14 @@ export default function App() {
         prefs={completionPrefs}
         permissionRev={notificationPermissionRev}
       />
+
+      {reviewDiet ? (
+        <DietReviewModal
+          diet={reviewDiet}
+          onConfirm={() => answerDietReview(true)}
+          onReupload={() => answerDietReview(false)}
+        />
+      ) : null}
 
       {reminderOfferOpen ? (
         <Modal

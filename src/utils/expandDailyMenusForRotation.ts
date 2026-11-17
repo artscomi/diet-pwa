@@ -1,5 +1,4 @@
 import type { DailyMenu, DietData, FoodItem } from "@/types/diet";
-import { dietData as defaultDietData } from "@/data/dietData";
 import { buildDietDataFromMenus } from "@/utils/buildDietDataFromMenus";
 
 /** Lunghezza del ciclo giornaliero: più è alto, meno si ripetono i menu vicini. */
@@ -15,95 +14,94 @@ function cloneItem(f: FoodItem): FoodItem {
   return { ...f };
 }
 
+/** Prima lista non vuota tra quelle date (mai alimenti della dieta predefinita). */
+function firstNonEmpty(...lists: (FoodItem[] | undefined)[]): FoodItem[] {
+  return lists.find((l) => l && l.length > 0) ?? [];
+}
+
+/**
+ * Alternative per categoria SOLO dalla dieta dell'utente: prima `dietData` estratto dal file,
+ * poi gli alimenti presenti nei menu. Una categoria assente resta vuota.
+ */
 function mergeDietDataForRotation(
   explicit: DietData | null | undefined,
   menus: DailyMenu[],
 ): DietData {
-  const fromBuild = buildDietDataFromMenus(menus);
-  const dd = explicit ?? fromBuild;
+  const b = buildDietDataFromMenus(menus);
+  const e = explicit;
   return {
     colazione: {
-      carboidrati: dd.colazione.carboidrati.length
-        ? dd.colazione.carboidrati
-        : defaultDietData.colazione.carboidrati,
-      frutta: dd.colazione.frutta.length
-        ? dd.colazione.frutta
-        : defaultDietData.colazione.frutta,
-      proteine: dd.colazione.proteine.length
-        ? dd.colazione.proteine
-        : defaultDietData.colazione.proteine,
+      carboidrati: firstNonEmpty(e?.colazione?.carboidrati, b.colazione.carboidrati),
+      frutta: firstNonEmpty(e?.colazione?.frutta, b.colazione.frutta),
+      proteine: firstNonEmpty(e?.colazione?.proteine, b.colazione.proteine),
     },
-    spuntinoMattutino: dd.spuntinoMattutino.length
-      ? dd.spuntinoMattutino
-      : defaultDietData.spuntinoMattutino,
+    spuntinoMattutino: firstNonEmpty(e?.spuntinoMattutino, b.spuntinoMattutino),
     pranzo: {
-      carboidrati: dd.pranzo.carboidrati.length
-        ? dd.pranzo.carboidrati
-        : defaultDietData.pranzo.carboidrati,
-      proteine: dd.pranzo.proteine.length
-        ? dd.pranzo.proteine
-        : defaultDietData.pranzo.proteine,
-      verdure: dd.pranzo.verdure.length
-        ? dd.pranzo.verdure
-        : defaultDietData.pranzo.verdure,
+      carboidrati: firstNonEmpty(e?.pranzo?.carboidrati, b.pranzo.carboidrati),
+      proteine: firstNonEmpty(e?.pranzo?.proteine, b.pranzo.proteine),
+      verdure: firstNonEmpty(e?.pranzo?.verdure, b.pranzo.verdure),
     },
-    merenda: dd.merenda.length ? dd.merenda : defaultDietData.merenda,
+    merenda: firstNonEmpty(e?.merenda, b.merenda),
     cena: {
-      pane: dd.cena.pane.length ? dd.cena.pane : defaultDietData.cena.pane,
-      verdure: dd.cena.verdure.length
-        ? dd.cena.verdure
-        : defaultDietData.cena.verdure,
-      proteine: dd.cena.proteine.length
-        ? dd.cena.proteine
-        : defaultDietData.cena.proteine,
+      pane: firstNonEmpty(e?.cena?.pane, b.cena.pane),
+      verdure: firstNonEmpty(e?.cena?.verdure, b.cena.verdure),
+      proteine: firstNonEmpty(e?.cena?.proteine, b.cena.proteine),
     },
-    olio:
-      dd.olio?.length ? dd.olio : defaultDietData.olio ?? [],
+    olio: firstNonEmpty(e?.olio, b.olio),
   };
 }
 
+/** Alternativa scelta, oppure il valore originale del menu se la categoria non ha alternative. */
+function pickOr<T>(alts: FoodItem[], i: number, fallback: T): FoodItem | T {
+  const f = pick(alts, i);
+  return f ? cloneItem(f) : fallback;
+}
+
+/**
+ * Dieta con un solo menu: varia i giorni combinando le alternative che il nutrizionista
+ * ha indicato per ciascuna categoria. Un pasto assente nella dieta resta assente.
+ */
 function buildSyntheticMenusFromBase(
   base: DailyMenu,
   merged: DietData,
 ): DailyMenu[] {
   const out: DailyMenu[] = [];
   for (let k = 0; k < ROTATION_CYCLE; k++) {
-    const carbC = pick(merged.colazione.carboidrati, k);
-    const frutta = pick(merged.colazione.frutta, k * 2 + 3);
-    const protC = pick(merged.colazione.proteine, k * 3 + 1);
-    const spunt = pick(merged.spuntinoMattutino, k);
-    const carbP = pick(merged.pranzo.carboidrati, k + 1);
-    const protP = pick(merged.pranzo.proteine, k * 2 + 5);
-    const verdP = pick(merged.pranzo.verdure, k + 7);
-    const mer = pick(merged.merenda, k + 1);
-    const pane = pick(merged.cena.pane, k);
-    const verdC = pick(merged.cena.verdure, k * 2 + 1);
-    const protCe = pick(merged.cena.proteine, k * 3 + 2);
-    const olioItem = pick(merged.olio, k);
-
-    out.push({
+    const menu: DailyMenu = {
       ...base,
       id: `menu-var-${k + 1}`,
       name: `Menu variato ${k + 1}`,
-      colazione: {
-        carboidrati: cloneItem(carbC!),
-        frutta: cloneItem(frutta!),
-        proteine: cloneItem(protC!),
+      colazione: base.colazione && {
+        ...base.colazione,
+        carboidrati: pickOr(merged.colazione.carboidrati, k, base.colazione.carboidrati),
+        frutta: pickOr(merged.colazione.frutta, k * 2 + 3, base.colazione.frutta),
+        proteine: pickOr(merged.colazione.proteine, k * 3 + 1, base.colazione.proteine),
       },
-      spuntinoMattutino: cloneItem(spunt!),
-      pranzo: {
-        carboidrati: cloneItem(carbP!),
-        proteine: cloneItem(protP!),
-        verdure: cloneItem(verdP!),
+      pranzo: base.pranzo && {
+        ...base.pranzo,
+        carboidrati: pickOr(merged.pranzo.carboidrati, k + 1, base.pranzo.carboidrati),
+        proteine: pickOr(merged.pranzo.proteine, k * 2 + 5, base.pranzo.proteine),
+        verdure: pickOr(merged.pranzo.verdure, k + 7, base.pranzo.verdure),
       },
-      merenda: cloneItem(mer!),
-      cena: {
-        pane: cloneItem(pane!),
-        verdure: cloneItem(verdC!),
-        proteine: cloneItem(protCe!),
+      cena: base.cena && {
+        ...base.cena,
+        pane: pickOr(merged.cena.pane, k, base.cena.pane),
+        verdure: pickOr(merged.cena.verdure, k * 2 + 1, base.cena.verdure),
+        proteine: pickOr(merged.cena.proteine, k * 3 + 2, base.cena.proteine),
       },
-      ...(olioItem ? { olio: cloneItem(olioItem) } : {}),
-    });
+    };
+    // Spuntino, merenda e olio solo se il nutrizionista li ha previsti nel menu.
+    if (base.spuntinoMattutino) {
+      menu.spuntinoMattutino = pickOr(merged.spuntinoMattutino, k, base.spuntinoMattutino);
+    }
+    if (base.merenda) {
+      menu.merenda = pickOr(merged.merenda, k + 1, base.merenda);
+    }
+    if (base.olio) {
+      menu.olio = pickOr(merged.olio ?? [], k, base.olio);
+    }
+    delete menu.weekday;
+    out.push(menu);
   }
   return out;
 }
@@ -112,7 +110,9 @@ function buildSyntheticMenusFromBase(
  * Garantisce un ciclo di ROTATION_CYCLE giorni distinti per l’indice data:
  * - dieta con un solo menu (tipico upload): genera varianti dagli ingredienti (dietData);
  * - 2 … ROTATION_CYCLE-1 menu: ripete i template fino a riempire il ciclo;
- * - già ≥ ROTATION_CYCLE: nessun cambio.
+ * - già ≥ ROTATION_CYCLE, oppure menu legati ai giorni della settimana: nessun cambio.
+ *
+ * Non aggiunge mai alimenti che non siano nella dieta dell'utente.
  */
 export function expandDailyMenusForRotation(
   menus: DailyMenu[],
@@ -120,6 +120,7 @@ export function expandDailyMenusForRotation(
 ): DailyMenu[] {
   if (menus.length === 0) return menus;
   if (menus.length >= ROTATION_CYCLE) return menus;
+  if (menus.some((m) => m.weekday != null)) return menus;
 
   const merged = mergeDietDataForRotation(dietData, menus);
 

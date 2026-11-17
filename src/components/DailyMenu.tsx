@@ -282,6 +282,46 @@ interface DailyMenuProps {
   dietData?: DietData;
   /** Chiave giorno (`Date.toDateString()`) per stati pasti e report (completamento %) */
   adherenceDateKey?: string;
+  /** Chiamato quando l'utente segna un pasto; `first` = primo check-in in assoluto. */
+  onMealCheckIn?: (info: { first: boolean }) => void;
+}
+
+/** Ordine dei pasti nella giornata e ora (decimale) da cui il pasto è "il prossimo". */
+const MEAL_TIME_SLOTS: { slot: ReplicateMealSlot; from: number }[] = [
+  { slot: "colazione", from: 0 },
+  { slot: "spuntinoMattutino", from: 10 },
+  { slot: "pranzo", from: 11.5 },
+  { slot: "merenda", from: 15.5 },
+  { slot: "cena", from: 18 },
+];
+
+/**
+ * Il pasto da evidenziare: il primo pasto previsto, a partire da quello dell'ora
+ * attuale, che non è ancora stato segnato. `null` se la giornata è chiusa.
+ */
+function getCurrentMealSlot(
+  menu: DailyMenu,
+  map: MealCompletionMap,
+  now: Date,
+): { slot: ReplicateMealSlot; isNow: boolean } | null {
+  const hour = now.getHours() + now.getMinutes() / 60;
+  const present = MEAL_TIME_SLOTS.filter(({ slot }) =>
+    slot === "spuntinoMattutino"
+      ? Boolean(menu.spuntinoMattutino)
+      : slot === "merenda"
+        ? Boolean(menu.merenda)
+        : true,
+  );
+  let startIdx = 0;
+  present.forEach((m, i) => {
+    if (hour >= m.from) startIdx = i;
+  });
+  for (let i = startIdx; i < present.length; i++) {
+    if (map[present[i].slot] === undefined) {
+      return { slot: present[i].slot, isNow: i === startIdx };
+    }
+  }
+  return null;
 }
 
 /** Vista lettura: una sola riga (prima alternativa); le altre restano nel menu a tendina in modifica. */
@@ -540,6 +580,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
     {
       menu,
       onSave,
+      onMealCheckIn,
       onReplicateMealToNextDay,
       onPendingChange,
       dietData: dietDataProp,
@@ -581,11 +622,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           return draft;
         });
         if (next !== null) {
-          trackOnce("activated", { slot, status: next });
+          const first = trackOnce("activated", { slot, status: next });
           trackOncePerDay("meal_checkin_day", { slot, status: next });
+          onMealCheckIn?.({ first });
         }
       },
-      [mealStatusDateKey],
+      [mealStatusDateKey, onMealCheckIn],
     );
 
     const mealCompletionFor = useCallback(
@@ -615,6 +657,53 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
         hasAnyMealCompletionForDay(menu, mealCompletionMap),
       [mealStatusDateKey, menu, mealCompletionMap],
     );
+
+    const isViewingToday =
+      Boolean(mealStatusDateKey) &&
+      mealStatusDateKey === new Date().toDateString();
+
+    /** Aggiornato ogni minuto: il pasto evidenziato segue l'ora. */
+    const [nowTick, setNowTick] = useState(() => Date.now());
+    useEffect(() => {
+      if (!isViewingToday) return;
+      const id = setInterval(() => setNowTick(Date.now()), 60_000);
+      return () => clearInterval(id);
+    }, [isViewingToday]);
+
+    const currentMeal = useMemo(
+      () =>
+        isViewingToday
+          ? getCurrentMealSlot(menu, mealCompletionMap, new Date(nowTick))
+          : null,
+      [isViewingToday, menu, mealCompletionMap, nowTick],
+    );
+    const currentSlot = currentMeal?.slot ?? null;
+
+    /** All'apertura di oggi porta in vista il pasto attuale (una volta per giorno visualizzato). */
+    const scrolledForDateRef = useRef<string | null>(null);
+    useEffect(() => {
+      if (!isViewingToday || !currentSlot) return;
+      if (scrolledForDateRef.current === mealStatusDateKey) return;
+      scrolledForDateRef.current = mealStatusDateKey;
+      if (currentSlot === "colazione") return;
+      const el = document.querySelector<HTMLElement>(
+        `[data-meal-slot="${currentSlot}"]`,
+      );
+      el?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }, [isViewingToday, currentSlot, mealStatusDateKey]);
+
+    const sectionProps = (slot: ReplicateMealSlot) => ({
+      className: `menu-section${currentSlot === slot ? " menu-section--current" : ""}`,
+      "data-meal-slot": slot,
+      "aria-current": currentSlot === slot ? ("time" as const) : undefined,
+    });
+
+    const nowBadge = (slot: ReplicateMealSlot) =>
+      currentSlot === slot ? (
+        <span className="menu-section__now-badge">
+          {currentMeal?.isNow ? "Adesso" : "Prossimo"}
+        </span>
+      ) : null;
 
     useEffect(() => {
       if (!mealStatusDateKey) return;
@@ -715,10 +804,33 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
         {mealStatusDateKey ? (
           <div className="menu-header">
             <div className="menu-header__completion-stack">
-              <span className="menu-header__completion-label">
-                {ADHERENCE_TITLE_STATIC}
-              </span>
-              <MealCompletionDaySummary percent={mealCompletionPercent} />
+              {shouldPersistAdherence ? (
+                <>
+                  <span className="menu-header__completion-label">
+                    {ADHERENCE_TITLE_STATIC}
+                  </span>
+                  <MealCompletionDaySummary percent={mealCompletionPercent} />
+                </>
+              ) : (
+                <div className="menu-checkin-hint" role="status">
+                  <span className="menu-checkin-hint__title">
+                    {isViewingToday
+                      ? "Com'è andata oggi?"
+                      : "Nessun pasto segnato in questo giorno"}
+                  </span>
+                  <span className="menu-checkin-hint__text">
+                    Tocca{" "}
+                    <IconCheckbox
+                      size={16}
+                      stroke={2}
+                      aria-label="l'icona di spunta"
+                      className="menu-checkin-hint__icon"
+                    />{" "}
+                    sotto un pasto per segnarlo: vedrai qui quanto stai
+                    seguendo il piano.
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         ) : null}
@@ -742,11 +854,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
         ) : null}
 
         <div className="menu-content">
-          <div className="menu-section">
+          <div {...sectionProps("colazione")}>
             <div className="menu-section__head">
               <h4>
                 <SunIcon size={MEAL_CARD_HEADING_ICON_PX} />
                 Colazione
+                {nowBadge("colazione")}
               </h4>
             </div>
             {menu.colazione?.carboidrati && (
@@ -778,11 +891,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           </div>
 
           {menu.spuntinoMattutino && (
-            <div className="menu-section">
+            <div {...sectionProps("spuntinoMattutino")}>
               <div className="menu-section__head">
                 <h4>
                   <PeanutIcon size={MEAL_CARD_HEADING_ICON_PX} />
                   Spuntino Mattutino
+                  {nowBadge("spuntinoMattutino")}
                 </h4>
               </div>
               <p>{formatFood(menu.spuntinoMattutino)}</p>
@@ -799,11 +913,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             </div>
           )}
 
-          <div className="menu-section">
+          <div {...sectionProps("pranzo")}>
             <div className="menu-section__head">
               <h4>
                 <UtensilsIcon size={MEAL_CARD_HEADING_ICON_PX} />
                 Pranzo
+                {nowBadge("pranzo")}
               </h4>
             </div>
             {menu.pranzo?.carboidrati && (
@@ -835,11 +950,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           </div>
 
           {menu.merenda && (
-            <div className="menu-section">
+            <div {...sectionProps("merenda")}>
               <div className="menu-section__head">
                 <h4>
                   <PeanutIcon size={MEAL_CARD_HEADING_ICON_PX} />
                   Merenda
+                  {nowBadge("merenda")}
                 </h4>
               </div>
               <p>{formatFood(menu.merenda)}</p>
@@ -856,11 +972,12 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
             </div>
           )}
 
-          <div className="menu-section">
+          <div {...sectionProps("cena")}>
             <div className="menu-section__head">
               <h4>
                 <MoonIcon size={MEAL_CARD_HEADING_ICON_PX} />
                 Cena
+                {nowBadge("cena")}
               </h4>
             </div>
             {menu.cena?.pane && (

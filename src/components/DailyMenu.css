@@ -795,3 +795,54 @@
     transform: scale(0.96);
   }
 }
+
+/* Pasto attuale: evidenziato e portato in vista all'apertura (risponde a "cosa mangio adesso?") */
+.menu-section[data-meal-slot] {
+  scroll-margin-top: 1rem;
+}
+
+.menu-section.menu-section--current,
+.menu-section.menu-section--current:hover {
+  background: #ecfdf5;
+  box-shadow: inset 0 0 0 2px #10b981;
+}
+
+.menu-section__now-badge {
+  margin-left: auto;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Stato vuoto della giornata: invito neutro al primo check-in, invece di uno 0% punitivo */
+.menu-checkin-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  max-width: 22rem;
+}
+
+.menu-checkin-hint__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.menu-checkin-hint__text {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.menu-checkin-hint__icon {
+  vertical-align: -3px;
+  color: #10b981;
+}

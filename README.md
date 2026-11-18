@@ -208,3 +208,14 @@ Ogni menu in `dailyMenus` segue la struttura usata dall’app (colazione, spunti
 ## Licenza
 
 MIT
+
+
+## Test di lettura delle diete
+
+`scripts/eval-diet-parsing.mjs` misura quante diete reali vengono lette correttamente. Metti PDF, TXT o immagini in una cartella **fuori dal repository** (sono documenti di terzi o dati di salute) e lancia:
+
+```bash
+node --experimental-strip-types scripts/eval-diet-parsing.mjs ./diete-test
+```
+
+Senza altre opzioni esegue solo i controlli locali (testo estratto, pasti e grammature, pre-controllo `looksLikeDiet`). Con l'app avviata e `OPENAI_API_KEY` configurata, aggiungi `--api http://localhost:3000` per far passare ogni file dalla pipeline completa e ottenere il tasso di successo. Richiede Node ≥ 22.6.

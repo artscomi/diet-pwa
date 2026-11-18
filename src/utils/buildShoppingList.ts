@@ -27,7 +27,8 @@ function extractItems(menu: DailyMenu): Array<{ item: FoodItem; category: Shoppi
   const results: Array<{ item: FoodItem; category: ShoppingCategory }> = [];
 
   const push = (item: FoodItem | undefined, cat: ShoppingCategory) => {
-    if (item?.name && item.quantity > 0) results.push({ item, category: cat });
+    // Anche le voci "q.b." (quantità 0): vanno comunque comprate.
+    if (item?.name) results.push({ item, category: cat });
   };
 
   const pushAlternatives = (

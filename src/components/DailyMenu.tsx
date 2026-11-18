@@ -330,6 +330,7 @@ function formatFood(
 ): string | null {
   const item = firstFoodItem(food);
   if (!item) return null;
+  if (!item.quantity) return `${item.name} (q.b.)`;
   return `${item.name} (${item.quantity} ${item.unit})`;
 }
 

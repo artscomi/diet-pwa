@@ -2,6 +2,7 @@
  * Formatta quantità + unità per la lista spesa (es. 1200 g → "1,2 kg" in it-IT).
  */
 export function formatShoppingQuantityDisplay(quantity: number, unit: string): string {
+  if (!quantity) return "q.b.";
   const u = unit.trim().toLowerCase();
   const isGrams = u === "g" || u === "gr" || u === "grammi" || u === "grammo";
 

@@ -120,7 +120,9 @@ export function expandDailyMenusForRotation(
 ): DailyMenu[] {
   if (menus.length === 0) return menus;
   if (menus.length >= ROTATION_CYCLE) return menus;
-  if (menus.some((m) => m.weekday != null)) return menus;
+  // Piano per giorni della settimana (almeno 2 giorni diversi): nessuna rotazione sintetica.
+  const weekdays = new Set(menus.map((m) => m.weekday).filter((w) => w != null));
+  if (weekdays.size >= 2) return menus;
 
   const merged = mergeDietDataForRotation(dietData, menus);
 

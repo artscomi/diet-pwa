@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import pdf from "pdf-parse";
 import type { DietData, DailyMenu } from "@/types/diet";
 import { isAllowedMime, MAX_UPLOAD_BYTES } from "@/constants/upload";
+import { normalizeDietPayload } from "@/utils/normalizeDietPayload";
 
 /** Modello OpenAI per vision + estrazione JSON (immagini e testo). */
 const PARSE_MODEL = "gpt-4o";
@@ -79,7 +80,8 @@ REGOLE PER dailyMenus:
 - Per ogni giorno/menu presente nel contenuto dell'utente, crea un elemento in dailyMenus.
 - Copia i nomi degli alimenti e le quantità DAL TESTO (es. "Pasta integrale 70g" -> name: "Pasta integrale", quantity: 70, unit: "g").
 - Se un pasto o un alimento NON è specificato nel testo, OMETTI quel campo (o l'intero pasto). Non inventare mai alimenti o quantità: l'utente deve vedere solo ciò che ha scritto il suo nutrizionista.
-- "weekday": se il documento associa il menu a un giorno della settimana, indica il numero (1 = lunedì, 2 = martedì, …, 7 = domenica). Se il menu vale per più giorni, crea un elemento per ciascun giorno. Se i menu NON sono associati a giorni della settimana (es. "Giorno 1", "Menu A"), ometti "weekday".
+- "weekday": se il documento associa il menu a UN giorno della settimana, indica il numero (1 = lunedì, 2 = martedì, …, 7 = domenica). Se il menu vale per più giorni o non è associato a giorni della settimana (es. "Giorno 1", "Menu A"), ometti "weekday". Non duplicare i menu.
+- "quantity" deve essere sempre un numero. Se il documento non indica una quantità (es. "a volontà", "q.b."), usa quantity 0 e unit "q.b.". Per i pezzi (es. "2 uova") usa unit "pz".
 - "name": usa l'etichetta del documento (es. "Lunedì", "Giorno 1", "Menu A").
 - Per "frutta" (colazione) e "verdure" (pranzo e cena): se il documento elenca PIÙ tipi da consumare insieme o da alternare come acquisti distinti (es. "200g verdure a scelta: zucchine, carote, melanzane"), usa un ARRAY di oggetti { name, quantity, unit } con UNA voce per ogni tipo e la quantità indicata o ripartita in modo sensato; NON unificare tutto in un solo nome generico "Verdure" o "Frutta" se i tipi sono specificati.
 
@@ -259,7 +261,7 @@ export async function POST(request: Request) {
         ],
         // Chiediamo esplicitamente un JSON valido
         response_format: { type: "json_object" },
-        max_tokens: 8192,
+        max_tokens: 16384,
       });
       const content = response.choices[0]?.message?.content;
       if (!content) {
@@ -297,11 +299,26 @@ export async function POST(request: Request) {
           { role: "user", content: contentToSend },
         ],
         response_format: { type: "json_object" },
-        max_tokens: 8192,
+        max_tokens: 16384,
       });
       const content = response.choices[0]?.message?.content;
       if (!content) throw new Error("Risposta OpenAI vuota");
+      if (response.choices[0]?.finish_reason === "length") {
+        console.error("parse-diet: risposta troncata (max_tokens)");
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "La dieta è molto lunga e non siamo riusciti a leggerla tutta in una volta. Prova a caricare un file con meno pagine (es. solo il piano settimanale).",
+          },
+          { status: 400 },
+        );
+      }
       result = extractJsonFromText(content) as ParseResult;
+    }
+
+    if (result.error !== "not_a_diet") {
+      result = normalizeDietPayload(result);
     }
 
     if (result.error === "not_a_diet") {

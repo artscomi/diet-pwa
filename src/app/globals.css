@@ -1,4 +1,26 @@
 :root {
+  /* ---- Palette app ---- */
+  --brand: #10b981;
+  --brand-strong: #059669;
+  --brand-deep: #047857;
+  --brand-soft: #ecfdf5;
+  /* Colori pieni, niente sfumature */
+  --app-bg: #f1effa; /* lavanda */
+  --ink: #0f172a;
+  --ink-muted: #64748b;
+  --card-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 20px rgba(15, 23, 42, 0.06);
+  /* Un colore per pasto */
+  --meal-colazione: #f59e0b;
+  --meal-colazione-soft: #fff7e6;
+  --meal-spuntino: #65a30d;
+  --meal-spuntino-soft: #f2f9e6;
+  --meal-pranzo: #f97316;
+  --meal-pranzo-soft: #fff1e7;
+  --meal-merenda: #ec4899;
+  --meal-merenda-soft: #fdf0f7;
+  --meal-cena: #6366f1;
+  --meal-cena-soft: #eef0ff;
+
   /* Accent UI (badge, link): azzurro cielo */
   --color-accent: #0284c7;
   --color-accent-rgb: 2, 132, 199;
@@ -572,11 +594,7 @@ button {
 .diet-report__average-wrap {
   margin: 0 0 0.75rem;
   padding: 1rem 1.1rem;
-  background: linear-gradient(
-    135deg,
-    rgba(16, 185, 129, 0.1),
-    rgba(59, 130, 246, 0.06)
-  );
+  background: var(--brand-soft);
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 12px;
   display: flex;
@@ -873,4 +891,77 @@ button {
 .offline-fallback a {
   color: var(--color-accent);
   font-weight: 600;
+}
+
+
+/* =====================================================================
+   Refresh colori app (header, giorno, sfondo)
+   ===================================================================== */
+.app {
+  background: var(--app-bg);
+}
+
+.app-header,
+.app-header.app-header--with-day-nav {
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.app-header__title {
+  color: var(--brand);
+  font-size: 1.5rem;
+}
+
+.app-header__icon-btn,
+.app-header__change-diet {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.menu-day-nav {
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid #e4e1f2;
+  box-shadow: none;
+}
+
+.menu-day-nav__inner {
+  padding: 0.55rem 0 0.75rem;
+}
+
+.menu-day-nav__btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border-color: rgba(16, 185, 129, 0.25);
+  color: var(--brand-strong);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.menu-day-nav__btn:hover {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+}
+
+.menu-day-nav__badge {
+  background: var(--brand);
+  color: #ffffff;
+  padding: 0.2rem 0.65rem;
+}
+
+.menu-day-nav__date {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.app-bottom-panel {
+  border-top: none;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 24px -8px rgba(15, 23, 42, 0.12);
 }

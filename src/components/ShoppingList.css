@@ -319,3 +319,61 @@
 .sl-clear-btn:active {
   transform: scale(0.98);
 }
+
+/* =====================================================================
+   Refresh colori: un colore per categoria
+   ===================================================================== */
+.shopping-list-card {
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  background: #ffffff;
+}
+
+.sl-category {
+  --cat: #94a3b8;
+  --cat-soft: #f1f5f9;
+  background: var(--cat-soft);
+}
+.sl-category[data-category="carboidrati"] {
+  --cat: var(--meal-colazione);
+  --cat-soft: var(--meal-colazione-soft);
+}
+.sl-category[data-category="proteine"] {
+  --cat: var(--meal-pranzo);
+  --cat-soft: var(--meal-pranzo-soft);
+}
+.sl-category[data-category="verdure"] {
+  --cat: var(--meal-spuntino);
+  --cat-soft: var(--meal-spuntino-soft);
+}
+.sl-category[data-category="frutta"] {
+  --cat: var(--meal-merenda);
+  --cat-soft: var(--meal-merenda-soft);
+}
+.sl-category[data-category="altro"] {
+  --cat: var(--meal-cena);
+  --cat-soft: var(--meal-cena-soft);
+}
+
+.sl-category-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--cat);
+  flex-shrink: 0;
+}
+
+.sl-category-name {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sl-category .sl-items {
+  background: #ffffff;
+}
+
+.sl-day-btn--active,
+.sl-day-btn--active:hover {
+  background: var(--brand);
+  border-color: var(--brand);
+}

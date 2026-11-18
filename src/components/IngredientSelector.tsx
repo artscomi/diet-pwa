@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import type { FoodItem } from '@/types/diet'
+import { filterFoods, FOOD_SEARCH_MIN_OPTIONS } from '@/utils/foodSearch'
 import './IngredientSelector.css'
 
 interface IngredientSelectorProps {
@@ -23,6 +24,9 @@ export default function IngredientSelector({
   trailingAction,
 }: IngredientSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const showSearch = options.length > FOOD_SEARCH_MIN_OPTIONS
+  const visible = filterFoods(options, query)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -41,6 +45,7 @@ export default function IngredientSelector({
   const handleSelect = (option: FoodItem) => {
     onSelect(option)
     setIsOpen(false)
+    setQuery('')
   }
 
   const getDisplayText = () => {
@@ -63,15 +68,30 @@ export default function IngredientSelector({
 
       {isOpen && (
         <div className="ingredient-dropdown">
+          {showSearch && (
+            <div className="ingredient-search">
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Cerca tra ${options.length} alternative`}
+                aria-label={`Cerca ${label.toLowerCase()}`}
+                autoComplete="off"
+                enterKeyHint="search"
+              />
+            </div>
+          )}
           {options.length === 0 ? (
             <div className="ingredient-option empty">Nessuna opzione disponibile</div>
+          ) : visible.length === 0 ? (
+            <div className="ingredient-option empty">Nessun alimento trovato</div>
           ) : (
-            options.map((option, index) => {
+            visible.map((option, index) => {
               const isSelected = selected?.name === option.name
 
               return (
                 <button
-                  key={index}
+                  key={`${option.name}|${option.quantity}|${index}`}
                   className={`ingredient-option ${isSelected ? 'selected' : ''}`}
                   onClick={() => handleSelect(option)}
                   type="button"

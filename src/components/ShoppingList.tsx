@@ -227,13 +227,14 @@ export default function ShoppingList({
               const catChecked = catItems.filter((i) => i.checked).length;
 
               return (
-                <div key={cat} className="sl-category">
+                <div key={cat} className="sl-category" data-category={cat}>
                   <button
                     type="button"
                     className="sl-category-header"
                     onClick={() => toggleCategory(cat)}
                   >
                     <span className="sl-category-name">
+                      <span className="sl-category-dot" aria-hidden />
                       {CATEGORY_LABELS[cat]}
                       <span className="sl-category-count">
                         {catChecked}/{catItems.length}

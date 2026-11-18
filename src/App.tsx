@@ -161,12 +161,15 @@ export default function App() {
     [dailyMenusSource],
   );
 
+  /** Anno solo se diverso da quello corrente: la data resta su una riga. */
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("it-IT", {
       weekday: "long",
-      year: "numeric",
       month: "long",
       day: "numeric",
+      ...(date.getFullYear() !== new Date().getFullYear()
+        ? { year: "numeric" as const }
+        : {}),
     });
   };
 

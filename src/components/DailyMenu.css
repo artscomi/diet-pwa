@@ -1060,3 +1060,119 @@
   width: 18px;
   height: 18px;
 }
+
+/* =====================================================================
+   Refresh colori: ogni pasto ha il suo colore, card bianche su sfondo caldo
+   ===================================================================== */
+.daily-menu-card,
+.daily-menu-card:hover {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.daily-menu-card .menu-header {
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border-bottom: none;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: var(--card-shadow);
+}
+
+.menu-section[data-meal-slot] {
+  --meal: var(--brand);
+  --meal-soft: var(--brand-soft);
+}
+.menu-section[data-meal-slot="colazione"] {
+  --meal: var(--meal-colazione);
+  --meal-soft: var(--meal-colazione-soft);
+}
+.menu-section[data-meal-slot="spuntinoMattutino"] {
+  --meal: var(--meal-spuntino);
+  --meal-soft: var(--meal-spuntino-soft);
+}
+.menu-section[data-meal-slot="pranzo"] {
+  --meal: var(--meal-pranzo);
+  --meal-soft: var(--meal-pranzo-soft);
+}
+.menu-section[data-meal-slot="merenda"] {
+  --meal: var(--meal-merenda);
+  --meal-soft: var(--meal-merenda-soft);
+}
+.menu-section[data-meal-slot="cena"] {
+  --meal: var(--meal-cena);
+  --meal-soft: var(--meal-cena-soft);
+}
+
+.menu-section[data-meal-slot],
+.menu-section[data-meal-slot]:hover {
+  position: relative;
+  overflow: visible;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: var(--card-shadow);
+}
+
+/* Fascia colorata in alto */
+.menu-section[data-meal-slot]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.1rem;
+  right: 1.1rem;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--meal);
+  opacity: 0.85;
+}
+
+/* Icona del pasto in una bolla colorata */
+.menu-section[data-meal-slot] h4 {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.menu-section[data-meal-slot] h4 svg {
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0.45rem;
+  border-radius: 12px;
+  background: var(--meal);
+  color: #ffffff;
+}
+
+/* Pasto attuale: anello nel colore del pasto */
+.menu-section.menu-section--current,
+.menu-section.menu-section--current:hover {
+  background: #ffffff;
+  box-shadow:
+    0 0 0 2px var(--meal),
+    var(--card-shadow);
+}
+
+.menu-section__now-badge {
+  background: var(--meal);
+}
+
+.menu-section[data-meal-slot] .food-row__label {
+  color: color-mix(in srgb, var(--meal) 70%, #64748b);
+}
+
+.menu-section[data-meal-slot] .meal-actions {
+  border-top-color: rgba(148, 163, 184, 0.22);
+}
+
+/* Pillola "fatto": verde pieno quando completato */
+.meal-actions__status--completed {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+/* Riepilogo vuoto */
+.menu-checkin-hint__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+}

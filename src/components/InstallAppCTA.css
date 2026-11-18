@@ -60,10 +60,8 @@
   width: 100%;
   padding: 0.4rem 1rem;
   padding-bottom: max(0.45rem, calc(env(safe-area-inset-bottom) + 0.2rem));
-  background: rgba(248, 250, 252, 0.98);
+  background: #f8faf8;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
 }
 
 .install-sticky-bar__inner {

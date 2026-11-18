@@ -8,6 +8,7 @@ import { dailyMenus } from "@/data/dailyMenus";
 import InstallAppCTA, { isStandalone } from "./InstallAppCTA";
 import Footer from "./Footer";
 import { validateDietJson } from "@/utils/validateDietJson";
+import { normalizeDietPayload } from "@/utils/normalizeDietPayload";
 import type { UserDiet, UploadedFileInfo } from "@/types/diet";
 import {
   isAllowedMime,
@@ -406,6 +407,8 @@ export default function Landing({
           return;
         }
 
+        // Stessa pulizia del server: un alimento scritto male non scarta tutta la dieta.
+        json.data = normalizeDietPayload(json.data);
         const validation = validateDietJson(json.data);
         if (!validation.valid) {
           fail("validation");

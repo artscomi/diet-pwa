@@ -326,9 +326,7 @@
 .shopping-list-card {
   border-radius: 18px;
   box-shadow: var(--card-shadow);
-  background:
-    radial-gradient(120% 90% at 100% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 50%),
-    #ffffff;
+  background: #ffffff;
 }
 
 .sl-category {
@@ -376,12 +374,6 @@
 
 .sl-day-btn--active,
 .sl-day-btn--active:hover {
-  background: var(--brand-gradient);
-  border-color: transparent;
-  box-shadow: 0 3px 8px -2px rgba(16, 185, 129, 0.5);
-}
-
-.sl-checkbox:checked + .sl-checkbox-custom {
-  background: var(--brand-gradient);
-  border-color: transparent;
+  background: var(--brand);
+  border-color: var(--brand);
 }

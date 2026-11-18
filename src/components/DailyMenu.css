@@ -1076,9 +1076,7 @@
   padding: 1rem 1.1rem;
   border-bottom: none;
   border-radius: 18px;
-  background:
-    radial-gradient(120% 140% at 100% 0%, rgba(20, 184, 166, 0.16) 0%, transparent 55%),
-    #ffffff;
+  background: #ffffff;
   box-shadow: var(--card-shadow);
 }
 
@@ -1112,7 +1110,7 @@
   position: relative;
   overflow: visible;
   border-radius: 18px;
-  background: linear-gradient(180deg, var(--meal-soft) 0, #ffffff 4.5rem);
+  background: #ffffff;
   box-shadow: var(--card-shadow);
 }
 
@@ -1143,21 +1141,19 @@
   border-radius: 12px;
   background: var(--meal);
   color: #ffffff;
-  box-shadow: 0 4px 10px -4px var(--meal);
 }
 
 /* Pasto attuale: anello nel colore del pasto */
 .menu-section.menu-section--current,
 .menu-section.menu-section--current:hover {
-  background: linear-gradient(180deg, var(--meal-soft) 0, #ffffff 6rem);
+  background: #ffffff;
   box-shadow:
     0 0 0 2px var(--meal),
-    0 10px 24px -10px var(--meal);
+    var(--card-shadow);
 }
 
 .menu-section__now-badge {
   background: var(--meal);
-  box-shadow: 0 2px 6px -1px var(--meal);
 }
 
 .menu-section[data-meal-slot] .food-row__label {
@@ -1168,11 +1164,10 @@
   border-top-color: rgba(148, 163, 184, 0.22);
 }
 
-/* Pillola "fatto": verde brand con gradiente quando completato */
+/* Pillola "fatto": verde pieno quando completato */
 .meal-actions__status--completed {
-  background: var(--brand-gradient);
-  border-color: transparent;
-  box-shadow: 0 4px 12px -4px rgba(16, 185, 129, 0.6);
+  background: var(--brand);
+  border-color: var(--brand);
 }
 
 /* Riepilogo vuoto */

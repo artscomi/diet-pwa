@@ -44,15 +44,19 @@ import {
   setAdherenceScore,
 } from "@/utils/dietAdherenceScores";
 import {
-  IconCheckbox,
+  IconArrowsExchange,
+  IconCheck,
+  IconChevronDown,
   IconCopyPlus,
+  IconDots,
   IconMoodCry,
   IconMoodHappy,
   IconMoodNeutral,
   IconMoodSad2,
   IconMoodSmile,
 } from "@tabler/icons-react";
-import { trackOnce, trackOncePerDay } from "@/utils/productMetrics";
+import { trackEvent, trackOnce, trackOncePerDay } from "@/utils/productMetrics";
+import FoodSwapSheet from "./FoodSwapSheet";
 import "./DailyMenu.css";
 
 const MEAL_SLOT_GROUP_LABEL: Record<ReplicateMealSlot, string> = {
@@ -424,6 +428,16 @@ function MealCompletionDaySummary({ percent }: { percent: number }) {
   );
 }
 
+const STATUS_LABEL: Record<MealCompletionStatus, string> = {
+  completed: "Fatto",
+  partial: "In parte",
+  skipped: "Saltato",
+};
+
+/**
+ * Azioni del pasto: "Segna come fatto" con un tocco (il gesto più importante),
+ * freccia per "In parte" / "Saltato", e un menu "⋯" per copia e modifica.
+ */
 function MenuSectionHeadActions({
   onReplicate,
   onEdit,
@@ -440,18 +454,23 @@ function MenuSectionHeadActions({
   };
 }) {
   const [panelOpen, setPanelOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!panelOpen) return;
+    if (!panelOpen && !moreOpen) return;
     const close = (e: MouseEvent | TouchEvent) => {
       const node = e.target as Node;
       if (wrapRef.current && !wrapRef.current.contains(node)) {
         setPanelOpen(false);
+        setMoreOpen(false);
       }
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPanelOpen(false);
+      if (e.key === "Escape") {
+        setPanelOpen(false);
+        setMoreOpen(false);
+      }
     };
     document.addEventListener("mousedown", close);
     document.addEventListener("touchstart", close);
@@ -461,119 +480,185 @@ function MenuSectionHeadActions({
       document.removeEventListener("touchstart", close);
       document.removeEventListener("keydown", onKey);
     };
-  }, [panelOpen]);
+  }, [panelOpen, moreOpen]);
+
+  const value = mealCompletion?.value;
 
   const pick = (s: MealCompletionStatus) => {
     if (!mealCompletion) return;
-    mealCompletion.onChange(mealCompletion.value === s ? null : s);
+    mealCompletion.onChange(value === s ? null : s);
     setPanelOpen(false);
   };
 
-  const triggerStatusClass =
-    mealCompletion?.value === "completed"
-      ? " menu-section__completion-trigger--completed"
-      : mealCompletion?.value === "skipped"
-        ? " menu-section__completion-trigger--skipped"
-        : mealCompletion?.value === "partial"
-          ? " menu-section__completion-trigger--partial"
-          : "";
+  /** Un tocco: segna come fatto (o annulla). Se è "in parte"/"saltato" apre le opzioni. */
+  const onPrimary = () => {
+    if (!mealCompletion) return;
+    setMoreOpen(false);
+    if (value === undefined) mealCompletion.onChange("completed");
+    else if (value === "completed") mealCompletion.onChange(null);
+    else setPanelOpen((o) => !o);
+  };
+
+  const primaryLabel = value ? STATUS_LABEL[value] : "Segna come fatto";
 
   return (
     <div className="menu-section__actions-wrap" ref={wrapRef}>
-      <div className="menu-section__actions">
-        {onReplicate ? (
-          <button
-            type="button"
-            className="menu-section__replicate"
-            onClick={onReplicate}
-            title="Copia nel giorno successivo"
-            aria-label="Copia questo pasto nel giorno successivo"
-          >
-            <IconCopyPlus
-              size={MEAL_CARD_ACTION_ICON_PX}
-              stroke={2}
-              aria-hidden
-            />
-          </button>
-        ) : null}
+      <div className="meal-actions">
         {mealCompletion ? (
-          <button
-            type="button"
-            className={`menu-section__completion-trigger${triggerStatusClass}${panelOpen ? " menu-section__completion-trigger--open" : ""}`}
-            onClick={() => setPanelOpen((o) => !o)}
-            aria-expanded={panelOpen}
-            aria-haspopup="true"
-            aria-label={MEAL_SLOT_GROUP_LABEL[mealCompletion.slot]}
-            title="Stato pasto"
+          <div
+            className={`meal-actions__status${value ? ` meal-actions__status--${value}` : ""}`}
           >
-            <IconCheckbox
-              size={MEAL_CARD_ACTION_ICON_PX}
-              stroke={2}
-              aria-hidden
-            />
-          </button>
+            <button
+              type="button"
+              className="meal-actions__done"
+              onClick={onPrimary}
+              aria-pressed={value === "completed"}
+              aria-label={
+                value === "completed"
+                  ? "Pasto segnato come fatto. Tocca per annullare"
+                  : value
+                    ? `${STATUS_LABEL[value]}. Tocca per cambiare`
+                    : "Segna il pasto come fatto"
+              }
+            >
+              <IconCheck size={18} stroke={2.5} aria-hidden />
+              <span>{primaryLabel}</span>
+            </button>
+            <button
+              type="button"
+              className="meal-actions__more-status"
+              onClick={() => {
+                setMoreOpen(false);
+                setPanelOpen((o) => !o);
+              }}
+              aria-expanded={panelOpen}
+              aria-haspopup="true"
+              aria-label={`${MEAL_SLOT_GROUP_LABEL[mealCompletion.slot]}: altre opzioni`}
+            >
+              <IconChevronDown size={18} stroke={2} aria-hidden />
+            </button>
+          </div>
         ) : null}
         <button
           type="button"
-          className="menu-section__edit"
-          onClick={onEdit}
-          aria-label={editAriaLabel}
+          className="meal-actions__menu-btn"
+          onClick={() => {
+            setPanelOpen(false);
+            setMoreOpen((o) => !o);
+          }}
+          aria-expanded={moreOpen}
+          aria-haspopup="menu"
+          aria-label="Altre azioni sul pasto"
         >
-          <EditIcon size={MEAL_CARD_ACTION_ICON_PX} />
+          <IconDots size={20} stroke={2} aria-hidden />
         </button>
       </div>
+
+      {moreOpen ? (
+        <div className="meal-actions__menu" role="menu">
+          {onReplicate ? (
+            <button
+              type="button"
+              role="menuitem"
+              className="meal-actions__menu-item"
+              onClick={() => {
+                setMoreOpen(false);
+                onReplicate();
+              }}
+            >
+              <IconCopyPlus size={18} stroke={2} aria-hidden />
+              Copia nel giorno dopo
+            </button>
+          ) : null}
+          <button
+            type="button"
+            role="menuitem"
+            className="meal-actions__menu-item"
+            onClick={() => {
+              setMoreOpen(false);
+              onEdit();
+            }}
+            aria-label={editAriaLabel}
+          >
+            <EditIcon size={18} />
+            Modifica pasto
+          </button>
+        </div>
+      ) : null}
+
       {panelOpen && mealCompletion ? (
         <div
-          className="menu-section__completion-panel"
+          className="meal-actions__status-panel"
           role="radiogroup"
           aria-label={MEAL_SLOT_GROUP_LABEL[mealCompletion.slot]}
         >
-          <button
-            type="button"
-            role="radio"
-            className={`menu-section__completion-option menu-section__completion-option--completed${mealCompletion.value === "completed" ? " menu-section__completion-option--active" : ""}`}
-            onClick={() => pick("completed")}
-            aria-checked={mealCompletion.value === "completed"}
-          >
-            <IconCheckbox
-              size={MEAL_CARD_ACTION_ICON_PX}
-              stroke={2}
-              aria-hidden
-            />
-            <span>Completato</span>
-          </button>
-          <button
-            type="button"
-            role="radio"
-            className={`menu-section__completion-option menu-section__completion-option--skipped${mealCompletion.value === "skipped" ? " menu-section__completion-option--active" : ""}`}
-            onClick={() => pick("skipped")}
-            aria-checked={mealCompletion.value === "skipped"}
-          >
-            <IconCheckbox
-              size={MEAL_CARD_ACTION_ICON_PX}
-              stroke={2}
-              aria-hidden
-            />
-            <span>Saltato</span>
-          </button>
-          <button
-            type="button"
-            role="radio"
-            className={`menu-section__completion-option menu-section__completion-option--partial${mealCompletion.value === "partial" ? " menu-section__completion-option--active" : ""}`}
-            onClick={() => pick("partial")}
-            aria-checked={mealCompletion.value === "partial"}
-          >
-            <IconCheckbox
-              size={MEAL_CARD_ACTION_ICON_PX}
-              stroke={2}
-              aria-hidden
-            />
-            <span>In parte</span>
-          </button>
+          {(["completed", "partial", "skipped"] as const).map((st) => (
+            <button
+              key={st}
+              type="button"
+              role="radio"
+              className={`meal-actions__status-option meal-actions__status-option--${st}${value === st ? " meal-actions__status-option--active" : ""}`}
+              onClick={() => pick(st)}
+              aria-checked={value === st}
+            >
+              {st === "completed" ? "✓" : st === "partial" ? "◐" : "✕"}{" "}
+              {st === "completed" ? "Fatto" : STATUS_LABEL[st]}
+            </button>
+          ))}
         </div>
       ) : null}
     </div>
   );
+}
+
+type SwappableSlot = "colazione" | "spuntinoMattutino" | "pranzo" | "merenda" | "cena";
+
+const SLOT_TITLE: Record<SwappableSlot, string> = {
+  colazione: "Colazione",
+  spuntinoMattutino: "Spuntino",
+  pranzo: "Pranzo",
+  merenda: "Merenda",
+  cena: "Cena",
+};
+
+/** Campi con più alternative possibili nel menu (frutta/verdure). */
+const MULTI_FIELDS = new Set(["frutta", "verdure"]);
+
+function readMealField(
+  menu: DailyMenu,
+  slot: SwappableSlot,
+  key?: string,
+): FoodItemOrAlternatives | undefined {
+  if (!key) return menu[slot as "spuntinoMattutino" | "merenda"];
+  const meal = menu[slot as "colazione" | "pranzo" | "cena"] as unknown as
+    | Record<string, FoodItemOrAlternatives | undefined>
+    | undefined;
+  return meal?.[key];
+}
+
+function optionsFor(dd: DietData, slot: SwappableSlot, key?: string): FoodItem[] {
+  if (!key) return (dd[slot as "spuntinoMattutino" | "merenda"] as FoodItem[] | undefined) ?? [];
+  const group = dd[slot as "colazione" | "pranzo" | "cena"] as unknown as
+    | Record<string, FoodItem[] | undefined>
+    | undefined;
+  return group?.[key] ?? [];
+}
+
+function writeMealField(
+  menu: DailyMenu,
+  slot: SwappableSlot,
+  key: string | undefined,
+  food: FoodItem,
+): DailyMenu {
+  if (!key) return { ...menu, [slot]: food };
+  const meal = (menu[slot as "colazione" | "pranzo" | "cena"] ?? {}) as unknown as Record<
+    string,
+    unknown
+  >;
+  const next = MULTI_FIELDS.has(key)
+    ? updateFoodAlternativesSlot(meal[key] as FoodItemOrAlternatives | undefined, food)
+    : food;
+  return { ...menu, [slot]: { ...meal, [key]: next } } as DailyMenu;
 }
 
 const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
@@ -798,6 +883,61 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
       onPendingChange?.(false);
     }, [onPendingChange]);
 
+    const [swap, setSwap] = useState<{
+      slot: SwappableSlot;
+      key?: string;
+      label: string | null;
+    } | null>(null);
+
+    /**
+     * Riga alimento. Se il nutrizionista ha previsto sostituzioni, è toccabile
+     * e apre il pannello con le alternative.
+     */
+    const foodRow = (label: string | null, slot: SwappableSlot, key?: string) => {
+      const value = readMealField(menu, slot, key);
+      const text = formatFood(value);
+      if (!text) return null;
+      const current = firstFoodItem(value);
+      const options = optionsFor(dietData, slot, key);
+      const hasOthers = options.some(
+        (o) => !current || o.name !== current.name || o.quantity !== current.quantity,
+      );
+      const content = (
+        <>
+          {label ? <span className="food-row__label">{label}</span> : null}
+          <span className="food-row__name">{text}</span>
+        </>
+      );
+      if (!onSave || !hasOthers) {
+        return <p className="food-row">{content}</p>;
+      }
+      return (
+        <button
+          type="button"
+          className="food-row food-row--swappable"
+          onClick={() => setSwap({ slot, key, label })}
+          aria-label={`${label ?? SLOT_TITLE[slot]}: ${text}. Tocca per vedere le sostituzioni`}
+        >
+          {content}
+          <IconArrowsExchange size={16} stroke={2} className="food-row__swap-icon" aria-hidden />
+        </button>
+      );
+    };
+
+    const swapSheet = swap ? (
+      <FoodSwapSheet
+        title={`${SLOT_TITLE[swap.slot]}${swap.label ? ` · ${swap.label}` : ""}`}
+        options={optionsFor(dietData, swap.slot, swap.key)}
+        current={firstFoodItem(readMealField(menu, swap.slot, swap.key))}
+        onClose={() => setSwap(null)}
+        onPick={(food) => {
+          onSave?.(writeMealField(menu, swap.slot, swap.key, food));
+          trackEvent("food_swapped", { slot: swap.slot, category: swap.key ?? swap.slot });
+          setSwap(null);
+        }}
+      />
+    ) : null;
+
     const duranteReadText = buildDuranteCombinedDraft(menu);
 
     return (
@@ -820,15 +960,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                       : "Nessun pasto segnato in questo giorno"}
                   </span>
                   <span className="menu-checkin-hint__text">
-                    Tocca{" "}
-                    <IconCheckbox
-                      size={16}
-                      stroke={2}
-                      aria-label="l'icona di spunta"
-                      className="menu-checkin-hint__icon"
-                    />{" "}
-                    sotto un pasto per segnarlo: vedrai qui quanto stai
-                    seguendo il piano.
+                    Tocca <strong>✓ Segna come fatto</strong> sotto un pasto:
+                    vedrai qui quanto stai seguendo il piano. Tocca un alimento
+                    per vedere le sostituzioni.
                   </span>
                 </div>
               )}
@@ -854,6 +988,8 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
           </Modal>
         ) : null}
 
+        {swapSheet}
+
         <div className="menu-content">
           <div {...sectionProps("colazione")}>
             <div className="menu-section__head">
@@ -863,22 +999,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 {nowBadge("colazione")}
               </h4>
             </div>
-            {menu.colazione?.carboidrati && (
-              <p>
-                <strong>Carboidrati:</strong>{" "}
-                {formatFood(menu.colazione.carboidrati)}
-              </p>
-            )}
-            {menu.colazione?.frutta && (
-              <p>
-                <strong>Frutta:</strong> {formatFood(menu.colazione.frutta)}
-              </p>
-            )}
-            {menu.colazione?.proteine && (
-              <p>
-                <strong>Proteine:</strong> {formatFood(menu.colazione.proteine)}
-              </p>
-            )}
+            {foodRow("Carboidrati", "colazione", "carboidrati")}
+            {foodRow("Frutta", "colazione", "frutta")}
+            {foodRow("Proteine", "colazione", "proteine")}
             <MenuSectionHeadActions
               onReplicate={
                 onReplicateMealToNextDay
@@ -900,7 +1023,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   {nowBadge("spuntinoMattutino")}
                 </h4>
               </div>
-              <p>{formatFood(menu.spuntinoMattutino)}</p>
+              {foodRow(null, "spuntinoMattutino")}
               <MenuSectionHeadActions
                 onReplicate={
                   onReplicateMealToNextDay
@@ -922,22 +1045,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 {nowBadge("pranzo")}
               </h4>
             </div>
-            {menu.pranzo?.carboidrati && (
-              <p>
-                <strong>Carboidrati:</strong>{" "}
-                {formatFood(menu.pranzo.carboidrati)}
-              </p>
-            )}
-            {menu.pranzo?.proteine && (
-              <p>
-                <strong>Proteine:</strong> {formatFood(menu.pranzo.proteine)}
-              </p>
-            )}
-            {menu.pranzo?.verdure && (
-              <p>
-                <strong>Verdure:</strong> {formatFood(menu.pranzo.verdure)}
-              </p>
-            )}
+            {foodRow("Carboidrati", "pranzo", "carboidrati")}
+            {foodRow("Proteine", "pranzo", "proteine")}
+            {foodRow("Verdure", "pranzo", "verdure")}
             <MenuSectionHeadActions
               onReplicate={
                 onReplicateMealToNextDay
@@ -959,7 +1069,7 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                   {nowBadge("merenda")}
                 </h4>
               </div>
-              <p>{formatFood(menu.merenda)}</p>
+              {foodRow(null, "merenda")}
               <MenuSectionHeadActions
                 onReplicate={
                   onReplicateMealToNextDay
@@ -981,21 +1091,9 @@ const DailyMenuComponent = forwardRef<DailyMenuHandle, DailyMenuProps>(
                 {nowBadge("cena")}
               </h4>
             </div>
-            {menu.cena?.pane && (
-              <p>
-                <strong>Pane:</strong> {formatFood(menu.cena.pane)}
-              </p>
-            )}
-            {menu.cena?.verdure && (
-              <p>
-                <strong>Verdure:</strong> {formatFood(menu.cena.verdure)}
-              </p>
-            )}
-            {menu.cena?.proteine && (
-              <p>
-                <strong>Proteine:</strong> {formatFood(menu.cena.proteine)}
-              </p>
-            )}
+            {foodRow("Pane", "cena", "pane")}
+            {foodRow("Verdure", "cena", "verdure")}
+            {foodRow("Proteine", "cena", "proteine")}
             <MenuSectionHeadActions
               onReplicate={
                 onReplicateMealToNextDay

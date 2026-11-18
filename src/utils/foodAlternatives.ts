@@ -15,8 +15,9 @@ export function flattenFoodSlot(
   v: FoodItemOrAlternatives | undefined | null,
 ): FoodItem[] {
   if (v == null) return [];
-  if (Array.isArray(v)) return v.filter((x) => isFoodItem(x) && x.name && x.quantity > 0);
-  return isFoodItem(v) && v.name && v.quantity > 0 ? [v] : [];
+  // quantità 0 = "q.b.": la voce va comunque comprata
+  if (Array.isArray(v)) return v.filter((x) => isFoodItem(x) && x.name && x.quantity >= 0);
+  return isFoodItem(v) && v.name && v.quantity >= 0 ? [v] : [];
 }
 
 /** Prima voce per i selettori (dropdown) quando ci sono più alternative. */

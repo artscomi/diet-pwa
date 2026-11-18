@@ -253,3 +253,32 @@
     background: #f8fafc;
   }
 }
+
+/* Ricerca nel menu a tendina (liste lunghe di sostituzioni) */
+.ingredient-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.ingredient-search input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 0 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  font: inherit;
+  font-size: 16px; /* evita lo zoom automatico su iOS */
+  color: #1a1a1a;
+}
+
+.ingredient-search input:focus {
+  outline: none;
+  border-color: #10b981;
+  background: #ffffff;
+}

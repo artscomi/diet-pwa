@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconSearch, IconX } from "@tabler/icons-react";
 import type { FoodItem } from "@/types/diet";
+import { filterFoods, FOOD_SEARCH_MIN_OPTIONS } from "@/utils/foodSearch";
 import "./FoodSwapSheet.css";
 
 interface FoodSwapSheetProps {
@@ -34,6 +35,10 @@ export default function FoodSwapSheet({
   onPick,
   onClose,
 }: FoodSwapSheetProps) {
+  const [query, setQuery] = useState("");
+  const showSearch = options.length > FOOD_SEARCH_MIN_OPTIONS;
+  const visible = useMemo(() => filterFoods(options, query), [options, query]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -75,8 +80,37 @@ export default function FoodSwapSheet({
             <IconX size={20} stroke={2} aria-hidden />
           </button>
         </div>
+        {showSearch ? (
+          <label className="swap-sheet__search">
+            <IconSearch size={18} stroke={2} aria-hidden />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Cerca tra ${options.length} alternative`}
+              aria-label="Cerca un alimento"
+              autoComplete="off"
+              enterKeyHint="search"
+            />
+            {query ? (
+              <button
+                type="button"
+                className="swap-sheet__search-clear"
+                onClick={() => setQuery("")}
+                aria-label="Cancella ricerca"
+              >
+                <IconX size={16} stroke={2} aria-hidden />
+              </button>
+            ) : null}
+          </label>
+        ) : null}
+        {visible.length === 0 ? (
+          <p className="swap-sheet__empty">
+            Nessun alimento trovato per “{query}”.
+          </p>
+        ) : null}
         <ul className="swap-sheet__list">
-          {options.map((o) => {
+          {visible.map((o) => {
             const selected = sameFood(o, current);
             return (
               <li key={`${o.name}|${o.quantity}|${o.unit}`}>

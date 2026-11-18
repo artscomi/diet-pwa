@@ -167,3 +167,57 @@
     animation: none;
   }
 }
+
+/* Ricerca tra le sostituzioni */
+.swap-sheet__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding: 0 0.75rem;
+  min-height: 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.swap-sheet__search:focus-within {
+  border-color: #10b981;
+  background: #ffffff;
+}
+
+.swap-sheet__search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 16px; /* evita lo zoom automatico su iOS */
+  color: #1a1a1a;
+  outline: none;
+}
+
+.swap-sheet__search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.swap-sheet__search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  cursor: pointer;
+}
+
+.swap-sheet__empty {
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  text-align: center;
+}

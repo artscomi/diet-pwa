@@ -846,3 +846,217 @@
   vertical-align: -3px;
   color: #10b981;
 }
+
+/* ---------- Righe alimento: il cibo in primo piano, categoria piccola ---------- */
+.menu-section .food-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 0.5rem;
+  row-gap: 0.05rem;
+  width: 100%;
+  margin: 0.15rem 0;
+  padding: 0.35rem 0;
+  font-size: clamp(0.875rem, 2.5vw, 0.9375rem);
+  line-height: 1.4;
+  color: #1a1a1a;
+  text-align: left;
+}
+
+.food-row__label {
+  flex-basis: 100%;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.food-row__name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+}
+
+.menu-section .food-row--swappable {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  width: calc(100% + 1rem);
+  padding: 0.35rem 0.5rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s;
+}
+
+.menu-section .food-row--swappable:hover,
+.menu-section .food-row--swappable:focus-visible {
+  background: rgba(16, 185, 129, 0.1);
+  outline: none;
+}
+
+.food-row__swap-icon {
+  align-self: center;
+  flex-shrink: 0;
+  color: #10b981;
+}
+
+/* ---------- Azioni pasto: "Segna come fatto" in primo piano ---------- */
+.meal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem var(--menu-section-pad-x) 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.38);
+}
+
+.meal-actions__status {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  border: 1.5px solid #10b981;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.meal-actions__done,
+.meal-actions__more-status,
+.meal-actions__menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.meal-actions__done {
+  flex: 1;
+  gap: 0.4rem;
+  padding: 0 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.meal-actions__more-status {
+  width: 44px;
+  flex-shrink: 0;
+  border-left: 1.5px solid rgba(16, 185, 129, 0.35);
+  color: #059669;
+}
+
+.meal-actions__status--completed {
+  background: #10b981;
+}
+
+.meal-actions__status--completed .meal-actions__done,
+.meal-actions__status--completed .meal-actions__more-status {
+  color: #ffffff;
+}
+
+.meal-actions__status--completed .meal-actions__more-status {
+  border-left-color: rgba(255, 255, 255, 0.4);
+}
+
+.meal-actions__status--partial {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.meal-actions__status--partial .meal-actions__done,
+.meal-actions__status--partial .meal-actions__more-status {
+  color: #b45309;
+  border-left-color: rgba(245, 158, 11, 0.35);
+}
+
+.meal-actions__status--skipped {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.meal-actions__status--skipped .meal-actions__done,
+.meal-actions__status--skipped .meal-actions__more-status {
+  color: #64748b;
+  border-left-color: #cbd5e1;
+}
+
+.meal-actions__done:focus-visible,
+.meal-actions__more-status:focus-visible,
+.meal-actions__menu-btn:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: -2px;
+}
+
+.meal-actions__menu-btn {
+  width: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #64748b;
+}
+
+.meal-actions__menu-btn:hover {
+  background: #e2e8f0;
+}
+
+.meal-actions__menu,
+.meal-actions__status-panel {
+  position: absolute;
+  right: var(--menu-section-pad-x);
+  top: calc(100% + 0.25rem);
+  z-index: 30;
+  min-width: 13rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+}
+
+.meal-actions__status-panel {
+  left: var(--menu-section-pad-x);
+  right: auto;
+}
+
+.meal-actions__menu-item,
+.meal-actions__status-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-align: left;
+  cursor: pointer;
+}
+
+.meal-actions__menu-item:hover,
+.meal-actions__status-option:hover {
+  background: #f1f5f9;
+}
+
+.meal-actions__status-option--active {
+  background: #ecfdf5;
+  font-weight: 700;
+}
+
+.meal-actions__menu-item svg {
+  color: #64748b;
+  width: 18px;
+  height: 18px;
+}

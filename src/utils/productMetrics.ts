@@ -34,6 +34,7 @@ const EVENT_STAGE = {
   diet_review_answered: "acquisition",
   // Activation — prima esperienza di valore: segna com'è andato un pasto
   activated: "activation",
+  food_swapped: "activation",
   // Retention — torna e usa il prodotto
   app_active_day: "retention",
   meal_checkin_day: "retention",

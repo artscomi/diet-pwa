@@ -101,3 +101,25 @@
     padding-right: 2rem;
   }
 }
+
+
+/* Refresh colori: indicatore attivo a pillola */
+.app-tab-nav__item::before {
+  display: none;
+}
+
+.app-tab-nav__icon {
+  box-sizing: content-box;
+  padding: 0.25rem 1rem;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.app-tab-nav__item--active .app-tab-nav__icon {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+}
+
+.app-tab-nav__item--active {
+  color: var(--brand-deep);
+}

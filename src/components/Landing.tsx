@@ -378,7 +378,12 @@ export default function Landing({
           body: formData,
         });
         const text = await res.text();
-        let json: { success?: boolean; data?: UserDiet; error?: string };
+        let json: {
+          success?: boolean;
+          data?: UserDiet;
+          error?: string;
+          code?: string;
+        };
         try {
           json = text ? (JSON.parse(text) as typeof json) : {};
         } catch {
@@ -392,7 +397,7 @@ export default function Landing({
         }
 
         if (!res.ok) {
-          fail(`http_${res.status}`);
+          fail(json.code ?? `http_${res.status}`);
           setUploadStatus(null);
           setError(json.error || "Errore durante l'analisi del file");
           if (fileInputRef.current) fileInputRef.current.value = "";

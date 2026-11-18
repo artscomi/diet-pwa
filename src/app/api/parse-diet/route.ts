@@ -4,6 +4,7 @@ import pdf from "pdf-parse";
 import type { DietData, DailyMenu } from "@/types/diet";
 import { isAllowedMime, MAX_UPLOAD_BYTES } from "@/constants/upload";
 import { normalizeDietPayload } from "@/utils/normalizeDietPayload";
+import { looksLikeDiet, tidyPdfText } from "@/utils/looksLikeDiet";
 
 /** Modello OpenAI per vision + estrazione JSON (immagini e testo). */
 const PARSE_MODEL = "gpt-4o";
@@ -17,6 +18,8 @@ Rispondi SOLO con un JSON valido, nient'altro:
 const DIET_JSON_PROMPT = `Sei un assistente che estrae informazioni su diete e menu DAL TESTO/CONTENUTO FORNITO DALL'UTENTE.
 
 REGOLA FONDAMENTALE: Se il contenuto NON descrive chiaramente una dieta o un piano alimentare con pasti (colazione, pranzo, cena, ecc.) e quantità di alimenti, NON inventare nulla. Restituisci SOLO: {"error":"not_a_diet"}
+
+ATTENZIONE: molti nutrizionisti usano un MENU UNICO valido tutti i giorni, con per ogni pasto una "prima scelta" seguita da un elenco di alimenti alternativi con le rispettive grammature (tabelle di sostituzione, spesso su due colonne). Anche questo È una dieta: metti la prima scelta di ogni categoria in un unico elemento di dailyMenus e tutte le alternative in dietData. Ignora tabelle di valori nutrizionali (kcal, proteine %, lipidi…), intestazioni e piè di pagina.
 
 Se invece il contenuto È una dieta/menu:
 - Usa SOLO gli alimenti e le quantità presenti nel contenuto. Non inventare menu generici né copiare esempi: estrai esattamente ciò che è scritto nel file.
@@ -137,6 +140,7 @@ async function classifyIsDiet(
         },
       ],
       response_format: { type: "json_object" },
+      temperature: 0,
       max_tokens: 100,
     });
     const raw = res.choices[0]?.message?.content;
@@ -157,6 +161,7 @@ async function classifyIsDiet(
       { role: "user", content: text.slice(0, 15000) },
     ],
     response_format: { type: "json_object" },
+      temperature: 0,
     max_tokens: 100,
   });
   const raw = res.choices[0]?.message?.content;
@@ -219,7 +224,7 @@ export async function POST(request: Request) {
       imageBase64 = buffer.toString("base64");
     } else if (mime === "application/pdf") {
       const data = await pdf(buffer);
-      textContent = data.text;
+      textContent = tidyPdfText(data.text);
     } else {
       textContent = buffer.toString("utf-8");
     }
@@ -229,15 +234,14 @@ export async function POST(request: Request) {
     const NOT_A_DIET_MESSAGE =
       "Il file non sembra contenere una dieta o un piano alimentare con pasti e quantità. Carica un documento o un'immagine con il menu (colazione, pranzo, cena, ecc.) e le quantità in grammi.";
 
-    const isDiet = await classifyIsDiet(
-      openai,
-      mime,
-      imageBase64,
-      textContent,
-    );
+    // Testo con pasti e grammature: è una dieta, non serve il classificatore AI.
+    const isDiet =
+      looksLikeDiet(textContent) ||
+      (await classifyIsDiet(openai, mime, imageBase64, textContent));
     if (!isDiet) {
+      console.warn("parse-diet: rifiutato dal classificatore");
       return NextResponse.json(
-        { success: false, error: NOT_A_DIET_MESSAGE },
+        { success: false, error: NOT_A_DIET_MESSAGE, code: "not_a_diet_classify" },
         { status: 400 },
       );
     }
@@ -261,6 +265,7 @@ export async function POST(request: Request) {
         ],
         // Chiediamo esplicitamente un JSON valido
         response_format: { type: "json_object" },
+      temperature: 0,
         max_tokens: 16384,
       });
       const content = response.choices[0]?.message?.content;
@@ -299,6 +304,7 @@ export async function POST(request: Request) {
           { role: "user", content: contentToSend },
         ],
         response_format: { type: "json_object" },
+      temperature: 0,
         max_tokens: 16384,
       });
       const content = response.choices[0]?.message?.content;
@@ -323,7 +329,7 @@ export async function POST(request: Request) {
 
     if (result.error === "not_a_diet") {
       return NextResponse.json(
-        { success: false, error: NOT_A_DIET_MESSAGE },
+        { success: false, error: NOT_A_DIET_MESSAGE, code: "not_a_diet_extract" },
         { status: 400 },
       );
     }

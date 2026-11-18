@@ -5,7 +5,7 @@
   --brand-deep: #047857;
   --brand-soft: #ecfdf5;
   /* Colori pieni, niente sfumature */
-  --app-bg: #f4f6f3;
+  --app-bg: #f1effa; /* lavanda */
   --ink: #0f172a;
   --ink-muted: #64748b;
   --card-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 20px rgba(15, 23, 42, 0.06);
@@ -926,7 +926,7 @@ button {
   background: #ffffff;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border-bottom: 1px solid #e5e9e4;
+  border-bottom: 1px solid #e4e1f2;
   box-shadow: none;
 }
 
